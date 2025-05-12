@@ -15,10 +15,8 @@ references:
 
   android_config: &android_config
     working_directory: *workspace
-    executor:
-      name: android/android-machine
-      resource-class: xlarge
-      tag: default
+    docker:
+      - image: cimg/android:2024.01
 
 # ----------------------------
 # Commands
@@ -26,8 +24,11 @@ references:
 commands:
   set-android-java-version:
     steps:
-      - android/change-java-version:
-          java-version: 17
+      - run:
+          name: Set Java Version
+          command: |
+            java -version
+            echo "JAVA_HOME=$JAVA_HOME"
 
 # ----------------------------
 # Jobs Section
@@ -38,21 +39,34 @@ jobs:
     steps:
       - set-android-java-version
       - checkout
-      - android/restore-gradle-cache
+      - set-android-java-version
+      - restore_cache:
+          key: gradle-{{ checksum "build.gradle" }}-{{ checksum "app/build.gradle" }}
+      - run:
+          name: Download Dependencies
+          command: ./gradlew androidDependencies
       - run:
           name: Run Detekt
           command: ./gradlew detekt
       - store_artifacts:
           path: build/reports/detekt
           destination: reports/detekt
-      - android/save-gradle-cache
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradle-{{ checksum "build.gradle" }}-{{ checksum "app/build.gradle" }}
+    executor: android-executor
 
   unit-tests-with-coverage:
     <<: *android_config
     steps:
-      - set-android-java-version
       - checkout
-      - android/restore-gradle-cache
+      - set-android-java-version
+      - restore_cache:
+          key: gradle-{{ checksum "build.gradle" }}-{{ checksum "app/build.gradle" }}
+      - run:
+          name: Download Dependencies
+          command: ./gradlew androidDependencies
       - run:
           name: Run Unit Tests with Coverage
           command: ./gradlew test jacocoTestReport
@@ -61,7 +75,11 @@ jobs:
           destination: reports/coverage
       - store_test_results:
           path: build/test-results
-      - android/save-gradle-cache
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradle-{{ checksum "build.gradle" }}-{{ checksum "app/build.gradle" }}
+    executor: android-executor
 
 # ----------------------------
 # Workflow Section
