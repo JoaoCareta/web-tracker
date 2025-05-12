@@ -7,6 +7,18 @@ orbs:
   android: circleci/android@2.3.0
 
 # ----------------------------
+# Executors Section
+# ----------------------------
+executors:
+  android-executor:
+    docker:
+      - image: cimg/android:2024.01
+    resource_class: medium
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xmx3g"
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
+
+# ----------------------------
 # References Section
 # ----------------------------
 references:
@@ -15,8 +27,7 @@ references:
 
   android_config: &android_config
     working_directory: *workspace
-    docker:
-      - image: cimg/android:2024.01
+    executor: android-executor
 
 # ----------------------------
 # Commands
@@ -24,11 +35,8 @@ references:
 commands:
   set-android-java-version:
     steps:
-      - run:
-          name: Set Java Version
-          command: |
-            java -version
-            echo "JAVA_HOME=$JAVA_HOME"
+      - android/change-java-version:
+          java-version: 17
 
 # ----------------------------
 # Jobs Section
@@ -39,33 +47,21 @@ jobs:
     steps:
       - set-android-java-version
       - checkout
-      - set-android-java-version
-      - restore_cache:
-          key: gradle-{{ checksum "build.gradle" }}-{{ checksum "app/build.gradle" }}
-      - run:
-          name: Download Dependencies
-          command: ./gradlew androidDependencies
+      - android/restore-gradle-cache
       - run:
           name: Run Detekt
           command: ./gradlew detekt
       - store_artifacts:
           path: build/reports/detekt
           destination: reports/detekt
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: gradle-{{ checksum "build.gradle" }}-{{ checksum "app/build.gradle" }}
+      - android/save-gradle-cache
 
   unit-tests-with-coverage:
     <<: *android_config
     steps:
-      - checkout
       - set-android-java-version
-      - restore_cache:
-          key: gradle-{{ checksum "build.gradle" }}-{{ checksum "app/build.gradle" }}
-      - run:
-          name: Download Dependencies
-          command: ./gradlew androidDependencies
+      - checkout
+      - android/restore-gradle-cache
       - run:
           name: Run Unit Tests with Coverage
           command: ./gradlew test jacocoTestReport
@@ -74,10 +70,7 @@ jobs:
           destination: reports/coverage
       - store_test_results:
           path: build/test-results
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: gradle-{{ checksum "build.gradle" }}-{{ checksum "app/build.gradle" }}
+      - android/save-gradle-cache
 
 # ----------------------------
 # Workflow Section
