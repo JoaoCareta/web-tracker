@@ -70,10 +70,10 @@ jobs:
             ./gradlew jacocoTestReport
             ./gradlew sonarqube
       - store_artifacts:
-          path: "**/build/reports/jacoco/"
+          path: build/reports/jacoco
           destination: reports/coverage
       - store_test_results:
-          path: "**/build/test-results"
+          path: build/test-results
       - android/save-gradle-cache
 
 # ----------------------------
@@ -87,4 +87,3 @@ workflows:
       - unit-tests-with-coverage:
           requires:
             - detekt
-          context: SonarCloud
