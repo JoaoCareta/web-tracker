@@ -33,25 +33,8 @@ afterEvaluate {
             flavorName = flavorName == jacocoTask ? "" : flavorName
 
             reports {
-                xml {
-                    required = true
-                    outputLocation = layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml")
-                }
-
-                html {
-                    required = true
-                    outputLocation = layout.buildDirectory.dir("reports/jacoco/test/html")
-                }
-
-                doLast {
-                    def moduleReportDir = layout.buildDirectory.dir("reports/jacoco/test").get().asFile
-                    def rootReportDir = project.rootProject.layout.buildDirectory.dir("reports/jacoco/${project.name}").get().asFile
-
-                    copy {
-                        from moduleReportDir
-                        into rootReportDir
-                    }
-                }
+                xml.required = true
+                html.required = true
             }
 
             getSourceDirectories().setFrom(findSourceDirectories(project, flavorName))
