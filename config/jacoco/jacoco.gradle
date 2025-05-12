@@ -1,0 +1,99 @@
+apply from: "$rootDir/config/jacoco/jacoco-common.gradle"
+
+afterEvaluate {
+    if (!project.hasProperty('android')) return
+
+    def jacocoTasks = [:]
+    def runAllTestTasks = []
+    def jacocoVerificationTasks = []
+
+    tasks.withType(Test).configureEach {
+        jacoco.includeNoLocationClasses = true
+        jacoco.excludes = ['jdk.internal.*']
+    }
+
+    android.productFlavors.all {
+        flavor ->
+            jacocoTasks.put(flavor.name, "jacocoTestReport${flavor.name.capitalize()}")
+            runAllTestTasks.add("jacocoRunTest${flavor.name.capitalize()}")
+            jacocoVerificationTasks.add("jacocoTestCoverageVerification${flavor.name.capitalize()}")
+    }
+
+    if (android.productFlavors.isEmpty()) {
+        jacocoTasks.put("jacocoTestReport", "jacocoTestReport")
+        runAllTestTasks.add("jacocoRunTest")
+        jacocoVerificationTasks.add("jacocoTestCoverageVerification")
+    }
+
+    jacocoTasks.each {
+        def jacocoTask = it.value
+        def flavorName = it.key
+
+        task(jacocoTask, type: JacocoReport, group: "coverage-report") {
+            flavorName = flavorName == jacocoTask ? "" : flavorName
+
+            reports {
+                xml {
+                    required = true
+                    outputLocation = layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml")
+                }
+
+                html {
+                    required = true
+                    outputLocation = layout.buildDirectory.dir("reports/jacoco/test/html")
+                }
+
+                doLast {
+                    def moduleReportDir = layout.buildDirectory.dir("reports/jacoco/test").get().asFile
+                    def rootReportDir = project.rootProject.layout.buildDirectory.dir("reports/jacoco/${project.name}").get().asFile
+
+                    copy {
+                        from moduleReportDir
+                        into rootReportDir
+                    }
+                }
+            }
+
+            getSourceDirectories().setFrom(findSourceDirectories(project, flavorName))
+            getClassDirectories().setFrom(findClassDirectories(project, flavorName))
+            getExecutionData().setFrom(fileTree(dir: "$buildDir", includes: findCoverageFiles(flavorName)).files.path)
+        }
+    }
+
+    runAllTestTasks.each { jacocoRunTask ->
+        task(jacocoRunTask, group: "coverage-report") {
+            def flavorName = jacocoRunTask.split("-").last()
+            flavorName = flavorName == jacocoRunTask ? "" : flavorName
+
+            // Run Tests
+            if (project.android.buildTypes.debug.testCoverageEnabled)
+                dependsOn "create${flavorName.capitalize()}DebugCoverageReport"
+            dependsOn "test${flavorName.capitalize()}DebugUnitTest"
+
+            if (flavorName.isEmpty())
+                finalizedBy "jacocoTestReport"
+            else
+                finalizedBy "jacocoTestReport${flavorName.capitalize()}"
+        }
+    }
+
+    jacocoVerificationTasks.each { jacocoVerificationTask ->
+        task(jacocoVerificationTask, type: JacocoCoverageVerification, group: "coverage-report") {
+            def flavorName = jacocoVerificationTask.split("-").last()
+            flavorName = flavorName == jacocoVerificationTask ? "" : flavorName
+
+            violationRules {
+                failOnViolation = true
+                rule {
+                    limit {
+                        minimum = minCoverage
+                    }
+                }
+            }
+
+            getSourceDirectories().setFrom(findSourceDirectories(project, flavorName))
+            getClassDirectories().setFrom(findClassDirectories(project, flavorName))
+            getExecutionData().setFrom(fileTree(dir: "$buildDir", includes: findCoverageFiles(flavorName)).files.path)
+        }
+    }
+}
