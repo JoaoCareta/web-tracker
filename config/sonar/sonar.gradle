@@ -1,0 +1,54 @@
+apply plugin: "org.sonarqube"
+
+def branch = System.getenv("CIRCLE_BRANCH")
+def prUrl = System.getenv("CIRCLE_PULL_REQUEST")
+
+static boolean isNullOrBlank(String value) {
+    return value == null || value.isBlank()
+}
+
+sonarqube {
+    androidVariant "devDebug"
+
+    properties {
+        property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.login", System.getenv("SONAR_TOKEN")
+
+        if (!isNullOrBlank(branch) && !isNullOrBlank(prUrl)) {
+            property "sonar.pullrequest.branch", "$branch"
+
+            int lastSlashIndex = prUrl.lastIndexOf('/')
+            String prNumber = prUrl.substring(lastSlashIndex + 1)
+            property "sonar.pullrequest.key", prNumber
+        }
+
+        property "sonar.projectName", "web-tracker"
+        property "sonar.projectKey", "JoaoCareta_web-tracker"
+        property "sonar.organization", "João Otávio Cesco Careta"
+
+        property "sonar.sources", "src/main/java"
+        property "sonar.tests", ["src/test/java"]
+        property "sonar.test.inclusions", "**/*Test*/**"
+        property "sonar.java.source", "17"
+        property "sonar.sourceEncoding", "UTF-8"
+
+        property "sonar.exclusions", [
+                "**/androidTest/**,**/*Test*/**,*.json,**/*test*/**,**/.gradle/**,**/R.class,build/**,**/*.png,**/res/**"
+        ]
+        property "sonar.coverage.exclusions", [
+                "**/*Activity.kt,**/*Fragment.kt,**/*Adapter.kt,**/*Delegate.kt,**/App.kt,standcountcore/**,**/*Extensions.kt,**/*Extension.kt,**/converters/**,**/*Constants.kt,**/*DataSource.kt,**/*Module.kt,common/metadata-db/**,common/design-system/**,common/core-android/**,common/core-db/**"
+        ]
+
+        property "sonar.report.export.path", "sonar-report.json"
+        property "sonar.issuesReport.json.enable", "true"
+        property "sonar.import_unknown_files", true
+        property "sonar.android.lint.report", "./build/outputs/lint-results.xml"
+        property "sonar.java.coveragePlugin", "jacoco"
+        property "sonar.coverage.jacoco.xmlReportPaths", [
+                "**/*jacocoTestReport*.xml",
+                "**/build/reports/jacoco/jacocoTestReport/*jacocoTestReport*.xml"
+        ]
+    }
+}
+
+tasks.sonarqube.dependsOn ":app:jacocoTestReportDev"
