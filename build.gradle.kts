@@ -7,8 +7,11 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.detekt.plugin)
+    alias(libs.plugins.sonarqube.plugin)
     jacoco
 }
+
+apply("${rootDir}/config/sonar/sonar.gradle")
 
 allprojects {
 
