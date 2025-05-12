@@ -1,0 +1,76 @@
+version: 2.1
+
+# ----------------------------
+# Orbs Section
+# ----------------------------
+orbs:
+  android: circleci/android@2.3.0
+
+# ----------------------------
+# References Section
+# ----------------------------
+references:
+  workspace: &workspace
+               ~/code
+
+  android_config: &android_config
+    working_directory: *workspace
+    executor:
+      name: android/android-machine
+      resource-class: xlarge
+      tag: default
+
+# ----------------------------
+# Commands
+# ----------------------------
+commands:
+  set-android-java-version:
+    steps:
+      - android/change-java-version:
+          java-version: 17
+
+# ----------------------------
+# Jobs Section
+# ----------------------------
+jobs:
+  detekt:
+    <<: *android_config
+    steps:
+      - set-android-java-version
+      - checkout
+      - android/restore-gradle-cache
+      - run:
+          name: Run Detekt
+          command: ./gradlew detekt
+      - store_artifacts:
+          path: build/reports/detekt
+          destination: reports/detekt
+      - android/save-gradle-cache
+
+  unit-tests-with-coverage:
+    <<: *android_config
+    steps:
+      - set-android-java-version
+      - checkout
+      - android/restore-gradle-cache
+      - run:
+          name: Run Unit Tests with Coverage
+          command: ./gradlew test jacocoTestReport
+      - store_artifacts:
+          path: build/reports/jacoco
+          destination: reports/coverage
+      - store_test_results:
+          path: build/test-results
+      - android/save-gradle-cache
+
+# ----------------------------
+# Workflow Section
+# ----------------------------
+workflows:
+  version: 2
+  build-test:
+    jobs:
+      - detekt
+      - unit-tests-with-coverage:
+          requires:
+            - detekt
