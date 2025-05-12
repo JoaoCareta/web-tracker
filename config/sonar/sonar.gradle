@@ -51,4 +51,4 @@ sonarqube {
     }
 }
 
-tasks.sonarqube.dependsOn ":app:jacocoTestReportDev"
+tasks.sonarqube.dependsOn ":app:jacocoTestReport"
