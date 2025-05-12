@@ -1,18 +1,10 @@
 version: 2.1
 
-# ----------------------------
-# Orbs Section
-# ----------------------------
 orbs:
   android: circleci/android@2.3.0
 
-# ----------------------------
-# References Section
-# ----------------------------
 references:
-  workspace: &workspace
-               ~/code
-
+  workspace: &workspace ~/code
   android_config: &android_config
     working_directory: *workspace
     executor:
@@ -20,18 +12,12 @@ references:
       resource-class: xlarge
       tag: default
 
-# ----------------------------
-# Commands
-# ----------------------------
 commands:
   set-android-java-version:
     steps:
       - android/change-java-version:
           java-version: 17
 
-# ----------------------------
-# Jobs Section
-# ----------------------------
 jobs:
   detekt:
     <<: *android_config
@@ -63,11 +49,7 @@ jobs:
           path: build/test-results
       - android/save-gradle-cache
 
-# ----------------------------
-# Workflow Section
-# ----------------------------
 workflows:
-  version: 2
   build-test:
     jobs:
       - detekt
