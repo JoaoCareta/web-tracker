@@ -7,6 +7,18 @@ orbs:
   android: circleci/android@2.3.0
 
 # ----------------------------
+# Executors Section
+# ----------------------------
+executors:
+  android-executor:
+    docker:
+      - image: cimg/android:2024.01
+    resource_class: medium
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xmx3g"
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
+
+# ----------------------------
 # References Section
 # ----------------------------
 references:
@@ -15,10 +27,7 @@ references:
 
   android_config: &android_config
     working_directory: *workspace
-    executor:
-      name: android/android-machine
-      resource-class: xlarge
-      tag: default
+    executor: android-executor
 
 # ----------------------------
 # Commands
