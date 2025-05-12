@@ -55,7 +55,6 @@ jobs:
           paths:
             - ~/.gradle
           key: gradle-{{ checksum "build.gradle" }}-{{ checksum "app/build.gradle" }}
-    executor: android-executor
 
   unit-tests-with-coverage:
     <<: *android_config
@@ -79,7 +78,6 @@ jobs:
           paths:
             - ~/.gradle
           key: gradle-{{ checksum "build.gradle" }}-{{ checksum "app/build.gradle" }}
-    executor: android-executor
 
 # ----------------------------
 # Workflow Section
