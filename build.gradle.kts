@@ -11,7 +11,7 @@ plugins {
     jacoco
 }
 
-// apply("${rootDir}/config/sonar/sonar.gradle")
+
 
 allprojects {
 
@@ -31,6 +31,8 @@ allprojects {
              * Aplicar Jacoco
              */
             apply(from = "${rootDir}/config/jacoco/jacoco.gradle")
+
+            apply("${rootDir}/config/sonar/sonar.gradle")
         }
     }
 
