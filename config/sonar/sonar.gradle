@@ -8,7 +8,7 @@ static boolean isNullOrBlank(String value) {
 }
 
 sonarqube {
-    androidVariant "devDebug"
+    // androidVariant "devDebug"
 
     properties {
         property "sonar.host.url", "https://sonarcloud.io"
@@ -50,5 +50,3 @@ sonarqube {
         ]
     }
 }
-
-tasks.sonarqube.dependsOn ":app:jacocoTestReport"

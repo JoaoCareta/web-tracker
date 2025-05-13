@@ -1,6 +1,7 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektPlugin
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
+import org.sonarqube.gradle.SonarQubeTask
 
 plugins {
     alias(libs.plugins.android.application) apply false
