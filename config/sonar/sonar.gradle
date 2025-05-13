@@ -46,9 +46,9 @@ sonarqube {
         property "sonar.java.coveragePlugin", "jacoco"
         property "sonar.coverage.jacoco.xmlReportPaths", [
                 "**/*jacocoTestReport*.xml",
-                "**/build/reports/jacoco/jacocoTestReport/*jacocoTestReport*.xml"
+                "**/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
         ]
     }
 }
 
-tasks.sonarqube.dependsOn ":app:jacocoTestReportDev"
+tasks.sonarqube.dependsOn ":app:jacocoTestReport"
