@@ -68,6 +68,7 @@ allprojects {
     }
 
     tasks.register("collectJacocoReports") {
+        dependsOn(subprojects.map { it.tasks.named("jacocoTestReport") })
         doLast {
             val reportPaths = subprojects.map { subproject ->
                 "${subproject.buildDir}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
