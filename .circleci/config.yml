@@ -62,13 +62,10 @@ jobs:
       - set-android-java-version
       - checkout
       - android/restore-gradle-cache
-      - sonarcloud/scan
       - run:
           name: Run Unit Tests with Coverage
-          command: |
-            ./gradlew test
-            ./gradlew jacocoTestReport
-            ./gradlew sonarqube
+          command: ./gradlew test jacocoTestReport
+      - sonarcloud/scan
       - store_artifacts:
           path: build/reports/jacoco
           destination: reports/coverage
