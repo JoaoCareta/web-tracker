@@ -48,6 +48,9 @@ jobs:
     steps:
       - set-android-java-version
       - checkout
+      - run:
+          name: Grant execute permission for gradlew
+          command: chmod +x ./gradlew
       - android/restore-gradle-cache
       - run:
           name: Run Detekt
@@ -66,12 +69,17 @@ jobs:
     steps:
       - set-android-java-version
       - checkout
+      - run:
+          name: Grant execute permission for gradlew
+          command: chmod +x ./gradlew
       - attach_workspace:
           at: .
       - android/restore-gradle-cache
       - run:
           name: Run Tests with Coverage
-          command: ./gradlew collectJacocoReports
+          command: |
+            ./gradlew test jacocoTestReport
+            ./gradlew collectJacocoReports
       - store_artifacts:
           path: build/reports/jacoco
           destination: reports/coverage
