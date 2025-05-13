@@ -24,7 +24,7 @@ sonarqube {
 
         property "sonar.projectName", "web-tracker"
         property "sonar.projectKey", "JoaoCareta_web-tracker"
-        property "sonar.organization", "joaocareta"
+        property "sonar.organization", "João Otávio Cesco Careta"
 
         property "sonar.sources", "src/main/java"
         property "sonar.tests", ["src/test/java"]
