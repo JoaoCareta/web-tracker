@@ -5,6 +5,7 @@ version: 2.1
 # ----------------------------
 orbs:
   android: circleci/android@2.3.0
+  sonarcloud: sonarsource/sonarcloud@2.0.0
 
 # ----------------------------
 # Executors Section
@@ -65,13 +66,13 @@ jobs:
       - run:
           name: Run Unit Tests with Coverage
           command: ./gradlew test jacocoTestReport
-      - sonarcloud/scan
       - store_artifacts:
           path: build/reports/jacoco
           destination: reports/coverage
       - store_test_results:
           path: build/test-results
       - android/save-gradle-cache
+      - sonarcloud/scan
 
 # ----------------------------
 # Workflow Section

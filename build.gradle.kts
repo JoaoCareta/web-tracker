@@ -1,7 +1,7 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektPlugin
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
-import org.sonarqube.gradle.SonarQubeTask
+import org.sonarqube.gradle.SonarTask
 
 plugins {
     alias(libs.plugins.android.application) apply false
@@ -15,7 +15,6 @@ plugins {
 
 
 allprojects {
-
     afterEvaluate {
         /**
          * Verificar se é um módulo Android antes de aplicar as configurações
@@ -66,5 +65,25 @@ allprojects {
             xml.required.set(true)
             html.required.set(true)
         }
+    }
+
+    tasks.register("collectJacocoReports") {
+        doLast {
+            val reportPaths = subprojects.map { subproject ->
+                "${subproject.buildDir}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
+            }.filter { File(it).exists() }
+
+            if (reportPaths.isNotEmpty()) {
+                sonarqube {
+                    properties {
+                        property("sonar.coverage.jacoco.xmlReportPaths", reportPaths.joinToString(","))
+                    }
+                }
+            }
+        }
+    }
+
+    tasks.withType<SonarTask> {
+        dependsOn("collectJacocoReports")
     }
 }

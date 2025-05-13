@@ -12,7 +12,7 @@ sonarqube {
 
     properties {
         property "sonar.host.url", "https://sonarcloud.io"
-        property "sonar.login", System.getenv("SONAR_TOKEN")
+        property "sonar.token", System.getenv("SONAR_TOKEN")
 
         if (!isNullOrBlank(branch) && !isNullOrBlank(prUrl)) {
             property "sonar.pullrequest.branch", "$branch"
@@ -24,7 +24,7 @@ sonarqube {
 
         property "sonar.projectName", "web-tracker"
         property "sonar.projectKey", "JoaoCareta_web-tracker"
-        property "sonar.organization", "João Otávio Cesco Careta"
+        property "sonar.organization", "joaocareta"
 
         property "sonar.sources", "src/main/java"
         property "sonar.tests", ["src/test/java"]
