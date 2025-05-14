@@ -1,0 +1,16 @@
+name: 'Bumpson'
+description: 'Bump Tag'
+author: 'Johanes'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+outputs:
+  new_tag:
+    description: 'Tag created'
+  tag:
+    description: 'The latest tag'
+  part:
+    description: 'Where the version was bumped'
+branding:
+  icon: 'git-merge'  
+  color: 'green'

@@ -16,8 +16,8 @@ android {
         applicationId = "com.joao.otavio.webtracker"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = "${extra["gitVersionCode"] ?: 3333}".toInt()
+        versionName = "${extra["gitVersionName"] ?: "1.1.0"}"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
