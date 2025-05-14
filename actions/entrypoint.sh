@@ -71,15 +71,15 @@ shopt -s nocasematch
 case "$GITHUB_COMMIT_MESSAGE" in
   *#minor* )
     echo "Starting a new minor RC"
-    current_tag="release/staging/$(semver -i minor "$prod_version")-RC.0"
+    current_tag="release/staging/$(semver -i minor "$prod_version")-RC.1"
   ;;
   *#rc* )
     if [ -z "$last_staging_version" ]; then
       echo "No staging version found. Creating new RC based on prod version"
-      current_tag="release/staging/$(semver -i patch "$prod_version")-RC.0"
+      current_tag="release/staging/$(semver -i patch "$prod_version")-RC.1"
     elif [ "$last_staging_version" = "$prod_version" ]; then
       echo "Staging version equals prod version. Creating new RC with patch increment"
-      current_tag="release/staging/$(semver -i patch "$prod_version")-RC.0"
+      current_tag="release/staging/$(semver -i patch "$prod_version")-RC.1"
     else
       echo "Bumping current RC"
       next_rc=$((last_staging_rc + 1))
