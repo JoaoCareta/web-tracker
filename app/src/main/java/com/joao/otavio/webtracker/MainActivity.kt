@@ -42,6 +42,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     WebTrackerTheme {
-        Greeting("Android-test-2")
+        Greeting("Android-test")
     }
 }
