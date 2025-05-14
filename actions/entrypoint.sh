@@ -64,31 +64,22 @@ case "$GITHUB_COMMIT_MESSAGE" in
 esac
 
 shopt -s nocasematch
-case "$GITHUB_COMMIT_MESSAGE" in
-  *#[Rr][Cc]* )  # Isso vai capturar #RC, #Rc, #rC, #rc
-    echo "Detected RC tag in commit message: $GITHUB_COMMIT_MESSAGE"
-
+if [[ "$GITHUB_COMMIT_MESSAGE" =~ [^a-zA-Z](#minor)[^a-zA-Z] ]]; then
+    echo "Starting a new minor RC"
+    current_tag="release/staging/$(semver -i minor "$last_prod_version")-RC.1"
+elif [[ "$GITHUB_COMMIT_MESSAGE" =~ [^a-zA-Z](#[Rr][Cc])[^a-zA-Z] ]]; then
     if [ "$last_prod_version" = "$last_staging_version" ]; then
-      echo "Production version ($last_prod_version) equals staging version ($last_staging_version)"
-      echo "Starting a new patch RC"
-      new_version=$(semver -i patch "$last_prod_version")
-      current_tag="release/staging/$new_version-RC.1"
-      echo "Created new RC version: $current_tag"
+        echo "Starting a new patch RC"
+        current_tag="release/staging/$(semver -i patch "$last_staging_version")-RC.1"
     else
-      echo "Production version ($last_prod_version) differs from staging version ($last_staging_version)"
-      echo "Bumping current RC"
-      current_rc_num=$(echo "$last_staging_rc" | grep -oE "[0-9]+")
-      next_rc_num=$((current_rc_num + 1))
-      current_tag="release/staging/$last_staging_version-RC.$next_rc_num"
-      echo "Bumped RC to: $current_tag"
+        echo "Bumping current RC"
+        suffix="RC"
+        current_tag="release/staging/$(semver -i prerelease "$last_staging_version-$last_staging_rc" --preid $suffix)"
     fi
-  ;;
-  *)
-    echo "No RC tag detected in commit message: $GITHUB_COMMIT_MESSAGE"
-    echo "Nothing to do!"
+else
+    echo "Nothing to do!";
     exit 0
-  ;;
-esac
+fi
 shopt -u nocasematch
 
 tag_version "$current_tag"
