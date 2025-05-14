@@ -63,9 +63,21 @@ case "$GITHUB_COMMIT_MESSAGE" in
   *#none*) exit 0 ;;
 esac
 
-# Extrai apenas o número da versão de prod (remove o prefixo release/prod/)
+# Força atualização das tags
+git fetch --tags --force
+
+# Extrai apenas o número da versão de prod, ordenando semanticamente
+last_prod_version=$(git tag -l "release/prod/*" | sort -V | tail -n 1)
 prod_version=$(echo "$last_prod_version" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
 echo "Current prod version: $prod_version"
+
+# Debug logs para ver todas as tags
+echo "All production tags:"
+git tag -l "release/prod/*" | sort -V
+echo "------------------------"
+echo "All staging tags:"
+git tag -l "release/staging/*" | sort -V
+echo "------------------------"
 
 shopt -s nocasematch
 case "$GITHUB_COMMIT_MESSAGE" in
