@@ -95,6 +95,8 @@ case "$GITHUB_COMMIT_MESSAGE" in
 esac
 shopt -u nocasematch
 
+echo "Tag to be created: $current_tag"
+
 tag_version "$current_tag"
 
 exit 0;
