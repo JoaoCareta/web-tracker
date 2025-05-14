@@ -59,24 +59,25 @@ echo "Last staging version: $last_staging_version"
 last_staging_rc=$(echo "$last_staging_tag" | grep -oE "RC\.[0-9]+" | cut -d'.' -f2)
 echo "Last staging RC: $last_staging_rc"
 
-case "$GITHUB_COMMIT_MESSAGE" in
-  *#none*) exit 0 ;;
-esac
-
 shopt -s nocasematch
 case "$GITHUB_COMMIT_MESSAGE" in
   *#minor* )
     echo "Starting a new minor RC"
-    current_tag="release/staging/$(semver -i minor "$last_prod_version")-RC.1"
+    current_tag="release/staging/$(semver -i minor "$last_prod_version")-RC.0"
   ;;
   *#rc* )
     if [ "$last_prod_version" = "$last_staging_version" ]; then
       echo "Starting a new patch RC"
-      current_tag="release/staging/$(semver -i patch "$last_staging_version")-RC.1"
+      current_tag="release/staging/$(semver -i patch "$last_prod_version")-RC.0"
     else
       echo "Bumping current RC"
-      suffix="RC"
-      current_tag="release/staging/$(semver -i prerelease "$last_staging_version-$last_staging_rc" --preid $suffix)"
+      # Incrementa o número do RC
+      next_rc=$((last_staging_rc + 1))
+      current_tag="release/staging/${last_staging_version}-RC.${next_rc}"
+
+      # Adiciona logs para debug
+      echo "Last RC number: $last_staging_rc"
+      echo "Next RC number: $next_rc"
     fi
   ;;
   *) echo "Nothing to do!."; exit 0 ;;
