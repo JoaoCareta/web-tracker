@@ -63,21 +63,33 @@ case "$GITHUB_COMMIT_MESSAGE" in
   *#none*) exit 0 ;;
 esac
 
+# Extrai apenas o número da versão de prod (remove o prefixo release/prod/)
+prod_version=$(echo "$last_prod_version" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+echo "Current prod version: $prod_version"
+
 shopt -s nocasematch
 case "$GITHUB_COMMIT_MESSAGE" in
   *#minor* )
     echo "Starting a new minor RC"
-    current_tag="release/staging/$(semver -i minor "$last_prod_version")-RC.1"
+    current_tag="release/staging/$(semver -i minor "$prod_version")-RC.0"
   ;;
   *#rc* )
-    if [ "$last_prod_version" = "$last_staging_version" ]; then
-      echo "Starting a new patch RC"
-      current_tag="release/staging/$(semver -i patch "$last_staging_version")-RC.1"
+    if [ -z "$last_staging_version" ]; then
+      echo "No staging version found. Creating new RC based on prod version"
+      current_tag="release/staging/$(semver -i patch "$prod_version")-RC.0"
+    elif [ "$last_staging_version" = "$prod_version" ]; then
+      echo "Staging version equals prod version. Creating new RC with patch increment"
+      current_tag="release/staging/$(semver -i patch "$prod_version")-RC.0"
     else
       echo "Bumping current RC"
-      suffix="RC"
-      current_tag="release/staging/$(semver -i prerelease "$last_staging_version-$last_staging_rc" --preid $suffix)"
+      next_rc=$((last_staging_rc + 1))
+      current_tag="release/staging/${last_staging_version}-RC.${next_rc}"
     fi
+
+    # Logs para debug
+    echo "Production version: $prod_version"
+    echo "Last staging version: $last_staging_version"
+    echo "Last staging RC: $last_staging_rc"
   ;;
   *) echo "Nothing to do!."; exit 0 ;;
 esac
