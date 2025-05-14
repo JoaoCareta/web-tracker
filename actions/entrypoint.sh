@@ -52,11 +52,11 @@ last_staging_tag=$(git describe --tags --abbrev=0 --match="release/staging/*")
 echo "Last staging tag: $last_staging_tag"
 
 # Extracts last staging version from last staging tag, the result do not include sufixes added in hotfixes and RC's.
-last_staging_version=$(echo "$last_staging_tag" | grep -E -o "release/staging/[0-9]+\.[0-9]+\.[0-9]+" | cut -d'/' -f 3)
+last_staging_version=$(echo "$last_staging_tag" | grep -E -o "[0-9]+\.[0-9]+\.[0-9]+" | head -n 1)
 echo "Last staging version: $last_staging_version"
 
 # Extracts the last RC number from the last staging tag
-last_staging_rc=$(echo "$last_staging_tag" | cut -d'-' -f2)
+last_staging_rc=$(echo "$last_staging_tag" | grep -oE "RC\.[0-9]+" | cut -d'.' -f2)
 echo "Last staging RC: $last_staging_rc"
 
 case "$GITHUB_COMMIT_MESSAGE" in
@@ -65,21 +65,29 @@ esac
 
 shopt -s nocasematch
 case "$GITHUB_COMMIT_MESSAGE" in
-  *#minor* )
-    echo "Starting a new minor RC"
-    current_tag="release/staging/$(semver -i minor "$last_prod_version")-RC.1"
-  ;;
-  *#rc* )
+  *#[Rr][Cc]* )  # Isso vai capturar #RC, #Rc, #rC, #rc
+    echo "Detected RC tag in commit message: $GITHUB_COMMIT_MESSAGE"
+
     if [ "$last_prod_version" = "$last_staging_version" ]; then
+      echo "Production version ($last_prod_version) equals staging version ($last_staging_version)"
       echo "Starting a new patch RC"
-      current_tag="release/staging/$(semver -i patch "$last_staging_version")-RC.1"
+      new_version=$(semver -i patch "$last_prod_version")
+      current_tag="release/staging/$new_version-RC.1"
+      echo "Created new RC version: $current_tag"
     else
+      echo "Production version ($last_prod_version) differs from staging version ($last_staging_version)"
       echo "Bumping current RC"
-      suffix="RC"
-      current_tag="release/staging/$(semver -i prerelease "$last_staging_version-$last_staging_rc" --preid $suffix)"
+      current_rc_num=$(echo "$last_staging_rc" | grep -oE "[0-9]+")
+      next_rc_num=$((current_rc_num + 1))
+      current_tag="release/staging/$last_staging_version-RC.$next_rc_num"
+      echo "Bumped RC to: $current_tag"
     fi
   ;;
-  *) echo "Nothing to do!."; exit 0 ;;
+  *)
+    echo "No RC tag detected in commit message: $GITHUB_COMMIT_MESSAGE"
+    echo "Nothing to do!"
+    exit 0
+  ;;
 esac
 shopt -u nocasematch
 
