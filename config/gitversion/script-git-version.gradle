@@ -1,0 +1,26 @@
+def getBuildVersion() {
+    def version = 3333
+    def buildNumber = System.getenv("CIRCLE_BUILD_NUM")
+    if (buildNumber != null) {
+        version = buildNumber
+    }
+
+    println("VersionCode: " + version)
+    return version
+}
+
+def getNumberOfTags = { ->
+    def lastGitTag = System.getenv("CIRCLE_TAG")
+    if(lastGitTag == null) {
+        lastGitTag = 'git describe --abbrev=0 --tags'.execute().text.trim()
+    }
+    def versionName = lastGitTag.tokenize("/")[2]
+
+    println("VersionName: " + versionName)
+    versionName
+}
+
+ext {
+    gitVersionCode = getBuildVersion() as int
+    gitVersionName = getNumberOfTags()
+}

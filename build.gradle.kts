@@ -60,7 +60,7 @@ allprojects {
     }
 
     tasks.withType<JacocoReport> {
-        dependsOn("testDebugUnitTest")
+        dependsOn("testStagingDebugUnitTest")
         reports {
             xml.required.set(true)
             html.required.set(true)
@@ -68,10 +68,10 @@ allprojects {
     }
 
     tasks.register("collectJacocoReports") {
-        dependsOn(subprojects.map { it.tasks.named("jacocoTestReport") })
+        dependsOn(subprojects.map { it.tasks.named("jacocoTestReportStaging") })
         doLast {
             val reportPaths = subprojects.map { subproject ->
-                "${subproject.buildDir}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
+                "${subproject.buildDir}/reports/jacoco/jacocoTestReportStaging/jacocoTestReportStaging.xml"
             }.filter { File(it).exists() }
 
             if (reportPaths.isNotEmpty()) {
