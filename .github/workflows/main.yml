@@ -1,0 +1,17 @@
+name: Bumpson
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: '0'
+    - name: Bump the tag version
+      uses: ./actions
+      env:
+        GITHUB_TOKEN: ${{ secrets.BUMPSON_TOKEN }}
+        GITHUB_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
