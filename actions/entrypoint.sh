@@ -64,22 +64,23 @@ case "$GITHUB_COMMIT_MESSAGE" in
 esac
 
 shopt -s nocasematch
-if [[ "$GITHUB_COMMIT_MESSAGE" =~ [^a-zA-Z](#minor)[^a-zA-Z] ]]; then
+case "$GITHUB_COMMIT_MESSAGE" in
+  *#minor* )
     echo "Starting a new minor RC"
     current_tag="release/staging/$(semver -i minor "$last_prod_version")-RC.1"
-elif [[ "$GITHUB_COMMIT_MESSAGE" =~ [^a-zA-Z](#[Rr][Cc])[^a-zA-Z] ]]; then
+  ;;
+  *#rc* )
     if [ "$last_prod_version" = "$last_staging_version" ]; then
-        echo "Starting a new patch RC"
-        current_tag="release/staging/$(semver -i patch "$last_staging_version")-RC.1"
+      echo "Starting a new patch RC"
+      current_tag="release/staging/$(semver -i patch "$last_staging_version")-RC.1"
     else
-        echo "Bumping current RC"
-        suffix="RC"
-        current_tag="release/staging/$(semver -i prerelease "$last_staging_version-$last_staging_rc" --preid $suffix)"
+      echo "Bumping current RC"
+      suffix="RC"
+      current_tag="release/staging/$(semver -i prerelease "$last_staging_version-$last_staging_rc" --preid $suffix)"
     fi
-else
-    echo "Nothing to do!";
-    exit 0
-fi
+  ;;
+  *) echo "Nothing to do!."; exit 0 ;;
+esac
 shopt -u nocasematch
 
 tag_version "$current_tag"
