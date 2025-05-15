@@ -115,7 +115,7 @@ jobs:
       - android/restore-gradle-cache
       - run:
           name: Build QA APK
-          command: ./gradlew assembleStagingDebug
+          command: ./gradlew assembleStagingRelease
       - run:
           name: Login to Firebase
           command: |
@@ -123,7 +123,7 @@ jobs:
       - run:
           name: Deploy to Firebase App Distribution
           command: |
-            firebase appdistribution:distribute app/build/outputs/apk/staging/debug/app-staging-debug.apk \
+            firebase appdistribution:distribute app/build/outputs/apk/staging/release/app-staging-release.apk \
               --app $FIREBASE_APP_ID \
               --groups "testers" \
               --release-notes "Build from main branch - $(git describe --tags --abbrev=0)"
