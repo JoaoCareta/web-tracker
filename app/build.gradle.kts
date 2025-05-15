@@ -44,7 +44,7 @@ android {
             applicationIdSuffix = ".debug"
             isDebuggable = true
             isMinifyEnabled = false
-            // signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("debug")
             isDefault = true
             enableUnitTestCoverage = true
             enableAndroidTestCoverage = true
@@ -72,7 +72,7 @@ android {
                 "proguard-rules.pro"
             )
 
-            // signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("release")
             enableUnitTestCoverage = false
             enableAndroidTestCoverage = false
 
