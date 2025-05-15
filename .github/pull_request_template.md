@@ -11,7 +11,7 @@
 <!-- 
     Por favor, copie a informação correta da url do ticket 
 -->
-[ADD_NUMBER_HERE](https://trello.com/c/PZbk1IyL/TICKET-NUMBER-TICKET-TITLE)
+[ADD_NUMBER_HERE](https://trello.com/c/PZbk1IyL/TICKET_NUMBER_TICKET_TITLE)
 
 ### 📝 Contexto da tarefa
 <!-- Por favor, informe por que essa alteração foi necessária -->
