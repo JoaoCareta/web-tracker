@@ -119,7 +119,7 @@ jobs:
       - run:
           name: Deploy to Firebase App Distribution
           command: |
-            firebase appdistribution:distribute app/build/outputs/apk/staging/release/baselineProfiles/app-staging-release.apk \
+            firebase appdistribution:distribute app/build/outputs/apk/staging/release/app-staging-release.apk \
               --app $FIREBASE_APP_ID \
               --groups "testers" \
               --token "$FIREBASE_TOKEN" \
