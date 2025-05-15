@@ -39,6 +39,20 @@ commands:
       - android/change-java-version:
           java-version: 17
 
+  setup-firebase:
+    steps:
+      - run:
+          name: Install Firebase CLI
+          command: |
+            curl -sL https://firebase.tools | bash
+
+  decode-keystore:
+    steps:
+      - run:
+          name: Decode Keystore
+          command: |
+            echo $ENCODED_KEYSTORE | base64 -d > keystore
+
 # ----------------------------
 # Jobs Section
 # ----------------------------
@@ -88,6 +102,36 @@ jobs:
       - sonarcloud/scan
       - android/save-gradle-cache
 
+  build-and-deploy-qa:
+    <<: *android_config
+    steps:
+      - set-android-java-version
+      - checkout
+      - setup-firebase
+      - decode-keystore
+      - run:
+          name: Grant execute permission for gradlew
+          command: chmod +x ./gradlew
+      - android/restore-gradle-cache
+      - run:
+          name: Build QA APK
+          command: ./gradlew assembleStagingRelease
+      - run:
+          name: Login to Firebase
+          command: |
+            echo $FIREBASE_TOKEN | firebase login:ci
+      - run:
+          name: Deploy to Firebase App Distribution
+          command: |
+            firebase appdistribution:distribute app/build/outputs/apk/staging/release/app-staging-release.apk \
+              --app $FIREBASE_APP_ID \
+              --groups "testers" \
+              --release-notes "Build from main branch - $(git describe --tags --abbrev=0)"
+      - store_artifacts:
+          path: app/build/outputs/apk/
+          destination: apks/
+      - android/save-gradle-cache
+
 # ----------------------------
 # Workflow Section
 # ----------------------------
@@ -99,3 +143,9 @@ workflows:
       - test-and-sonar:
           requires:
             - detekt
+      - build-and-deploy-qa:
+          requires:
+            - test-and-sonar
+          filters:
+            branches:
+              only: main

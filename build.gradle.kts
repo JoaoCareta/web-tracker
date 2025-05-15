@@ -9,6 +9,8 @@ plugins {
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.detekt.plugin)
     alias(libs.plugins.sonarqube.plugin)
+    alias(libs.plugins.firebase.plugin)
+    alias(libs.plugins.firebase.app.distribuiton.plugin) apply false
     jacoco
 }
 
@@ -68,6 +70,8 @@ allprojects {
     }
 
     tasks.register("collectJacocoReports") {
+        group = "verification"
+        description = "Collects Jacoco reports from all subprojects and configures them for Sonarqube analysis"
         dependsOn(subprojects.map { it.tasks.named("jacocoTestReportStaging") })
         doLast {
             val reportPaths = subprojects.map { subproject ->

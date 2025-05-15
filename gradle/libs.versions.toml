@@ -10,6 +10,8 @@ activityCompose = "1.8.0"
 composeBom = "2024.04.01"
 detektVersion = "1.23.8"
 sonarqubeVersion = "4.4.1.3373"
+firebaseVersion = "4.4.2"
+appDistribuitionVersion = "5.1.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,4 +35,5 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 detekt-plugin = { id = "io.gitlab.arturbosch.detekt", version.ref = "detektVersion" }
 sonarqube-plugin = { id = "org.sonarqube", version.ref = "sonarqubeVersion" }
-
+firebase-plugin = { id = "com.google.gms.google-services", version.ref = "firebaseVersion" }
+firebase-app-distribuiton-plugin = { id = "com.google.firebase.appdistribution", version.ref = "appDistribuitionVersion" }

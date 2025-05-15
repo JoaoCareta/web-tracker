@@ -1,0 +1,158 @@
+{
+  "project_info": {
+    "project_number": "868095324397",
+    "project_id": "webtrack-8ff15",
+    "storage_bucket": "webtrack-8ff15.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:868095324397:android:9cad36ffb6e60dd8d6dce4",
+        "android_client_info": {
+          "package_name": "com.joao.otavio.webtracker.hom"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "868095324397-b0tguaqhge82nlg3cb2d4t90h0n7smma.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.joao.otavio.webtracker.hom",
+            "certificate_hash": "11bb148306acec68adcfeea114f90a584a88b2e0"
+          }
+        },
+        {
+          "client_id": "868095324397-l25hk7ofo5omqa0ibtu6a17s3pj3plh2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeq8gDoU4NztkO4LaF9ZQG2IOK-Y2-uj0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "868095324397-l25hk7ofo5omqa0ibtu6a17s3pj3plh2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:868095324397:android:e321d18be4db0d25d6dce4",
+        "android_client_info": {
+          "package_name": "com.joao.otavio.webtracker.hom.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "868095324397-qn6np4o3ks3suleo82srmt1vt6eivsc2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.joao.otavio.webtracker.hom.debug",
+            "certificate_hash": "11bb148306acec68adcfeea114f90a584a88b2e0"
+          }
+        },
+        {
+          "client_id": "868095324397-l25hk7ofo5omqa0ibtu6a17s3pj3plh2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeq8gDoU4NztkO4LaF9ZQG2IOK-Y2-uj0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "868095324397-l25hk7ofo5omqa0ibtu6a17s3pj3plh2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:868095324397:android:3da51a1d6b980aa0d6dce4",
+        "android_client_info": {
+          "package_name": "com.joao.otavio.webtracker.prod"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "868095324397-tclbn34gov7c98dj484s7qfj1fd8ld3i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.joao.otavio.webtracker.prod",
+            "certificate_hash": "11bb148306acec68adcfeea114f90a584a88b2e0"
+          }
+        },
+        {
+          "client_id": "868095324397-l25hk7ofo5omqa0ibtu6a17s3pj3plh2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeq8gDoU4NztkO4LaF9ZQG2IOK-Y2-uj0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "868095324397-l25hk7ofo5omqa0ibtu6a17s3pj3plh2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:868095324397:android:b0ef6c3cfd427a18d6dce4",
+        "android_client_info": {
+          "package_name": "com.joao.otavio.webtracker.prod.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "868095324397-de6b4568gm2t0fgojpsns62eukusod4e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.joao.otavio.webtracker.prod.debug",
+            "certificate_hash": "11bb148306acec68adcfeea114f90a584a88b2e0"
+          }
+        },
+        {
+          "client_id": "868095324397-l25hk7ofo5omqa0ibtu6a17s3pj3plh2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeq8gDoU4NztkO4LaF9ZQG2IOK-Y2-uj0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "868095324397-l25hk7ofo5omqa0ibtu6a17s3pj3plh2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
