@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.firebase.plugin)
+    id("com.google.firebase.appdistribution")
 }
 
 apply("$rootDir/config/gitversion/script-git-version.gradle")
@@ -11,6 +13,21 @@ val appName = "Web Tracker"
 android {
     namespace = "com.joao.otavio.webtracker"
     compileSdk = 35
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+
+    signingConfigs {
+        create("release") {
+            keyAlias = "web-tracker"
+            keyPassword = "agoravai"
+            storeFile = file("../keystore")
+            storePassword = "agoravai"
+        }
+    }
 
     defaultConfig {
         applicationId = "com.joao.otavio.webtracker"
@@ -58,6 +75,11 @@ android {
             // signingConfig = signingConfigs.getByName("release")
             enableUnitTestCoverage = false
             enableAndroidTestCoverage = false
+
+            firebaseAppDistribution {
+                groups = "testers"
+                releaseNotesFile = "release_notes.txt"
+            }
         }
     }
 
@@ -88,6 +110,7 @@ android {
              *             )
              */
             dimension = "version"
+            applicationIdSuffix = ".prod"
             resValue("string", "app_name", appName)
         }
     }
@@ -105,7 +128,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -121,4 +143,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
 }
