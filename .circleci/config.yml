@@ -117,15 +117,12 @@ jobs:
           name: Build QA APK
           command: ./gradlew assembleStagingRelease
       - run:
-          name: Login to Firebase
-          command: |
-            echo $FIREBASE_TOKEN | firebase login:ci
-      - run:
           name: Deploy to Firebase App Distribution
           command: |
             firebase appdistribution:distribute app/build/outputs/apk/staging/release/app-staging-release.apk \
               --app $FIREBASE_APP_ID \
               --groups "testers" \
+              --token "$FIREBASE_TOKEN" \
               --release-notes "Build from main branch - $(git describe --tags --abbrev=0)"
       - store_artifacts:
           path: app/build/outputs/apk/
