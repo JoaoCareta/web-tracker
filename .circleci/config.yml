@@ -115,4 +115,37 @@ jobs:
       - android/restore-gradle-cache
       - run:
           name: Build QA APK
-          command: ./gradlew assembleStagingDeb▍
+          command: ./gradlew assembleStagingDebug
+      - run:
+          name: Login to Firebase
+          command: |
+            echo $FIREBASE_TOKEN | firebase login:ci
+      - run:
+          name: Deploy to Firebase App Distribution
+          command: |
+            firebase appdistribution:distribute app/build/outputs/apk/staging/debug/app-staging-debug.apk \
+              --app $FIREBASE_APP_ID \
+              --groups "testers" \
+              --release-notes "Build from main branch - $(git describe --tags --abbrev=0)"
+      - store_artifacts:
+          path: app/build/outputs/apk/
+          destination: apks/
+      - android/save-gradle-cache
+
+# ----------------------------
+# Workflow Section
+# ----------------------------
+workflows:
+  version: 2
+  build-test-analyze:
+    jobs:
+      - detekt
+      - test-and-sonar:
+          requires:
+            - detekt
+      - build-and-deploy-qa:
+          requires:
+            - test-and-sonar
+          filters:
+            branches:
+              only: main
