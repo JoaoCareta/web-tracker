@@ -13,6 +13,7 @@ detektVersion = "1.23.8"
 sonarqubeVersion = "4.4.1.3373"
 firebaseVersion = "4.4.2"
 appDistribuitionVersion = "5.1.1"
+crashlyticsVersion = "3.0.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,3 +40,4 @@ detekt-plugin = { id = "io.gitlab.arturbosch.detekt", version.ref = "detektVersi
 sonarqube-plugin = { id = "org.sonarqube", version.ref = "sonarqubeVersion" }
 firebase-plugin = { id = "com.google.gms.google-services", version.ref = "firebaseVersion" }
 firebase-app-distribuiton-plugin = { id = "com.google.firebase.appdistribution", version.ref = "appDistribuitionVersion" }
+crashlytics-plugin = { id = "com.google.firebase.crashlytics", version.ref = "crashlyticsVersion" }
