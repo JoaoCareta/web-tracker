@@ -1,18 +1,41 @@
+import dependencies.projectconfig.ProjectConfig.APP_ID
+import dependencies.projectconfig.ProjectConfig.APP_NAME
+import dependencies.projectconfig.ProjectConfig.COMPILE_SDK
+import dependencies.projectconfig.ProjectConfig.DEBUG
+import dependencies.projectconfig.ProjectConfig.DEBUG_SUFFIX
+import dependencies.projectconfig.ProjectConfig.JVM_TARGET
+import dependencies.projectconfig.ProjectConfig.KEY_ALIAS
+import dependencies.projectconfig.ProjectConfig.MIN_SDK
+import dependencies.projectconfig.ProjectConfig.NAME_SPACE
+import dependencies.projectconfig.ProjectConfig.PROD
+import dependencies.projectconfig.ProjectConfig.PROD_SUFFIX
+import dependencies.projectconfig.ProjectConfig.RELEASE
+import dependencies.projectconfig.ProjectConfig.RELEASE_NOTES_FILE
+import dependencies.projectconfig.ProjectConfig.STAGING
+import dependencies.projectconfig.ProjectConfig.STAGING_SUFFIX
+import dependencies.projectconfig.ProjectConfig.STORE_PASSWORD
+import dependencies.projectconfig.ProjectConfig.TARGET_SDK
+import dependencies.projectconfig.ProjectConfig.TESTERS_GROUP_NAME
+import dependencies.projectconfig.ProjectConfig.VERSION
+import dependencies.projectconfig.ProjectConfig.KEY_PASSWORD
+import dependencies.projectconfig.ProjectConfig.STORE_FILE
+import dependencies.scripts.Scripts.GIT_VERSION_PATH
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.firebase.plugin)
-    id("com.google.firebase.appdistribution")
+    alias(libs.plugins.firebase.app.distribuiton.plugin)
 }
 
-apply("$rootDir/config/gitversion/script-git-version.gradle")
+apply("$rootDir/$GIT_VERSION_PATH")
 
-val appName = "Web Tracker"
+val appName = APP_NAME
 
 android {
-    namespace = "com.joao.otavio.webtracker"
-    compileSdk = 35
+    namespace = NAME_SPACE
+    compileSdk = COMPILE_SDK
 
     testOptions {
         unitTests {
@@ -21,18 +44,18 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            keyAlias = "web-tracker"
-            keyPassword = "agoravai"
-            storeFile = file("../keystore")
-            storePassword = "agoravai"
+        create(RELEASE) {
+            keyAlias = KEY_ALIAS
+            keyPassword = KEY_PASSWORD
+            storeFile = file(STORE_FILE)
+            storePassword = STORE_PASSWORD
         }
     }
 
     defaultConfig {
-        applicationId = "com.joao.otavio.webtracker"
-        minSdk = 24
-        targetSdk = 35
+        applicationId = APP_ID
+        minSdk = MIN_SDK
+        targetSdk = TARGET_SDK
         versionCode = "${extra["gitVersionCode"] ?: 3333}".toInt()
         versionName = "${extra["gitVersionName"] ?: "1.1.0"}"
 
@@ -40,17 +63,17 @@ android {
     }
 
     buildTypes {
-        getByName("debug") {
-            applicationIdSuffix = ".debug"
+        getByName(DEBUG) {
+            applicationIdSuffix = DEBUG_SUFFIX
             isDebuggable = true
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName(DEBUG)
             isDefault = true
             enableUnitTestCoverage = true
             enableAndroidTestCoverage = true
         }
 
-        getByName("release") {
+        getByName(RELEASE) {
             /**
              * Enables code shrinking, obfuscation, and optimization for only
              * your project's release build type.
@@ -72,21 +95,21 @@ android {
                 "proguard-rules.pro"
             )
 
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName(RELEASE)
             enableUnitTestCoverage = false
             enableAndroidTestCoverage = false
 
             firebaseAppDistribution {
-                groups = "testers"
-                releaseNotesFile = "release_notes.txt"
+                groups = TESTERS_GROUP_NAME
+                releaseNotesFile = RELEASE_NOTES_FILE
             }
         }
     }
 
-    flavorDimensions += listOf("version")
+    flavorDimensions += listOf(VERSION)
 
     productFlavors {
-        create("staging") {
+        create(STAGING) {
             /**
              * manifestPlaceholders += mapOf(
              *                 "appIcon" to "@mipmap/ic_launcher_qa",
@@ -95,13 +118,13 @@ android {
              *             )
              */
 
-            dimension = "version"
-            applicationIdSuffix = ".hom"
+            dimension = VERSION
+            applicationIdSuffix = STAGING_SUFFIX
             resValue("string", "app_name", "$appName QA")
             isDefault = true
         }
 
-        create("prod") {
+        create(PROD) {
             /**
              * manifestPlaceholders += mapOf(
              *                 "appIcon" to "@mipmap/ic_launcher",
@@ -109,8 +132,8 @@ android {
              *                 "appAuthRedirectScheme" to "com.cropwise.scout"
              *             )
              */
-            dimension = "version"
-            applicationIdSuffix = ".prod"
+            dimension = VERSION
+            applicationIdSuffix = PROD_SUFFIX
             resValue("string", "app_name", appName)
         }
     }
@@ -120,7 +143,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = JVM_TARGET
     }
     buildFeatures {
         compose = true
@@ -145,5 +168,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    implementation(platform(libs.firebase.bom))
 }

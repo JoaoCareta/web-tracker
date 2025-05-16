@@ -57,73 +57,30 @@ commands:
 # Jobs Section
 # ----------------------------
 jobs:
-  detekt:
+  analyze:
     <<: *android_config
     steps:
       - set-android-java-version
       - checkout
-      - run:
-          name: Grant execute permission for gradlew
-          command: chmod +x ./gradlew
       - android/restore-gradle-cache
       - run:
-          name: Run Detekt
-          command: ./gradlew detekt
-      - persist_to_workspace:
-          root: .
-          paths:
-            - build/reports/detekt
+          name: Run Code Analysis
+          command: make analyze
       - store_artifacts:
-          path: build/reports/detekt
-          destination: reports/detekt
+          path: build/reports
       - android/save-gradle-cache
 
-  test-and-sonar:
-    <<: *android_config
-    steps:
-      - set-android-java-version
-      - checkout
-      - run:
-          name: Grant execute permission for gradlew
-          command: chmod +x ./gradlew
-      - attach_workspace:
-          at: .
-      - android/restore-gradle-cache
-      - run:
-          name: Run Tests with Coverage
-          command: |
-            ./gradlew test jacocoTestReportStaging
-            ./gradlew collectJacocoReports
-      - store_artifacts:
-          path: build/reports/jacoco
-          destination: reports/coverage
-      - store_test_results:
-          path: build/test-results
-      - sonarcloud/scan
-      - android/save-gradle-cache
-
-  build-and-deploy-qa:
+  deploy:
     <<: *android_config
     steps:
       - set-android-java-version
       - checkout
       - setup-firebase
       - decode-keystore
-      - run:
-          name: Grant execute permission for gradlew
-          command: chmod +x ./gradlew
       - android/restore-gradle-cache
       - run:
-          name: Build QA APK
-          command: ./gradlew assembleStagingRelease
-      - run:
-          name: Deploy to Firebase App Distribution
-          command: |
-            firebase appdistribution:distribute app/build/outputs/apk/staging/release/app-staging-release.apk \
-              --app $FIREBASE_APP_ID \
-              --groups "testers" \
-              --token "$FIREBASE_TOKEN" \
-              --release-notes "Build from main branch - $(git describe --tags --abbrev=0)"
+          name: Build and Deploy - Firebase
+          command: make deploy
       - store_artifacts:
           path: app/build/outputs/apk/
           destination: apks/
@@ -136,13 +93,10 @@ workflows:
   version: 2
   build-test-analyze:
     jobs:
-      - detekt
-      - test-and-sonar:
+      - analyze
+      - deploy:
           requires:
-            - detekt
-      - build-and-deploy-qa:
-          requires:
-            - test-and-sonar
+            - analyze
           filters:
             branches:
               only: main
