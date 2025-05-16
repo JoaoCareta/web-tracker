@@ -1,3 +1,5 @@
+import dependencies.firebase.Firebase.FIREBASE_ANALYTICS
+import dependencies.firebase.Firebase.FIREBASE_CRASHLYTICS
 import dependencies.projectconfig.ProjectConfig.APP_ID
 import dependencies.projectconfig.ProjectConfig.APP_NAME
 import dependencies.projectconfig.ProjectConfig.COMPILE_SDK
@@ -27,6 +29,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.firebase.plugin)
     alias(libs.plugins.firebase.app.distribuiton.plugin)
+    alias(libs.plugins.crashlytics.plugin)
 }
 
 apply("$rootDir/$GIT_VERSION_PATH")
@@ -169,4 +172,6 @@ dependencies {
 
     // Firebase
     implementation(platform(libs.firebase.bom))
+    implementation(FIREBASE_CRASHLYTICS)
+    implementation(FIREBASE_ANALYTICS)
 }

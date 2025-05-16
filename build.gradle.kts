@@ -23,10 +23,19 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.compose) apply false
+
+    // Detekt
     alias(libs.plugins.detekt.plugin)
+
+    // Sonarqube
     alias(libs.plugins.sonarqube.plugin)
+
+    // Firebase
     alias(libs.plugins.firebase.plugin)
     alias(libs.plugins.firebase.app.distribuiton.plugin) apply false
+    alias(libs.plugins.crashlytics.plugin) apply false
+
+    // JaCoCo
     jacoco
 }
 
