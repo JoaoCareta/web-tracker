@@ -1,20 +1,50 @@
-name: GitHub Commit To Trello Comment
-
-on: [push, pull_request]
+name: Trello Integration
+on:
+  push:
+    branches: [ main, develop, feature/** ]
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
 
 jobs:
-  build:
+  update-trello:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v2
+      - name: Extract Info
+        id: extract
+        run: |
+          if [ "${{ github.event_name }}" == "push" ]; then
+            MESSAGE="${{ github.event.head_commit.message }}"
+            URL="${{ github.event.head_commit.url }}"
+          else
+            MESSAGE="${{ github.event.pull_request.title }}"
+            URL="${{ github.event.pull_request.html_url }}"
+          fi
+          
+          TRELLO_ID=$(echo "$MESSAGE" | grep -oP '#\K[A-Za-z0-9]+' || echo "")
+          echo "trello_id=$TRELLO_ID" >> $GITHUB_ENV
+          echo "message=$MESSAGE" >> $GITHUB_ENV
+          echo "url=$URL" >> $GITHUB_ENV
 
-      - uses: dalezak/github-commit-to-trello-card@main
-        with:
-          trello-api-key: ${{ secrets.TRELLO_KEY }}
-          trello-auth-token: ${{ secrets.TRELLO_TOKEN }}
-          trello-board-id: ${{ secrets.TRELLO_BOARD }}
-          trello-card-action: "Attachment"
-          trello-list-name-commit: "Doing"
-          trello-list-name-pr-open: "Code Review"
-          trello-list-name-pr-closed: "Testing"
+      - name: Update Trello Card
+        if: env.trello_id != ''
+        env:
+          TRELLO_API_KEY: ${{ secrets.TRELLO_API_KEY }}
+          TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+          TRELLO_BOARD_ID: 'ex4jYfGG'
+        run: |
+          # 1. Primeiro, vamos buscar o card no board
+          CARD_INFO=$(curl -s "https://api.trello.com/1/boards/${TRELLO_BOARD_ID}/cards/${TRELLO_ID}?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}")
+          
+          if [ $? -eq 0 ]; then
+            # 2. Atualizar a descrição do card adicionando o link do commit/PR
+            CURRENT_DESC=$(echo $CARD_INFO | jq -r '.desc')
+            NEW_DESC="${CURRENT_DESC}\n\nGitHub Link: ${URL}"
+            
+            curl -X PUT "https://api.trello.com/1/cards/${TRELLO_ID}?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}" \
+              --data-urlencode "desc=${NEW_DESC}"
+            
+            echo "✅ Trello card atualizado com sucesso!"
+          else
+            echo "❌ Erro ao buscar o card do Trello"
+            exit 1
+          fi
