@@ -1,8 +1,7 @@
 # Variáveis
 GRADLEW = ./gradlew
-FIREBASE_CLI = firebase
 
-# Garantir permissão de execução do gradlew
+# Permissões
 permissions:
 	chmod +x $(GRADLEW)
 
@@ -14,37 +13,24 @@ clean:
 detekt:
 	$(GRADLEW) detekt
 
-# Testes unitários e cobertura
+# Build do projeto
+build-staging:
+	$(GRADLEW) assembleStagingRelease
+
+# Testes unitários
 test:
 	$(GRADLEW) test
 
-# Gerar e coletar relatórios Jacoco
+# Relatórios de cobertura
 coverage:
 	$(GRADLEW) jacocoTestReportStaging
 	$(GRADLEW) collectJacocoReports
 
-# Análise Sonar
-sonar:
-	$(GRADLEW) sonarqube
-
-# Build da versão de staging
-build-staging:
-	$(GRADLEW) assembleStagingRelease
-
-# Deploy para Firebase
+# Deploy Firebase
 deploy-firebase:
-	$(FIREBASE_CLI) appdistribution:distribute \
+	firebase appdistribution:distribute \
 		app/build/outputs/apk/staging/release/app-staging-release.apk \
 		--app ${FIREBASE_APP_ID} \
 		--groups "testers" \
 		--token "${FIREBASE_TOKEN}" \
 		--release-notes "Build from main branch - $$(git describe --tags --abbrev=0)"
-
-# Comando para executar pipeline completa
-pipeline: permissions clean detekt test coverage sonar build-staging deploy-firebase
-
-# Comando para executar apenas análises
-analyze: permissions clean detekt test coverage sonar
-
-# Comando para build e deploy
-deploy: permissions clean build-staging deploy-firebase

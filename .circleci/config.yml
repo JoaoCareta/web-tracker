@@ -31,7 +31,7 @@ references:
     executor: android-executor
 
 # ----------------------------
-# Commands
+# Commands Section
 # ----------------------------
 commands:
   set-android-java-version:
@@ -46,57 +46,97 @@ commands:
           command: |
             curl -sL https://firebase.tools | bash
 
-  decode-keystore:
-    steps:
-      - run:
-          name: Decode Keystore
-          command: |
-            echo $ENCODED_KEYSTORE | base64 -d > keystore
-
 # ----------------------------
 # Jobs Section
 # ----------------------------
 jobs:
-  analyze:
+  # Build and Static Analysis
+  build-and-detekt:
     <<: *android_config
     steps:
       - set-android-java-version
       - checkout
       - android/restore-gradle-cache
       - run:
-          name: Run Code Analysis
-          command: make analyze
+          name: Set Gradlew Permissions
+          command: make permissions
+      - run:
+          name: Run Detekt
+          command: make detekt
+      - run:
+          name: Build Staging
+          command: make build-staging
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build/reports/detekt
+            - app/build/outputs/apk/
       - store_artifacts:
-          path: build/reports
-      - android/save-gradle-cache
-
-  deploy:
-    <<: *android_config
-    steps:
-      - set-android-java-version
-      - checkout
-      - setup-firebase
-      - decode-keystore
-      - android/restore-gradle-cache
-      - run:
-          name: Build and Deploy - Firebase
-          command: make deploy
+          path: build/reports/detekt
+          destination: reports/detekt
       - store_artifacts:
           path: app/build/outputs/apk/
           destination: apks/
       - android/save-gradle-cache
 
+  # Tests and Code Quality
+  test-and-sonar:
+    <<: *android_config
+    steps:
+      - set-android-java-version
+      - checkout
+      - attach_workspace:
+          at: .
+      - android/restore-gradle-cache
+      - run:
+          name: Run Tests
+          command: make test
+      - run:
+          name: Generate Coverage Reports
+          command: make coverage
+      - sonarcloud/scan
+      - store_artifacts:
+          path: build/reports/jacoco
+          destination: reports/coverage
+      - store_test_results:
+          path: build/test-results
+      - android/save-gradle-cache
+
+  # Deployment
+  deploy-qa:
+    <<: *android_config
+    steps:
+      - set-android-java-version
+      - checkout
+      - attach_workspace:
+          at: .
+      - setup-firebase
+      - run:
+          name: Deploy to Firebase
+          command: make deploy-firebase
+      - store_artifacts:
+          path: app/build/outputs/apk/
+          destination: apks/
+
 # ----------------------------
-# Workflow Section
+# Workflows Section
 # ----------------------------
 workflows:
   version: 2
-  build-test-analyze:
+  build-test-deploy:
     jobs:
-      - analyze
-      - deploy:
+      # Build and Analysis
+      - build-and-detekt
+
+      # Tests and Quality Gate
+      - test-and-sonar:
           requires:
-            - analyze
+            - build-and-detekt
+
+      # Deploy to QA
+      - deploy-qa:
+          requires:
+            - test-and-sonar
           filters:
             branches:
               only: main
