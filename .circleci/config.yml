@@ -31,7 +31,7 @@ references:
     executor: android-executor
 
 # ----------------------------
-# Commands
+# Commands Section
 # ----------------------------
 commands:
   set-android-java-version:
@@ -46,101 +46,95 @@ commands:
           command: |
             curl -sL https://firebase.tools | bash
 
-  decode-keystore:
-    steps:
-      - run:
-          name: Decode Keystore
-          command: |
-            echo $ENCODED_KEYSTORE | base64 -d > keystore
-
 # ----------------------------
 # Jobs Section
 # ----------------------------
 jobs:
-  detekt:
+  # Build and Static Analysis
+  build-and-detekt:
     <<: *android_config
     steps:
       - set-android-java-version
       - checkout
-      - run:
-          name: Grant execute permission for gradlew
-          command: chmod +x ./gradlew
       - android/restore-gradle-cache
       - run:
+          name: Set Gradlew Permissions
+          command: make permissions
+      - run:
           name: Run Detekt
-          command: ./gradlew detekt
+          command: make detekt
+      - run:
+          name: Build Staging
+          command: make build-staging
       - persist_to_workspace:
           root: .
           paths:
             - build/reports/detekt
+            - app/build/outputs/apk/
       - store_artifacts:
           path: build/reports/detekt
           destination: reports/detekt
-      - android/save-gradle-cache
-
-  test-and-sonar:
-    <<: *android_config
-    steps:
-      - set-android-java-version
-      - checkout
-      - run:
-          name: Grant execute permission for gradlew
-          command: chmod +x ./gradlew
-      - attach_workspace:
-          at: .
-      - android/restore-gradle-cache
-      - run:
-          name: Run Tests with Coverage
-          command: |
-            ./gradlew test jacocoTestReportStaging
-            ./gradlew collectJacocoReports
-      - store_artifacts:
-          path: build/reports/jacoco
-          destination: reports/coverage
-      - store_test_results:
-          path: build/test-results
-      - sonarcloud/scan
-      - android/save-gradle-cache
-
-  build-and-deploy-qa:
-    <<: *android_config
-    steps:
-      - set-android-java-version
-      - checkout
-      - setup-firebase
-      - decode-keystore
-      - run:
-          name: Grant execute permission for gradlew
-          command: chmod +x ./gradlew
-      - android/restore-gradle-cache
-      - run:
-          name: Build QA APK
-          command: ./gradlew assembleStagingRelease
-      - run:
-          name: Deploy to Firebase App Distribution
-          command: |
-            firebase appdistribution:distribute app/build/outputs/apk/staging/release/app-staging-release.apk \
-              --app $FIREBASE_APP_ID \
-              --groups "testers" \
-              --token "$FIREBASE_TOKEN" \
-              --release-notes "Build from main branch - $(git describe --tags --abbrev=0)"
       - store_artifacts:
           path: app/build/outputs/apk/
           destination: apks/
       - android/save-gradle-cache
 
+  # Tests and Code Quality
+  test-and-sonar:
+    <<: *android_config
+    steps:
+      - set-android-java-version
+      - checkout
+      - attach_workspace:
+          at: .
+      - android/restore-gradle-cache
+      - run:
+          name: Run Tests
+          command: make test
+      - run:
+          name: Generate Coverage Reports
+          command: make coverage
+      - sonarcloud/scan
+      - store_artifacts:
+          path: build/reports/jacoco
+          destination: reports/coverage
+      - store_test_results:
+          path: build/test-results
+      - android/save-gradle-cache
+
+  # Deployment
+  deploy-qa:
+    <<: *android_config
+    steps:
+      - set-android-java-version
+      - checkout
+      - attach_workspace:
+          at: .
+      - setup-firebase
+      - run:
+          name: Deploy to Firebase
+          command: make deploy-firebase
+      - store_artifacts:
+          path: app/build/outputs/apk/
+          destination: apks/
+
 # ----------------------------
-# Workflow Section
+# Workflows Section
 # ----------------------------
 workflows:
   version: 2
-  build-test-analyze:
+  build-test-deploy:
     jobs:
-      - detekt
+      # Build and Analysis
+      - build-and-detekt
+
+      # Tests and Quality Gate
       - test-and-sonar:
           requires:
-            - detekt
-      - build-and-deploy-qa:
+            - build-and-detekt
+
+      # Deploy to QA
+      - deploy-qa:
           requires:
             - test-and-sonar
           filters:

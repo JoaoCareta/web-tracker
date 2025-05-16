@@ -1,3 +1,19 @@
+import dependencies.android.Android.ANDROID_APPLICATION
+import dependencies.android.Android.ANDROID_LIBRARY
+import dependencies.scripts.Scripts.DETEKT_PATH
+import dependencies.scripts.Scripts.DETEKT_REPORT_PATH
+import dependencies.scripts.Scripts.JACOCO_PATH
+import dependencies.scripts.Scripts.JACOCO_REPORT_PATH
+import dependencies.scripts.Scripts.SONAR_PATH
+import dependencies.tasks.Tasks.COLLECT_JACOCO_REPORTS
+import dependencies.tasks.Tasks.COLLECT_JACOCO_REPORTS_DESCRIPTION
+import dependencies.tasks.Tasks.COLLECT_JACOCO_REPORTS_GROUP
+import dependencies.tasks.Tasks.FAILED
+import dependencies.tasks.Tasks.JACOCO_TEST_REPORT_STAGING
+import dependencies.tasks.Tasks.PASSED
+import dependencies.tasks.Tasks.SKIPPED
+import dependencies.tasks.Tasks.SONAR_QUBE_COVERAGE_PROPERTY
+import dependencies.tasks.Tasks.TEST_STAGING_DEBUG_UNIT_TEST
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektPlugin
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
@@ -21,20 +37,23 @@ allprojects {
         /**
          * Verificar se é um módulo Android antes de aplicar as configurações
          */
-        if (plugins.hasPlugin("com.android.application") ||
-            plugins.hasPlugin("com.android.library")) {
+        if (plugins.hasPlugin(ANDROID_APPLICATION) ||
+            plugins.hasPlugin(ANDROID_LIBRARY)) {
 
             /**
              * Aplicar Detekt
              */
-            apply(from = "${rootDir}/config/detekt/detekt.gradle")
+            apply(from = "${rootDir}/$DETEKT_PATH")
 
             /**
-             * Aplicar Jacoco
+             * Aplicar JaCoCo
              */
-            apply(from = "${rootDir}/config/jacoco/jacoco.gradle")
+            apply(from = "${rootDir}/$JACOCO_PATH")
 
-            apply("${rootDir}/config/sonar/sonar.gradle")
+            /**
+             * Aplicar Sonar
+             */
+            apply("${rootDir}/$SONAR_PATH")
         }
     }
 
@@ -42,7 +61,7 @@ allprojects {
      * Detekt task para gerar reports
      */
     val reportMerge by tasks.registering(ReportMergeTask::class) {
-        output.set(rootProject.layout.buildDirectory.file("reports/detekt/merge.xml"))
+        output.set(rootProject.layout.buildDirectory.file(DETEKT_REPORT_PATH))
     }
 
     plugins.withType(DetektPlugin::class) {
@@ -57,31 +76,31 @@ allprojects {
 
     tasks.withType<Test> {
         testLogging {
-            events("passed", "skipped", "failed")
+            events(PASSED, SKIPPED, FAILED)
         }
     }
 
     tasks.withType<JacocoReport> {
-        dependsOn("testStagingDebugUnitTest")
+        dependsOn(TEST_STAGING_DEBUG_UNIT_TEST)
         reports {
             xml.required.set(true)
             html.required.set(true)
         }
     }
 
-    tasks.register("collectJacocoReports") {
-        group = "verification"
-        description = "Collects Jacoco reports from all subprojects and configures them for Sonarqube analysis"
-        dependsOn(subprojects.map { it.tasks.named("jacocoTestReportStaging") })
+    tasks.register(COLLECT_JACOCO_REPORTS) {
+        group = COLLECT_JACOCO_REPORTS_GROUP
+        description = COLLECT_JACOCO_REPORTS_DESCRIPTION
+        dependsOn(subprojects.map { it.tasks.named(JACOCO_TEST_REPORT_STAGING) })
         doLast {
             val reportPaths = subprojects.map { subproject ->
-                "${subproject.buildDir}/reports/jacoco/jacocoTestReportStaging/jacocoTestReportStaging.xml"
+                "${subproject.buildDir}/$JACOCO_REPORT_PATH"
             }.filter { File(it).exists() }
 
             if (reportPaths.isNotEmpty()) {
                 sonarqube {
                     properties {
-                        property("sonar.coverage.jacoco.xmlReportPaths", reportPaths.joinToString(","))
+                        property(SONAR_QUBE_COVERAGE_PROPERTY, reportPaths.joinToString(","))
                     }
                 }
             }
@@ -89,6 +108,6 @@ allprojects {
     }
 
     tasks.withType<SonarTask> {
-        dependsOn("collectJacocoReports")
+        dependsOn(COLLECT_JACOCO_REPORTS)
     }
 }
