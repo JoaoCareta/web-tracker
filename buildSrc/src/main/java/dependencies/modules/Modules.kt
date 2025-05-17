@@ -1,6 +1,8 @@
 package dependencies.modules
 
 object Modules {
-    const val app = ":app"
-    const val core = ":core"
+
+    object Common {
+        const val DESIGN_SYSTEM = ":common:design-system"
+    }
 }
