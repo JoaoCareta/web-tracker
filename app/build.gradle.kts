@@ -1,5 +1,6 @@
 import dependencies.firebase.Firebase.FIREBASE_ANALYTICS
 import dependencies.firebase.Firebase.FIREBASE_CRASHLYTICS
+import dependencies.modules.Modules.Common.DESIGN_SYSTEM
 import dependencies.projectconfig.ProjectConfig.APP_ID
 import dependencies.projectconfig.ProjectConfig.APP_NAME
 import dependencies.projectconfig.ProjectConfig.COMPILE_SDK
@@ -174,4 +175,8 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(FIREBASE_CRASHLYTICS)
     implementation(FIREBASE_ANALYTICS)
+
+
+    // Modules
+    implementation(project(DESIGN_SYSTEM))
 }

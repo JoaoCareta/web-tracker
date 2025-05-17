@@ -21,3 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Web Tracker"
 include(":app")
+include(":common")
+include(":common:design-system")
