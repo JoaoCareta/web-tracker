@@ -29,7 +29,7 @@ coverage:
 # Deploy Firebase
 deploy-firebase:
 	firebase appdistribution:distribute \
-		app/staging/release/app-staging-release.apk \
+		app/build/outputs/apk/staging/release/app-staging-release.apk \
 		--app ${FIREBASE_APP_ID} \
 		--groups "testers" \
 		--token "${FIREBASE_TOKEN}" \
