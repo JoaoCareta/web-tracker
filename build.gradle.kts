@@ -122,7 +122,6 @@ allprojects {
         }
 
         // Dependência apenas dos projetos Android
-        dependsOn(androidProjects.map { it.tasks.named(TEST_STAGING_DEBUG_UNIT_TEST) })
         dependsOn(androidProjects.map { it.tasks.named(JACOCO_TEST_REPORT_STAGING_UNIFIED) })
 
         doLast {

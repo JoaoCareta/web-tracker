@@ -9,10 +9,13 @@ tasks.register(jacocoTaskName, JacocoReport) {
     }
 
     def excludes = [
-            '**/*Application.kt',
-            '**/WebTrackerApplication.kt',
-            '**/MainActivity.kt',
+            '**/*Application.class',
+            '**/WebTrackerApplication.class',
+            '**/WebTrackerApplication$*.class',
+            '**/MainActivity.class',
+            '**/MainActivity*.class',
             '**/*Activity.class',
+            '**/*Activity*.class',
             '**/*Activity.kt',
             '**/*Dialog.kt',
             '**/*Adapter.kt',
@@ -42,8 +45,7 @@ tasks.register(jacocoTaskName, JacocoReport) {
             '**/RawTrackingDataReader.kt',
             '**/ui/components/**',
             '**/ui/**',
-            '**/common/design-system/**',
-            '/Users/joaocesco/AndroidStudioProjects/WebTracker/app/src/main/java/com/joao/otavio/webtracker/WebTrackerApplication.kt'
+            '**/common/design-system/**'
     ]
 
     def javaClasses = fileTree(dir: "${project.buildDir}/intermediates/javac/stagingDebug/classes", excludes: excludes)
