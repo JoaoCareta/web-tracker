@@ -32,10 +32,10 @@ sonarqube {
         property "sonar.sourceEncoding", "UTF-8"
 
         property "sonar.exclusions", [
-                "**/androidTest/**,**/*Test*/**,*.json,**/*test*/**,**/.gradle/**,**/R.class,build/**,**/*.png,**/res/**,**/*Application.kt"
+                "**/androidTest/**,**/*Test*/**,*.json,**/*test*/**,**/.gradle/**,**/R.class,build/**,**/*.png,**/res/**,**/*Application.kt,**/app/src/main/java/com/joao/otavio/webtracker/WebTrackerApplication.kt"
         ]
         property "sonar.coverage.exclusions", [
-                "**/*Application.kt,**/WebTrackerApplication.kt,**/*Activity.kt,**/*Dialog.kt,**/*Adapter.kt,**/*Delegate.kt,**/App.kt,**/*Extensions.kt,**/*Extension.kt,**/converters/**,**/*Constants.kt,**/*DataSource.kt,**/*Module.kt,common/metadata-db/**,**/*Injection.kt,**/*FlagsImpl.kt,**/*DataHolder.kt,**/DialogTemplates.kt,**/*Dto.kt,**/*Screen.kt,**/model/**,**/models/**,**/*View.kt,**/*Layout.kt,**/viewholders/**,**/screens/**,**/migrations/**,**/*DAO.kt,**/RawTrackingDataReader.kt,**/ui/components/**,**/ui/**,**/common/design-system/**"
+                "**/*Application.kt,**/WebTrackerApplication.kt,**/*Activity.kt,**/*Dialog.kt,**/*Adapter.kt,**/*Delegate.kt,**/App.kt,**/*Extensions.kt,**/*Extension.kt,**/converters/**,**/*Constants.kt,**/*DataSource.kt,**/*Module.kt,common/metadata-db/**,**/*Injection.kt,**/*FlagsImpl.kt,**/*DataHolder.kt,**/DialogTemplates.kt,**/*Dto.kt,**/*Screen.kt,**/model/**,**/models/**,**/*View.kt,**/*Layout.kt,**/viewholders/**,**/screens/**,**/migrations/**,**/*DAO.kt,**/RawTrackingDataReader.kt,**/ui/components/**,**/ui/**,**/common/design-system/**,**/app/src/main/java/com/joao/otavio/webtracker/WebTrackerApplication.kt"
         ]
 
         property "sonar.report.export.path", "sonar-report.json"

@@ -42,7 +42,8 @@ tasks.register(jacocoTaskName, JacocoReport) {
             '**/RawTrackingDataReader.kt',
             '**/ui/components/**',
             '**/ui/**',
-            '**/common/design-system/**'
+            '**/common/design-system/**',
+            '/Users/joaocesco/AndroidStudioProjects/WebTracker/app/src/main/java/com/joao/otavio/webtracker/WebTrackerApplication.kt'
     ]
 
     def javaClasses = fileTree(dir: "${project.buildDir}/intermediates/javac/stagingDebug/classes", excludes: excludes)
