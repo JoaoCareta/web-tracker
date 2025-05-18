@@ -108,6 +108,9 @@ jobs:
           at: .
       - setup-firebase
       - run:
+          name: Build Staging App
+          command: make build-staging
+      - run:
           name: Deploy to Firebase
           command: make deploy-firebase
       - store_artifacts:
