@@ -9,6 +9,7 @@ tasks.register(jacocoTaskName, JacocoReport) {
     }
 
     def excludes = [
+            '**/*Application.kt',
             '**/WebTrackerApplication.kt',
             '**/MainActivity.kt',
             '**/*Activity.class',
