@@ -41,15 +41,9 @@ commands:
 
   setup-firebase:
     steps:
-      - restore_cache:
-          key: node-deps-{{ checksum "package-lock.json" }}
       - run:
           name: Install Firebase CLI
-          command: npm install -g firebase-tools
-      - save_cache:
-          key: node-deps-{{ checksum "package-lock.json" }}
-          paths:
-            - ~/.npm
+          command: curl -sL https://firebase.tools | bash
 
 # ----------------------------
 # Jobs Section
