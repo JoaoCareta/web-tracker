@@ -41,84 +41,84 @@ commands:
 
   setup-firebase:
     steps:
+      - restore_cache:
+          key: node-deps-{{ checksum "package-lock.json" }}
       - run:
           name: Install Firebase CLI
-          command: |
-            curl -sL https://firebase.tools | bash
+          command: npm install -g firebase-tools
+      - save_cache:
+          key: node-deps-{{ checksum "package-lock.json" }}
+          paths:
+            - ~/.npm
 
 # ----------------------------
 # Jobs Section
+# (Altere os nomes dos jobs abaixo se desejar: build-and-detekt, test-and-sonar, deploy-qa)
 # ----------------------------
+jobs:
+  # Build and Static Analysis
+  build-and-detekt:
+    <<: *android_config
+    steps:
+      - set-android-java-version
+      - checkout
+      - android/restore-gradle-cache
+      - run:
+          name: Set Gradlew Permissions
+          command: make permissions
+      - run:
+          name: Run Detekt
+          command: make detekt
+      - run:
+          name: Build Staging
+          command: make build-staging
+      - store_artifacts:
+          path: build/reports/detekt
+          destination: reports/detekt
+      - android/save-gradle-cache
 
-# Para alterar os nomes dos jobs, edite os identificadores abaixo: static-analysis-build, unit-test-and-quality-scan, deploy-to-firebase-qa
+  # Tests and Code Quality
+  test-and-sonar:
+    <<: *android_config
+    steps:
+      - set-android-java-version
+      - checkout
+      - android/restore-gradle-cache
+      - run:
+          name: Clean Project
+          command: make clean
+      - run:
+          name: Run Tests
+          command: make test
+      - run:
+          name: Generate Coverage Reports
+          command: make coverage
+      - sonarcloud/scan
+      - store_artifacts:
+          path: app/build/reports/jacoco/jacocoTestReport-staging-unified/html
+          destination: reports/coverage
+      - store_artifacts:
+          path: app/build/reports/jacoco/jacocoTestReport-staging-unified/jacocoTestReport-staging-unified.xml
+          destination: reports/coverage-xml
+      - store_test_results:
+          path: build/test-results
+      - android/save-gradle-cache
 
-static-analysis-build:
-  <<: *android_config
-  steps:
-    - set-android-java-version
-    - checkout
-    - android/restore-gradle-cache
-    - run:
-        name: Set Gradlew Permissions
-        command: make permissions
-    - run:
-        name: Run Detekt
-        command: make detekt
-    - run:
-        name: Build Staging
-        command: make build-staging
-    - persist_to_workspace:
-        root: .
-        paths:
-          - build/reports/detekt
-          - app/build/outputs/apk/
-    - store_artifacts:
-        path: build/reports/detekt
-        destination: reports/detekt
-    - store_artifacts:
-        path: app/build/outputs/apk/
-        destination: apks/
-    - android/save-gradle-cache
-
-unit-test-and-quality-scan:
-  <<: *android_config
-  steps:
-    - set-android-java-version
-    - checkout
-    - attach_workspace:
-        at: .
-    - android/restore-gradle-cache
-    - run:
-        name: Clean Project
-        command: make clean
-    - run:
-        name: Run Tests
-        command: make test
-    - run:
-        name: Generate Coverage Reports
-        command: make coverage
-    - sonarcloud/scan
-    - store_artifacts:
-        path: build/reports/jacoco
-        destination: reports/coverage
-    - store_test_results:
-        path: build/test-results
-    - android/save-gradle-cache
-
-deploy-to-firebase-qa:
-  <<: *android_config
-  steps:
-    - set-android-java-version
-    - checkout
-    - attach_workspace:
-        at: .
-    - setup-firebase
-    - run:
-        name: Deploy to Firebase
-        command: make deploy-firebase
-    - store_artifacts:
-        path: app/build/outputs/apk/
-        destination: apks/
+  # Deployment
+  deploy-qa:
+    <<: *android_config
+    steps:
+      - set-android-java-version
+      - checkout
+      - attach_workspace:
+          at: .
+      - setup-firebase
+      - run:
+          name: Deploy to Firebase
+          command: make deploy-firebase
+      - store_artifacts:
+          path: app/build/outputs/apk/
+          destination: apks/
 
 # ----------------------------
 # Workflows Section
@@ -128,17 +128,17 @@ workflows:
   build-test-deploy:
     jobs:
       # Build and Analysis
-      - static-analysis-build
+      - build-and-detekt
 
       # Tests and Quality Gate
-      - unit-test-and-quality-scan:
+      - test-and-sonar:
           requires:
-            - static-analysis-build
+            - build-and-detekt
 
       # Deploy to QA
-      - deploy-to-firebase-qa:
+      - deploy-qa:
           requires:
-            - unit-test-and-quality-scan
+            - test-and-sonar
           filters:
             branches:
               only: main
