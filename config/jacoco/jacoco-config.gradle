@@ -9,13 +9,39 @@ tasks.register(jacocoTaskName, JacocoReport) {
     }
 
     def excludes = [
-            '**/R.class',
-            '**/R$*.class',
-            '**/BuildConfig.*',
-            '**/Manifest*.*',
-            '**/*Test*.*',
-            'android/**/*.*',
-            '**/*$ViewBinding*.*'
+            '**/WebTrackerApplication.kt',
+            '**/MainActivity.kt',
+            '**/*Activity.class',
+            '**/*Activity.kt',
+            '**/*Dialog.kt',
+            '**/*Adapter.kt',
+            '**/*Delegate.kt',
+            '**/App.kt',
+            '**/*Extensions.kt',
+            '**/*Extension.kt',
+            '**/converters/**',
+            '**/*Constants.kt',
+            '**/*DataSource.kt',
+            '**/*Module.kt',
+            'common/metadata-db/**',
+            '**/*Injection.kt',
+            '**/*FlagsImpl.kt',
+            '**/*DataHolder.kt',
+            '**/DialogTemplates.kt',
+            '**/*Dto.kt',
+            '**/*Screen.kt',
+            '**/model/**',
+            '**/models/**',
+            '**/*View.kt',
+            '**/*Layout.kt',
+            '**/viewholders/**',
+            '**/screens/**',
+            '**/migrations/**',
+            '**/*DAO.kt',
+            '**/RawTrackingDataReader.kt',
+            '**/ui/components/**',
+            '**/ui/**',
+            '**/common/design-system/**'
     ]
 
     def javaClasses = fileTree(dir: "${project.buildDir}/intermediates/javac/stagingDebug/classes", excludes: excludes)

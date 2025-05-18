@@ -1,6 +1,6 @@
 package com.joao.otavio.webtracker
 
-class CoverageTest {
+class CoverageClass {
     fun soma(a: Int, b: Int): Int {
         return a+b
     }

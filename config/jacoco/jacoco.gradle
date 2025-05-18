@@ -39,7 +39,7 @@ afterEvaluate {
 
             getSourceDirectories().setFrom(findSourceDirectories(project, flavorName))
             getClassDirectories().setFrom(findClassDirectories(project, flavorName))
-            getExecutionData().setFrom(fileTree(dir: "$buildDir", includes: findCoverageFiles(flavorName)).files.path)
+            getExecutionData().setFrom(fileTree(dir: "$buildDir", includes: findCoverageFiles(flavorName)))
         }
     }
 
@@ -76,7 +76,7 @@ afterEvaluate {
 
             getSourceDirectories().setFrom(findSourceDirectories(project, flavorName))
             getClassDirectories().setFrom(findClassDirectories(project, flavorName))
-            getExecutionData().setFrom(fileTree(dir: "$buildDir", includes: findCoverageFiles(flavorName)).files.path)
+            getExecutionData().setFrom(fileTree(dir: "$buildDir", includes: findCoverageFiles(flavorName)))
         }
     }
 }
