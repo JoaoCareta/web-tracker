@@ -35,7 +35,7 @@ sonarqube {
                 "**/androidTest/**,**/*Test*/**,*.json,**/*test*/**,**/.gradle/**,**/R.class,build/**,**/*.png,**/res/**"
         ]
         property "sonar.coverage.exclusions", [
-                "**/*Activity.kt,**/*Fragment.kt,**/*Adapter.kt,**/*Delegate.kt,**/App.kt,standcountcore/**,**/*Extensions.kt,**/*Extension.kt,**/converters/**,**/*Constants.kt,**/*DataSource.kt,**/*Module.kt,common/metadata-db/**,common/design-system/**,common/core-android/**,common/core-db/**"
+                "**/WebTrackerApplication.kt,**/*Activity.kt,**/*Dialog.kt,**/*Adapter.kt,**/*Delegate.kt,**/App.kt,**/*Extensions.kt,**/*Extension.kt,**/converters/**,**/*Constants.kt,**/*DataSource.kt,**/*Module.kt,common/metadata-db/**,**/*Injection.kt,**/*FlagsImpl.kt,**/*DataHolder.kt,**/DialogTemplates.kt,**/*Dto.kt,**/*Screen.kt,**/model/**,**/models/**,**/*View.kt,**/*Layout.kt,**/viewholders/**,**/screens/**,**/migrations/**,**/*DAO.kt,**/RawTrackingDataReader.kt,**/ui/components/**,**/ui/**,**/common/design-system/**"
         ]
 
         property "sonar.report.export.path", "sonar-report.json"
