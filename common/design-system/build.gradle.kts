@@ -5,10 +5,8 @@ import dependencies.projectconfig.ProjectConfig.JVM_TARGET
 import dependencies.projectconfig.ProjectConfig.MIN_SDK
 import dependencies.projectconfig.ProjectConfig.NAME_SPACE
 import dependencies.projectconfig.ProjectConfig.PROD
-import dependencies.projectconfig.ProjectConfig.PROD_SUFFIX
 import dependencies.projectconfig.ProjectConfig.RELEASE
 import dependencies.projectconfig.ProjectConfig.STAGING
-import dependencies.projectconfig.ProjectConfig.STAGING_SUFFIX
 import dependencies.projectconfig.ProjectConfig.VERSION
 
 plugins {
@@ -95,7 +93,12 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.runtime.android)
     implementation(libs.androidx.ui.text.android)
+    implementation(libs.androidx.foundation.layout.android)
+    implementation(libs.androidx.foundation.android)
+    implementation(libs.androidx.ui.tooling.preview.android)
+    implementation(libs.androidx.material3.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    debugImplementation(libs.ui.tooling)
 }

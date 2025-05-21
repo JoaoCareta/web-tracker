@@ -130,7 +130,12 @@ complexity:
   LongMethod:
     active: true
     threshold: 60
+    ignoreAnnotated:
+      - Composable
   LongParameterList:
+    ignoreAnnotated:
+      - Composable
+      - Preview
     active: true
     functionThreshold: 6
     constructorThreshold: 7
@@ -751,6 +756,9 @@ style:
   UnusedPrivateMember:
     active: true
     allowedNames: ''
+    ignoreAnnotated:
+      - Composable
+      - Preview
   UnusedPrivateProperty:
     active: true
     allowedNames: '_|ignored|expected|serialVersionUID'
