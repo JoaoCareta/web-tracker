@@ -4,7 +4,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-data class Paddings(
+data class Spacing(
     val none: Dp = 0.dp,
     val nano: Dp = 1.dp,
     val micro: Dp = 2.dp,
@@ -36,4 +36,4 @@ data class Paddings(
     val xxUltra: Dp = 100.dp
 )
 
-val LocalPaddings = compositionLocalOf { Paddings() }
+val LocalSpacing = compositionLocalOf { Spacing() }
