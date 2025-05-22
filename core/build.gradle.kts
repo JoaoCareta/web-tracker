@@ -1,8 +1,6 @@
 import dependencies.android.Android
-import dependencies.modules.Modules.Common.CORE
-import dependencies.modules.Modules.Common.DESIGN_SYSTEM
-import dependencies.projectconfig.ProjectConfig.AUTHENTICATION_PRESENTATION_NAME_SPACE
 import dependencies.projectconfig.ProjectConfig.COMPILE_SDK
+import dependencies.projectconfig.ProjectConfig.CORE_NAME_SPACE
 import dependencies.projectconfig.ProjectConfig.DEBUG
 import dependencies.projectconfig.ProjectConfig.JVM_TARGET
 import dependencies.projectconfig.ProjectConfig.MIN_SDK
@@ -20,7 +18,7 @@ plugins {
 
 android {
     compileSdk = COMPILE_SDK
-    namespace = AUTHENTICATION_PRESENTATION_NAME_SPACE
+    namespace = CORE_NAME_SPACE
 
     defaultConfig {
         minSdk = MIN_SDK
@@ -105,8 +103,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-    // Modules
-    implementation(project(DESIGN_SYSTEM))
-    implementation(project(CORE))
 }

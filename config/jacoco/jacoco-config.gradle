@@ -46,7 +46,10 @@ tasks.register(jacocoTaskName, JacocoReport) {
             '**/ui/components/**',
             '**/ui/**',
             '**/common/design-system/**',
-            '**/features/authentication/authentication-presentation/**'
+            '**/features/authentication/authentication-presentation/**',
+            '**/core/navigation/**',
+            '**/core/util/**',
+            '**/webtracker/navigation/**',
     ]
 
     def javaClasses = fileTree(dir: "${project.buildDir}/intermediates/javac/stagingDebug/classes", excludes: excludes)

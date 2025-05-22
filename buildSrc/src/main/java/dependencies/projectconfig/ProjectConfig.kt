@@ -9,6 +9,7 @@ object ProjectConfig {
     const val DESIGN_SYSTEM_NAME_SPACE = "com.joao.otavio.webtracker.common.desygn.system"
     const val AUTHENTICATION_PRESENTATION_NAME_SPACE = "com.joao.otavio.webtracker.features.authentication.authentication.presentation"
     const val AUTHENTICATION_DOMAIN_NAME_SPACE = "com.joao.otavio.webtracker.features.authentication.authentication.domain"
+    const val CORE_NAME_SPACE = "com.joao.otavio.webtracker.core"
     const val APP_ID = "com.joao.otavio.webtracker"
     const val COMPILE_SDK = 35
     const val MIN_SDK = 24
@@ -17,10 +18,10 @@ object ProjectConfig {
     /**
      * SIGNING CONFIG
      */
-    const val KEY_ALIAS = "web-tracker"
-    const val KEY_PASSWORD = "agoravai"
-    const val STORE_FILE = "../keystore"
-    const val STORE_PASSWORD = "agoravai"
+    const val KEY_ALIAS = "KEY_ALIAS"
+    const val KEY_PASSWORD = "KEY_PASSWORD"
+    const val STORE_FILE = "STORE_FILE"
+    const val STORE_PASSWORD = "STORE_PASSWORD"
 
     /**
      * Build Types
