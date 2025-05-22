@@ -16,8 +16,8 @@ executors:
       - image: cimg/android:2024.01
     resource_class: medium
     environment:
-      JAVA_TOOL_OPTIONS: "-Xmx3g"
-      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
+      JAVA_TOOL_OPTIONS: "-Xmx2g -XX:+UseG1GC -XX:MaxGCPauseMillis=100"
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs=-Xmx2g"
 
 # ----------------------------
 # References Section
@@ -82,6 +82,20 @@ commands:
             # Ajusta as permissões
             chmod 600 $KEYSTORE_PATH
 
+  optimize-gradle-build:
+    steps:
+      - run:
+          name: Optimize Gradle Build
+          command: |
+            # Limpa o cache do Gradle
+            rm -rf ~/.gradle/caches/
+            # Configura o Gradle para modo offline
+            mkdir -p ~/.gradle
+            echo "org.gradle.parallel=false" >> ~/.gradle/gradle.properties
+            echo "org.gradle.workers.max=1" >> ~/.gradle/gradle.properties
+            echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
+            echo "org.gradle.jvmargs=-Xmx2g -XX:+HeapDumpOnOutOfMemoryError" >> ~/.gradle/gradle.properties
+
 # ----------------------------
 # Jobs Section
 # (Altere os nomes dos jobs abaixo se desejar: build-and-detekt, test-and-sonar, deploy-qa)
@@ -109,15 +123,27 @@ jobs:
       - checkout
       - android/restore-gradle-cache
       - setup-keystore
+      - optimize-gradle-build
       - run:
           name: Set Gradlew Permissions
           command: make permissions
       - run:
+          name: Clean Project
+          command: make clean
+      - run:
           name: Run Detekt
-          command: make detekt
+          command: |
+            ./gradlew detekt \
+            --no-daemon \
+            --max-workers 1
       - run:
           name: Build Staging
-          command: make build-staging
+          command: |
+            ./gradlew assembleStagingRelease \
+            --no-daemon \
+            --max-workers 1 \
+            --stacktrace \
+            -Dkotlin.compiler.execution.strategy=in-process
       - store_artifacts:
           path: build/reports/detekt
           destination: reports/detekt
@@ -131,15 +157,24 @@ jobs:
       - checkout
       - android/restore-gradle-cache
       - setup-keystore
+      - optimize-gradle-build
       - run:
           name: Clean Project
           command: make clean
       - run:
           name: Run Tests
-          command: make test
+          command: |
+            ./gradlew test \
+            --no-daemon \
+            --max-workers 1 \
+            --stacktrace \
+            -Dkotlin.compiler.execution.strategy=in-process
       - run:
           name: Generate Coverage Reports
-          command: make coverage
+          command: |
+            ./gradlew jacocoTestReport \
+            --no-daemon \
+            --max-workers 1
       - sonarcloud/scan
       - store_artifacts:
           path: app/build/reports/jacoco/jacocoTestReport-staging-unified/html
@@ -161,9 +196,15 @@ jobs:
           at: .
       - setup-keystore
       - setup-firebase
+      - optimize-gradle-build
       - run:
           name: Build Staging App
-          command: make build-staging
+          command: |
+            ./gradlew assembleStagingRelease \
+            --no-daemon \
+            --max-workers 1 \
+            --stacktrace \
+            -Dkotlin.compiler.execution.strategy=in-process
       - run:
           name: Deploy to Firebase
           command: make deploy-firebase
