@@ -132,18 +132,10 @@ jobs:
           command: make clean
       - run:
           name: Run Detekt
-          command: |
-            ./gradlew detekt \
-            --no-daemon \
-            --max-workers 1
+          command: make detekt
       - run:
           name: Build Staging
-          command: |
-            ./gradlew assembleStagingRelease \
-            --no-daemon \
-            --max-workers 1 \
-            --stacktrace \
-            -Dkotlin.compiler.execution.strategy=in-process
+          command: make build-staging
       - store_artifacts:
           path: build/reports/detekt
           destination: reports/detekt
@@ -163,18 +155,10 @@ jobs:
           command: make clean
       - run:
           name: Run Tests
-          command: |
-            ./gradlew test \
-            --no-daemon \
-            --max-workers 1 \
-            --stacktrace \
-            -Dkotlin.compiler.execution.strategy=in-process
+          command: make test
       - run:
           name: Generate Coverage Reports
-          command: |
-            ./gradlew jacocoTestReport \
-            --no-daemon \
-            --max-workers 1
+          command: make coverage
       - sonarcloud/scan
       - store_artifacts:
           path: app/build/reports/jacoco/jacocoTestReport-staging-unified/html
@@ -199,12 +183,7 @@ jobs:
       - optimize-gradle-build
       - run:
           name: Build Staging App
-          command: |
-            ./gradlew assembleStagingRelease \
-            --no-daemon \
-            --max-workers 1 \
-            --stacktrace \
-            -Dkotlin.compiler.execution.strategy=in-process
+          command: make build-staging
       - run:
           name: Deploy to Firebase
           command: make deploy-firebase
