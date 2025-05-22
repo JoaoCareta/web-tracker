@@ -54,7 +54,7 @@ android {
         create(RELEASE) {
             keyAlias = System.getenv(KEY_ALIAS) ?: ""
             keyPassword = System.getenv(KEY_PASSWORD) ?: ""
-            storeFile = file(System.getenv(STORE_FILE)  ?: "../keystore")
+            storeFile = file("../keystore")
             storePassword = System.getenv(STORE_PASSWORD) ?: ""
         }
     }
