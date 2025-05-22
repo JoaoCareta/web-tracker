@@ -3,7 +3,8 @@ package com.joao.otavio.design_system.design.themes
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import com.joao.otavio.webtracker.R
+import com.joao.otavio.webtracker.common.desygn.system.R
+
 
 interface WebTrackerTheme {
     val background: Color

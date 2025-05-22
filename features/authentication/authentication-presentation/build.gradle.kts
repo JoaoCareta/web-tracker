@@ -1,7 +1,8 @@
 import dependencies.android.Android
+import dependencies.modules.Modules.Common.DESIGN_SYSTEM
+import dependencies.projectconfig.ProjectConfig.AUTHENTICATION_PRESENTATION_NAME_SPACE
 import dependencies.projectconfig.ProjectConfig.COMPILE_SDK
 import dependencies.projectconfig.ProjectConfig.DEBUG
-import dependencies.projectconfig.ProjectConfig.DESIGN_SYSTEM_NAME_SPACE
 import dependencies.projectconfig.ProjectConfig.JVM_TARGET
 import dependencies.projectconfig.ProjectConfig.MIN_SDK
 import dependencies.projectconfig.ProjectConfig.PROD
@@ -18,7 +19,7 @@ plugins {
 
 android {
     compileSdk = COMPILE_SDK
-    namespace = DESIGN_SYSTEM_NAME_SPACE
+    namespace = AUTHENTICATION_PRESENTATION_NAME_SPACE
 
     defaultConfig {
         minSdk = MIN_SDK
@@ -88,18 +89,22 @@ android {
 
 dependencies {
 
-    implementation(libs.material)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.runtime.android)
-    implementation(libs.androidx.ui.text.android)
-    implementation(libs.androidx.foundation.layout.android)
-    implementation(libs.androidx.foundation.android)
-    implementation(libs.androidx.ui.tooling.preview.android)
-    implementation(libs.androidx.material3.android)
-    debugImplementation(libs.ui.tooling)
-
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Modules
+    implementation(project(DESIGN_SYSTEM))
 }

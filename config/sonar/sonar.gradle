@@ -70,7 +70,8 @@ sonarqube {
                 "**/RawTrackingDataReader.kt",
                 "**/ui/components/**",
                 "**/ui/**",
-                "**/common/design-system/**"
+                "**/common/design-system/**",
+                "**/features/authentication/authentication-presentation/**"
         ]
 
         property "sonar.report.export.path", "sonar-report.json"
