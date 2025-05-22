@@ -1,5 +1,8 @@
+import dependencies.android.Android.AndroidX.COMPOSE_NAVIGATION
 import dependencies.firebase.Firebase.FIREBASE_ANALYTICS
 import dependencies.firebase.Firebase.FIREBASE_CRASHLYTICS
+import dependencies.modules.Modules.Common.AUTHENTICATION_PRESENTATION
+import dependencies.modules.Modules.Common.CORE
 import dependencies.modules.Modules.Common.DESIGN_SYSTEM
 import dependencies.projectconfig.ProjectConfig.APP_ID
 import dependencies.projectconfig.ProjectConfig.APP_NAME
@@ -49,10 +52,10 @@ android {
 
     signingConfigs {
         create(RELEASE) {
-            keyAlias = KEY_ALIAS
-            keyPassword = KEY_PASSWORD
-            storeFile = file(STORE_FILE)
-            storePassword = STORE_PASSWORD
+            keyAlias = System.getenv(KEY_ALIAS) ?: ""
+            keyPassword = System.getenv(KEY_PASSWORD) ?: ""
+            storeFile = file("keystore/release.keystore")
+            storePassword = System.getenv(STORE_PASSWORD) ?: ""
         }
     }
 
@@ -171,6 +174,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // Navegação com Compose
+    implementation(COMPOSE_NAVIGATION)
+
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(FIREBASE_CRASHLYTICS)
@@ -179,4 +185,6 @@ dependencies {
 
     // Modules
     implementation(project(DESIGN_SYSTEM))
+    implementation(project(AUTHENTICATION_PRESENTATION))
+    implementation(project(CORE))
 }

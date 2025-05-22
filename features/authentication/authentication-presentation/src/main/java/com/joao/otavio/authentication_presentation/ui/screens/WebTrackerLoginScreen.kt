@@ -1,6 +1,7 @@
 package com.joao.otavio.authentication_presentation.ui.screens
 
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,9 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.joao.otavio.core.util.UiEvent
 import com.joao.otavio.design_system.buttons.WebTrackerButton
 import com.joao.otavio.design_system.design.themes.MainTheme
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
@@ -27,10 +30,12 @@ import com.joao.otavio.webtracker.common.desygn.system.R
 @Composable
 fun LoginScreen(
     version: String,
-    onEnterClick: () -> Unit,
+    onEnterClick: (UiEvent.Navigate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
+    onEnterClick
+    val currentContext = LocalContext.current
 
     WebTrackerScaffold(
         modifier = modifier.fillMaxSize(),
@@ -65,7 +70,9 @@ fun LoginScreen(
 
                 WebTrackerButton(
                     text = stringResource(R.string.authentication_login),
-                    onClick = onEnterClick,
+                    onClick = {
+                        Toast.makeText(currentContext, "Click on login", Toast.LENGTH_LONG).show()
+                    },
                     modifier = Modifier
                         .padding(horizontal = dimensions.xxLarge),
                     theme = MainTheme()

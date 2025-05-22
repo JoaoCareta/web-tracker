@@ -71,7 +71,10 @@ sonarqube {
                 "**/ui/components/**",
                 "**/ui/**",
                 "**/common/design-system/**",
-                "**/features/authentication/authentication-presentation/**"
+                "**/features/authentication/authentication-presentation/**",
+                "**/core/navigation/**",
+                "**/core/util/**",
+                "**/webtracker/navigation/**"
         ]
 
         property "sonar.report.export.path", "sonar-report.json"
