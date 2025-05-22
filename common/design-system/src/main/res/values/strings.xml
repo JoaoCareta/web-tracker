@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Web Tracker</string>
+
+    <!-- region Authentication -->
+    <string name="authentication_login">Entrar</string>
+    <!-- endregion -->
+</resources>

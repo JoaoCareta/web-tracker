@@ -10,15 +10,15 @@ class DarkTheme : WebTrackerTheme {
     override val primary by lazy { Color(InternalColors.dark1) }
     override val primaryDark by lazy { Color(InternalColors.dark2) }
     override val primaryText by lazy { Color(InternalColors.softWhite) }
-    override val primaryIcon by lazy { Color(InternalColors.green1b) }
+    override val primaryIcon by lazy { Color(InternalColors.green2_5b) }
     override val primaryLight by lazy { Color(InternalColors.green4a) }
 
-    override val secondary by lazy { Color(InternalColors.green1b) }
+    override val secondary by lazy { Color(InternalColors.green2_5b) }
     override val secondaryDark by lazy { Color(InternalColors.green2b) }
     override val secondaryText by lazy { Color(InternalColors.softWhiteSecondary) }
     override val secondaryIcon by lazy { Color(InternalColors.dark4) }
 
-    override val third by lazy { Color(InternalColors.green1b) }
+    override val third by lazy { Color(InternalColors.green2_5b) }
     override val thirdDark by lazy { Color(InternalColors.green1b) }
     override val thirdText by lazy { Color(InternalColors.softWhiteThird) }
     override val thirdIcon by lazy { Color(InternalColors.dark7) }

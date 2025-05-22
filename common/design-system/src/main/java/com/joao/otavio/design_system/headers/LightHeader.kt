@@ -29,8 +29,8 @@ import com.joao.otavio.design_system.design.themes.MainTheme
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
 import com.joao.otavio.design_system.dimensions.LocalFontSize
 import com.joao.otavio.design_system.dimensions.LocalPaddings
-import com.joao.otavio.design_system.dimensions.LocalSpacing
-import com.joao.otavio.webtracker.R
+import com.joao.otavio.design_system.dimensions.LocalDimensions
+import com.joao.otavio.webtracker.common.desygn.system.R
 
 @Composable
 fun LightHeader(
@@ -40,7 +40,7 @@ fun LightHeader(
     theme: WebTrackerTheme = WebTrackerTheme,
 ) {
     val paddingValues = LocalPaddings.current
-    val spacingValues = LocalSpacing.current
+    val dimensionsValues = LocalDimensions.current
     val fontValues = LocalFontSize.current
 
     Box(Modifier.background(theme.primary)) {
@@ -59,7 +59,7 @@ fun LightHeader(
                 )
         ) {
             Button(
-                elevation = ButtonDefaults.buttonElevation(spacingValues.none, spacingValues.none),
+                elevation = ButtonDefaults.buttonElevation(dimensionsValues.none, dimensionsValues.none),
                 onClick = onClickLeft,
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(
@@ -67,8 +67,8 @@ fun LightHeader(
                 ),
                 contentPadding = PaddingValues(paddingValues.none),
                 modifier = Modifier
-                    .width(spacingValues.xHuge)
-                    .height(spacingValues.xHuge)
+                    .width(dimensionsValues.xHuge)
+                    .height(dimensionsValues.xHuge)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_left),
@@ -92,7 +92,7 @@ fun LightHeader(
             )
 
             Button(
-                elevation = ButtonDefaults.buttonElevation(spacingValues.none, spacingValues.none),
+                elevation = ButtonDefaults.buttonElevation(dimensionsValues.none, dimensionsValues.none),
                 onClick = { onClickRight?.invoke() },
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(
@@ -100,8 +100,8 @@ fun LightHeader(
                 ),
                 contentPadding = PaddingValues(paddingValues.none),
                 modifier = Modifier
-                    .width(spacingValues.xHuge)
-                    .height(spacingValues.xHuge)
+                    .width(dimensionsValues.xHuge)
+                    .height(dimensionsValues.xHuge)
                     .alpha(onClickRight?.let { 1f } ?: 0f)
             ) {
                 Icon(

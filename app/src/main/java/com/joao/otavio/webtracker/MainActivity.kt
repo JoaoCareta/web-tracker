@@ -19,7 +19,6 @@ import com.joao.otavio.design_system.headers.LightHeader
 import com.joao.otavio.design_system.scaffold.MOCKK_TEXT
 import com.joao.otavio.design_system.scaffold.WEB_TRACKER
 import com.joao.otavio.design_system.scaffold.WebTrackerScaffold
-import com.joao.otavio.webtracker.ui.theme.WebTrackerTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -4,6 +4,7 @@ object InternalColors {
     // region Protector - Main Theme
     const val green1a = 0xFF198746
     const val green2a = 0xFF16793E
+    const val green2_5b = 0xFF2E957C
     const val green3a = 0xFF8CC3A3
     const val green4a = 0xFFD3F6D9
     const val green5a = 0xFFEDFEF0
