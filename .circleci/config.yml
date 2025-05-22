@@ -50,23 +50,57 @@ commands:
       - run:
           name: Setup Keystore
           command: |
-            # Cria o diretório se não existir
-            mkdir -p "${STORE_FILE%/*}"
-            # Decodifica o keystore
-            echo $ENCODED_KEYSTORE | base64 -d > ${STORE_FILE}
-            # Verifica se o arquivo foi criado corretamente
-            if [ ! -f "${STORE_FILE}" ]; then
-              echo "Keystore file does not exist"
+            # Mostra o diretório de trabalho
+            echo "Working directory: $PWD"
+            
+            # Cria um diretório temporário para a keystore
+            mkdir -p ${PWD}/app/keystore
+            
+            # Define o caminho completo da keystore
+            KEYSTORE_PATH="${PWD}/app/keystore/release.keystore"
+            echo "Keystore path: $KEYSTORE_PATH"
+            
+            # Verifica se a variável ENCODED_KEYSTORE existe
+            if [ -z "$ENCODED_KEYSTORE" ]; then
+              echo "ERROR: ENCODED_KEYSTORE is empty or not set"
               exit 1
             fi
+            
+            # Decodifica a keystore
+            echo $ENCODED_KEYSTORE | base64 -d > $KEYSTORE_PATH
+            
+            # Verifica se o arquivo foi criado e seu tamanho
+            if [ -f "$KEYSTORE_PATH" ]; then
+              echo "Keystore created successfully"
+              ls -la $KEYSTORE_PATH
+              echo "Keystore size: $(wc -c < $KEYSTORE_PATH) bytes"
+            else
+              echo "ERROR: Failed to create keystore file"
+              exit 1
+            fi
+            
             # Ajusta as permissões
-            chmod 600 ${STORE_FILE}
+            chmod 600 $KEYSTORE_PATH
 
 # ----------------------------
 # Jobs Section
 # (Altere os nomes dos jobs abaixo se desejar: build-and-detekt, test-and-sonar, deploy-qa)
 # ----------------------------
 jobs:
+  # Debug Environment
+  debug-environment:
+    <<: *android_config
+    steps:
+      - checkout
+      - run:
+          name: Debug Environment
+          command: |
+            echo "Workspace: $PWD"
+            echo "List of environment variables:"
+            env | grep -v ENCODED_KEYSTORE
+            echo "Directory structure:"
+            ls -R
+
   # Build and Static Analysis
   build-and-detekt:
     <<: *android_config
@@ -144,8 +178,13 @@ workflows:
   version: 2
   build-test-deploy:
     jobs:
+      # Debug Environment
+      - debug-environment
+
       # Build and Analysis
-      - build-and-detekt
+      - build-and-detekt:
+          requires:
+            - debug-environment
 
       # Tests and Quality Gate
       - test-and-sonar:
