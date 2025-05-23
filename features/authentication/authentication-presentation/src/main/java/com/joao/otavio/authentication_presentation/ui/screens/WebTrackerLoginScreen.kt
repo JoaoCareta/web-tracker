@@ -1,6 +1,5 @@
 package com.joao.otavio.authentication_presentation.ui.screens
 
-import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -11,13 +10,16 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -46,6 +48,7 @@ import com.joao.otavio.core.util.UiEvent
 import com.joao.otavio.design_system.buttons.WebTrackerButton
 import com.joao.otavio.design_system.design.themes.MainTheme
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
+import com.joao.otavio.design_system.dimensions.Dimensions
 import com.joao.otavio.design_system.dimensions.LocalDimensions
 import com.joao.otavio.design_system.outlinedTextField.WebTrackerOutlinedTextField
 import com.joao.otavio.design_system.scaffold.WebTrackerScaffold
@@ -53,14 +56,14 @@ import com.joao.otavio.webtracker.common.desygn.system.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@SuppressLint("ConfigurationScreenWidthHeight")
+const val DELAY_TIME = 3000L
+
 @Composable
 fun LoginScreen(
     version: String,
     onEnterClick: (UiEvent.Navigate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val dimensions = LocalDimensions.current
     var showLoginFields by remember { mutableStateOf(false) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -71,145 +74,315 @@ fun LoginScreen(
     } else {
         stringResource(R.string.authentication_signIn)
     }
+    val dimensions = LocalDimensions.current
 
     WebTrackerScaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = Color.White
     ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_login_background),
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier.fillMaxSize()
+        LoginContent(
+            paddingValues = paddingValues,
+            isLoading = isLoading,
+            showLoginFields = showLoginFields,
+            email = email,
+            password = password,
+            buttonText = buttonText,
+            version = version,
+            onEmailChange = { email = it },
+            onPasswordChange = { password = it },
+            dimensions = dimensions,
+            onButtonClick = {
+                if (!showLoginFields) {
+                    showLoginFields = true
+                } else {
+                    scope.launch {
+                        isLoading = true
+                        delay(DELAY_TIME)
+                        isLoading = false
+                        onEnterClick.invoke(UiEvent.Navigate(WebTrackerScreens.Dummy.route))
+                    }
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun LoginContent(
+    paddingValues: PaddingValues,
+    isLoading: Boolean,
+    showLoginFields: Boolean,
+    email: String,
+    password: String,
+    buttonText: String,
+    version: String,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onButtonClick: () -> Unit,
+    dimensions: Dimensions,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+    ) {
+        LoginBackground()
+
+        if (!isLoading) {
+            LoginMainContent(
+                showLoginFields = showLoginFields,
+                email = email,
+                password = password,
+                buttonText = buttonText,
+                version = version,
+                onEmailChange = onEmailChange,
+                onPasswordChange = onPasswordChange,
+                onButtonClick = onButtonClick,
+                dimensions = dimensions
             )
+        }
 
-            if (!isLoading) {
-                Text(
-                    text = stringResource(R.string.app_name),
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = MainTheme().primaryText,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = dimensions.medium)
-                )
-
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(horizontal = dimensions.medium)
-                        .padding(bottom = dimensions.medium)
-                        .imePadding(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    AnimatedVisibility(
-                        visible = showLoginFields,
-                        enter = fadeIn() + expandVertically(),
-                        exit = fadeOut() + shrinkVertically()
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = dimensions.xSmall)
-                        ) {
-
-                            WebTrackerOutlinedTextField(
-                                value = email,
-                                onValueChange = { email = it },
-                                label = stringResource(R.string.authentication_email),
-                                leadingIcon = Icons.Default.Email,
-                                theme = MainTheme(),
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Email,
-                                    imeAction = ImeAction.Next
-                                )
-                            )
-
-                            WebTrackerOutlinedTextField(
-                                value = password,
-                                onValueChange = { password = it },
-                                label = stringResource(R.string.authentication_password),
-                                leadingIcon = Icons.Default.Lock,
-                                theme = MainTheme(),
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Password,
-                                    imeAction = ImeAction.Done
-                                ),
-                                visualTransformation = PasswordVisualTransformation()
-                            )
-                        }
-                    }
-
-                    WebTrackerButton(
-                        text = buttonText,
-                        onClick = {
-                            if (!showLoginFields) {
-                                showLoginFields = true
-                            } else {
-                                scope.launch {
-                                    isLoading = true
-                                    delay(DELAY_TIME)
-                                    isLoading = false
-                                    onEnterClick.invoke(UiEvent.Navigate(WebTrackerScreens.Dummy.route))
-                                }
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = dimensions.xSmall),
-                        theme = MainTheme(),
-                        enabled = !isLoading
-                    )
-
-                    Spacer(modifier = Modifier.height(dimensions.medium))
-
-                    Text(
-                        text = stringResource(R.string.app_name),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MainTheme().primaryText,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-
-                    Box(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = version,
-                            style = MaterialTheme.typography.displaySmall,
-                            color = MainTheme().primaryText,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.align(Alignment.CenterEnd)
-                        )
-                    }
-                }
-            }
-
-            if (isLoading) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.White.copy(alpha = 0.9f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        color = MainTheme().secondary
-                    )
-                }
-            }
+        if (isLoading) {
+            LoadingOverlay()
         }
     }
 }
 
+@Composable
+private fun LoginBackground() {
+    Image(
+        painter = painterResource(id = R.drawable.ic_login_background),
+        contentDescription = null,
+        contentScale = ContentScale.FillBounds,
+        modifier = Modifier.fillMaxSize()
+    )
+}
 
-const val DELAY_TIME = 3000L
+@Composable
+private fun LoginMainContent(
+    showLoginFields: Boolean,
+    email: String,
+    password: String,
+    buttonText: String,
+    version: String,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onButtonClick: () -> Unit,
+    dimensions: Dimensions
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        LoginHeader(
+            Modifier
+                .padding(top = dimensions.medium)
+                .align(Alignment.CenterHorizontally)
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        LoginFooter(
+            showLoginFields = showLoginFields,
+            email = email,
+            password = password,
+            buttonText = buttonText,
+            version = version,
+            onEmailChange = onEmailChange,
+            onPasswordChange = onPasswordChange,
+            onButtonClick = onButtonClick,
+            dimensions = dimensions
+        )
+    }
+}
+
+@Composable
+private fun LoginHeader(
+    modifier: Modifier
+) {
+    Text(
+        text = stringResource(R.string.app_name),
+        style = MaterialTheme.typography.headlineLarge,
+        color = MainTheme().primaryText,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun LoginFooter(
+    showLoginFields: Boolean,
+    email: String,
+    password: String,
+    buttonText: String,
+    version: String,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onButtonClick: () -> Unit,
+    dimensions: Dimensions
+) {
+
+    Column(
+        modifier = Modifier
+            .padding(horizontal = dimensions.medium)
+            .padding(bottom = dimensions.medium)
+            .imePadding(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        LoginFields(
+            showLoginFields = showLoginFields,
+            email = email,
+            password = password,
+            onEmailChange = onEmailChange,
+            onPasswordChange = onPasswordChange,
+            dimensions = dimensions
+        )
+
+        LoginButton(
+            text = buttonText,
+            onClick = onButtonClick,
+            dimensions = dimensions
+        )
+
+        VersionInfo(
+            version = version,
+            dimensions = dimensions
+        )
+    }
+}
+
+@Composable
+private fun LoginFields(
+    showLoginFields: Boolean,
+    email: String,
+    password: String,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    dimensions: Dimensions
+) {
+
+    AnimatedVisibility(
+        visible = showLoginFields,
+        enter = fadeIn() + expandVertically(),
+        exit = fadeOut() + shrinkVertically()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = dimensions.xSmall)
+        ) {
+
+            LoginEmailField(
+                email = email,
+                onEmailChange = onEmailChange
+            )
+
+            LoginPasswordField(
+                password = password,
+                onPasswordChange = onPasswordChange
+            )
+        }
+    }
+}
+
+@Composable
+fun LoginEmailField(
+    email: String,
+    onEmailChange: (String) -> Unit
+) {
+    WebTrackerOutlinedTextField(
+        value = email,
+        onValueChange = onEmailChange,
+        label = stringResource(R.string.authentication_email),
+        leadingIcon = Icons.Default.Email,
+        theme = MainTheme(),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Email,
+            imeAction = ImeAction.Next
+        )
+    )
+}
+
+@Composable
+fun LoginPasswordField(
+    password: String,
+    onPasswordChange: (String) -> Unit
+) {
+    WebTrackerOutlinedTextField(
+        value = password,
+        onValueChange = onPasswordChange,
+        label = stringResource(R.string.authentication_password),
+        leadingIcon = Icons.Default.Lock,
+        theme = MainTheme(),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done
+        ),
+        visualTransformation = PasswordVisualTransformation()
+    )
+}
+
+@Composable
+private fun LoginButton(
+    text: String,
+    onClick: () -> Unit,
+    dimensions: Dimensions
+) {
+    WebTrackerButton(
+        text = text,
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = dimensions.xSmall),
+        theme = MainTheme(),
+        enabled = true
+    )
+}
+
+@Composable
+private fun VersionInfo(
+    version: String,
+    dimensions: Dimensions
+) {
+    Spacer(modifier = Modifier.height(dimensions.medium))
+
+    Text(
+        text = stringResource(R.string.app_name),
+        style = MaterialTheme.typography.titleLarge,
+        color = MainTheme().primaryText,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
+
+    Box(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = version,
+            style = MaterialTheme.typography.displaySmall,
+            color = MainTheme().primaryText,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.align(Alignment.CenterEnd)
+        )
+    }
+}
+
+@Composable
+private fun LoadingOverlay() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White.copy(alpha = 0.9f)),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            color = MainTheme().secondary
+        )
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
