@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.joao.otavio.design_system.design.utils.ThemeUtils
+import com.joao.otavio.design_system.dimensions.LocalAlpha
 import com.joao.otavio.design_system.dimensions.LocalFontSize
 
 
@@ -22,6 +23,8 @@ fun WebTrackerTheme(
         ThemeUtils.setAppTheme(if (darkTheme) AppThemes.DARK.name else AppThemes.LIGHT.name)
         onDispose { }
     }
+
+    val alpha = LocalAlpha.current
 
     val colorScheme = ColorScheme(
         // Primary colors
@@ -56,12 +59,12 @@ fun WebTrackerTheme(
 
         // Surface container colors
         surfaceBright = WebTrackerTheme.background,
-        surfaceDim = WebTrackerTheme.background.copy(alpha = 0.87f),
+        surfaceDim = WebTrackerTheme.background.copy(alpha = alpha.emphasizedHigh),
         surfaceContainer = WebTrackerTheme.background,
-        surfaceContainerHigh = WebTrackerTheme.background.copy(alpha = 0.92f),
+        surfaceContainerHigh = WebTrackerTheme.background.copy(alpha = alpha.nearOpaque),
         surfaceContainerHighest = WebTrackerTheme.background,
-        surfaceContainerLow = WebTrackerTheme.background.copy(alpha = 0.96f),
-        surfaceContainerLowest = WebTrackerTheme.background.copy(alpha = 0.98f),
+        surfaceContainerLow = WebTrackerTheme.background.copy(alpha = alpha.almostOpaque),
+        surfaceContainerLowest = WebTrackerTheme.background.copy(alpha = alpha.barelyTransparent),
 
         // Error colors
         error = WebTrackerTheme.error,
