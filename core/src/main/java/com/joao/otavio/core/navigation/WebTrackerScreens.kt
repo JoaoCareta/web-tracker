@@ -17,6 +17,13 @@ sealed class WebTrackerScreens(
         fun createRoute(version: String) = "login?version=$version"
     }
 
+    data object Dummy : WebTrackerScreens(
+        route = "dummy",
+        title = "Dummy",
+        baseRoute = "dummy",
+        hasArguments = false
+    )
+
     companion object {
         fun fromRoute(route: String?): WebTrackerScreens {
             return when (route?.substringBefore("?")) {

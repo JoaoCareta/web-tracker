@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,6 +30,10 @@ fun WebTrackerButton(
     theme: WebTrackerTheme = WebTrackerTheme.current
 ) {
     val dimensionsValues = LocalDimensions.current
+    val configuration = LocalConfiguration.current
+    val fontScale = configuration.fontScale
+    val adjustedPadding = dimensionsValues.xSmall / fontScale.coerceAtLeast(1f)
+
     Button(
         onClick = onClick,
         modifier = modifier
@@ -42,11 +47,13 @@ fun WebTrackerButton(
             disabledContentColor = theme.thirdText
         ),
         shape = RoundedCornerShape(dimensionsValues.xxxSmall),
-        contentPadding = PaddingValues(dimensionsValues.xSmall),
+        contentPadding = PaddingValues(horizontal = adjustedPadding),
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.labelLarge,
+            style = MaterialTheme.typography.labelLarge.copy(
+                fontSize = MaterialTheme.typography.labelLarge.fontSize / fontScale
+            ),
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -75,7 +82,11 @@ fun WebTrackerMainThemeButtonDisabledPreview() {
     )
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, backgroundColor = 0xFF121212)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    backgroundColor = 0xFF121212
+)
 @Composable
 fun WebTrackerDarkThemeButtonPreview() {
     WebTrackerButton(
@@ -86,7 +97,11 @@ fun WebTrackerDarkThemeButtonPreview() {
     )
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, backgroundColor = 0xFF121212)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    backgroundColor = 0xFF121212
+)
 @Composable
 fun WebTrackerDarkThemeButtonDisabledPreview() {
     WebTrackerButton(

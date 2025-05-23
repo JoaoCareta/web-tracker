@@ -106,6 +106,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    implementation("com.firebaseui:firebase-ui-auth:9.0.0")
+
     // Modules
     implementation(project(DESIGN_SYSTEM))
     implementation(project(CORE))

@@ -1,4 +1,5 @@
 import dependencies.android.Android
+import dependencies.modules.Modules.Common.CORE
 import dependencies.projectconfig.ProjectConfig.COMPILE_SDK
 import dependencies.projectconfig.ProjectConfig.DEBUG
 import dependencies.projectconfig.ProjectConfig.DESIGN_SYSTEM_NAME_SPACE
@@ -102,4 +103,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    //Modules
+    implementation(project(CORE))
 }

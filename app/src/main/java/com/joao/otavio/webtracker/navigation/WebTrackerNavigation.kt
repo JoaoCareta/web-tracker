@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.joao.otavio.authentication_presentation.ui.screens.DummyScreen
 import com.joao.otavio.core.util.UiEvent
 import com.joao.otavio.authentication_presentation.ui.screens.LoginScreen
 import com.joao.otavio.core.navigation.WebTrackerScreens
@@ -32,6 +33,12 @@ fun WebTrackerNavigation(appVersion: String) {
                 version = version,
                 onEnterClick = navController::navigateTo
             )
+        }
+
+        composable(
+            route = WebTrackerScreens.Dummy.route
+        ) {
+            DummyScreen()
         }
     }
 }
