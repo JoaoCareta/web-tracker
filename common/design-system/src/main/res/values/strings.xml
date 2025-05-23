@@ -2,6 +2,9 @@
     <string name="app_name">Web Tracker</string>
 
     <!-- region Authentication -->
-    <string name="authentication_login">Entrar</string>
+    <string name="authentication_signIn">Entrar</string>
+    <string name="authentication_login">Conectar</string>
+    <string name="authentication_email">Email</string>
+    <string name="authentication_password">Senha</string>
     <!-- endregion -->
 </resources>
