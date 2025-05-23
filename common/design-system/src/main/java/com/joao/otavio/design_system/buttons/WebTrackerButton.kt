@@ -51,9 +51,7 @@ fun WebTrackerButton(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.labelLarge.copy(
-                fontSize = MaterialTheme.typography.labelLarge.fontSize / fontScale
-            ),
+            style = MaterialTheme.typography.labelLarge,
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
