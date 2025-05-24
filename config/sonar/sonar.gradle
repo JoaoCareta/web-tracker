@@ -71,12 +71,14 @@ sonarqube {
                 "**/ui/components/**",
                 "**/ui/**",
                 "**/common/design-system/**",
-                "**/features/authentication-presentation/src/main/java/**/events/**",
-                "**/features/authentication-presentation/src/main/java/**/state/**",
-                "**/features/authentication-presentation/src/main/java/**/ui/**",
+                "**/authentication/authentication-presentation/**/events/**",
+                "**/authentication/authentication-presentation/**/state/**",
+                "**/authentication/authentication-presentation/**/ui/**",
                 "**/core/navigation/**",
                 "**/core/util/**",
-                "**/webtracker/navigation/**"
+                "**/webtracker/navigation/**",
+                "**/webtracker/di/**",
+                "**/webtracker/application/**",
         ]
 
         property "sonar.report.export.path", "sonar-report.json"
