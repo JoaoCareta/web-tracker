@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.joao.otavio.design_system.design.themes.DarkTheme
 import com.joao.otavio.design_system.design.themes.MainTheme
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
+import com.joao.otavio.design_system.dimensions.LocalAlpha
 import com.joao.otavio.design_system.dimensions.LocalDimensions
 
 @Composable
@@ -37,6 +38,7 @@ fun WebTrackerOutlinedTextField(
     enabled: Boolean = true
 ) {
     val dimensions = LocalDimensions.current
+    val alpha = LocalAlpha.current
 
     OutlinedTextField(
         value = value,
@@ -67,10 +69,10 @@ fun WebTrackerOutlinedTextField(
             focusedTextColor = theme.secondary,
             unfocusedTextColor = theme.secondary,
             cursorColor = theme.secondary,
-            disabledBorderColor = theme.secondary.copy(alpha = 0.5f),
-            disabledTextColor = theme.secondary.copy(alpha = 0.5f),
-            disabledLeadingIconColor = theme.secondary.copy(alpha = 0.5f),
-            disabledLabelColor = theme.secondary.copy(alpha = 0.5f)
+            disabledBorderColor = theme.secondary.copy(alpha = alpha.medium),
+            disabledTextColor = theme.secondary.copy(alpha = alpha.medium),
+            disabledLeadingIconColor = theme.secondary.copy(alpha = alpha.medium),
+            disabledLabelColor = theme.secondary.copy(alpha = alpha.medium)
         )
     )
 

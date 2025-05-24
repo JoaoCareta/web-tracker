@@ -1,6 +1,8 @@
 import dependencies.android.Android.AndroidX.COMPOSE_NAVIGATION
 import dependencies.firebase.Firebase.FIREBASE_ANALYTICS
 import dependencies.firebase.Firebase.FIREBASE_CRASHLYTICS
+import dependencies.hilt.DaggerHilt.DAGGER_HILT_ANDROID
+import dependencies.hilt.DaggerHilt.DAGGER_HILT_COMPILER
 import dependencies.modules.Modules.Common.AUTHENTICATION_PRESENTATION
 import dependencies.modules.Modules.Common.CORE
 import dependencies.modules.Modules.Common.DESIGN_SYSTEM
@@ -34,6 +36,8 @@ plugins {
     alias(libs.plugins.firebase.plugin)
     alias(libs.plugins.firebase.app.distribuiton.plugin)
     alias(libs.plugins.crashlytics.plugin)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.dagger.hilt)
 }
 
 apply("$rootDir/$GIT_VERSION_PATH")
@@ -159,19 +163,26 @@ android {
 }
 
 dependencies {
+    // AndroidX - Core e Lifecycle
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+
+    // AndroidX - Compose
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
+    // AndroidX - Testes
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    // AndroidX - Debug
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
@@ -183,6 +194,9 @@ dependencies {
     implementation(FIREBASE_CRASHLYTICS)
     implementation(FIREBASE_ANALYTICS)
 
+    // Hilt
+    kapt(DAGGER_HILT_COMPILER)
+    implementation(DAGGER_HILT_ANDROID)
 
     // Modules
     implementation(project(DESIGN_SYSTEM))

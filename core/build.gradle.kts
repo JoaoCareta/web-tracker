@@ -1,4 +1,6 @@
 import dependencies.android.Android
+import dependencies.hilt.DaggerHilt.DAGGER_HILT_ANDROID
+import dependencies.hilt.DaggerHilt.DAGGER_HILT_COMPILER
 import dependencies.projectconfig.ProjectConfig.COMPILE_SDK
 import dependencies.projectconfig.ProjectConfig.CORE_NAME_SPACE
 import dependencies.projectconfig.ProjectConfig.DEBUG
@@ -8,11 +10,14 @@ import dependencies.projectconfig.ProjectConfig.PROD
 import dependencies.projectconfig.ProjectConfig.RELEASE
 import dependencies.projectconfig.ProjectConfig.STAGING
 import dependencies.projectconfig.ProjectConfig.VERSION
+import dependencies.testing.Testing.COROUTINE_TEST
 
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.dagger.hilt)
     jacoco
 }
 
@@ -87,20 +92,22 @@ android {
 }
 
 dependencies {
-
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
+    // AndroidX - Compose
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    // Coroutines
+    implementation(COROUTINE_TEST)
+
+    // Dagger Hilt
+    kapt(DAGGER_HILT_COMPILER)
+    implementation(DAGGER_HILT_ANDROID)
+
+    // AndroidX - Debug
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

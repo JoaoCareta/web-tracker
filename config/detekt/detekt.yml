@@ -399,6 +399,8 @@ naming:
     variablePattern: '[a-z][A-Za-z0-9]*'
     privateVariablePattern: '(_)?[a-z][A-Za-z0-9]*'
     excludeClassPattern: '$^'
+    excludes:
+      - '**/CoroutineContextProvider.kt'
 
 performance:
   active: true

@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.joao.otavio.design_system.design.themes.DarkTheme
 import com.joao.otavio.design_system.design.themes.MainTheme
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
+import com.joao.otavio.design_system.dimensions.LocalAlpha
 import com.joao.otavio.design_system.dimensions.LocalFontSize
 import com.joao.otavio.design_system.dimensions.LocalPaddings
 import com.joao.otavio.design_system.dimensions.LocalDimensions
@@ -42,6 +43,7 @@ fun LightHeader(
     val paddingValues = LocalPaddings.current
     val dimensionsValues = LocalDimensions.current
     val fontValues = LocalFontSize.current
+    val alpha = LocalAlpha.current
 
     Box(Modifier.background(theme.primary)) {
         Row(
@@ -102,7 +104,7 @@ fun LightHeader(
                 modifier = Modifier
                     .width(dimensionsValues.xHuge)
                     .height(dimensionsValues.xHuge)
-                    .alpha(onClickRight?.let { 1f } ?: 0f)
+                    .alpha(onClickRight?.let { alpha.opaque } ?: alpha.transparent)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_search),

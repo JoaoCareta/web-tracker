@@ -1,4 +1,4 @@
-package com.joao.otavio.authentication_presentation.ui.screens
+package com.joao.otavio.authentication_presentation.ui.screens.login
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
@@ -48,7 +48,9 @@ import com.joao.otavio.core.util.UiEvent
 import com.joao.otavio.design_system.buttons.WebTrackerButton
 import com.joao.otavio.design_system.design.themes.MainTheme
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
+import com.joao.otavio.design_system.dimensions.Alpha
 import com.joao.otavio.design_system.dimensions.Dimensions
+import com.joao.otavio.design_system.dimensions.LocalAlpha
 import com.joao.otavio.design_system.dimensions.LocalDimensions
 import com.joao.otavio.design_system.outlinedTextField.WebTrackerOutlinedTextField
 import com.joao.otavio.design_system.scaffold.WebTrackerScaffold
@@ -64,6 +66,8 @@ fun LoginScreen(
     onEnterClick: (UiEvent.Navigate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val dimensions = LocalDimensions.current
+    val alpha = LocalAlpha.current
     var showLoginFields by remember { mutableStateOf(false) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -74,7 +78,6 @@ fun LoginScreen(
     } else {
         stringResource(R.string.authentication_signIn)
     }
-    val dimensions = LocalDimensions.current
 
     WebTrackerScaffold(
         modifier = modifier.fillMaxSize(),
@@ -91,6 +94,7 @@ fun LoginScreen(
             onEmailChange = { email = it },
             onPasswordChange = { password = it },
             dimensions = dimensions,
+            alpha = alpha,
             onButtonClick = {
                 if (!showLoginFields) {
                     showLoginFields = true
@@ -120,6 +124,7 @@ private fun LoginContent(
     onPasswordChange: (String) -> Unit,
     onButtonClick: () -> Unit,
     dimensions: Dimensions,
+    alpha: Alpha
 ) {
     Box(
         modifier = Modifier
@@ -143,7 +148,9 @@ private fun LoginContent(
         }
 
         if (isLoading) {
-            LoadingOverlay()
+            LoadingOverlay(
+                alpha = alpha
+            )
         }
     }
 }
@@ -300,7 +307,7 @@ fun LoginEmailField(
         theme = MainTheme(),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Email,
-            imeAction = ImeAction.Next
+            imeAction = ImeAction.Done
         )
     )
 }
@@ -371,11 +378,13 @@ private fun VersionInfo(
 }
 
 @Composable
-private fun LoadingOverlay() {
+private fun LoadingOverlay(
+    alpha: Alpha
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White.copy(alpha = 0.9f)),
+            .background(Color.White.copy(alpha = alpha.ultraHigh)),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
