@@ -9,7 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.joao.otavio.authentication_presentation.ui.screens.DummyScreen
 import com.joao.otavio.core.util.UiEvent
-import com.joao.otavio.authentication_presentation.ui.screens.LoginScreen
+import com.joao.otavio.authentication_presentation.ui.screens.login.LoginScreen
 import com.joao.otavio.core.navigation.WebTrackerScreens
 
 @Composable

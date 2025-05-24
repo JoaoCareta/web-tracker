@@ -1,4 +1,8 @@
 import dependencies.android.Android
+import dependencies.android.Android.AndroidX.LIFE_CYCLE_VIEW_MODEL
+import dependencies.firebase.Firebase.FIREBASE_AUTHENTICATION
+import dependencies.hilt.DaggerHilt.DAGGER_HILT_ANDROID
+import dependencies.hilt.DaggerHilt.DAGGER_HILT_COMPILER
 import dependencies.modules.Modules.Common.CORE
 import dependencies.modules.Modules.Common.DESIGN_SYSTEM
 import dependencies.projectconfig.ProjectConfig.AUTHENTICATION_PRESENTATION_NAME_SPACE
@@ -10,11 +14,14 @@ import dependencies.projectconfig.ProjectConfig.PROD
 import dependencies.projectconfig.ProjectConfig.RELEASE
 import dependencies.projectconfig.ProjectConfig.STAGING
 import dependencies.projectconfig.ProjectConfig.VERSION
+import dependencies.testing.Testing.COROUTINE_TEST
 
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.dagger.hilt)
     jacoco
 }
 
@@ -89,24 +96,40 @@ android {
 }
 
 dependencies {
-
+    // AndroidX - Core e Lifecycle
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(LIFE_CYCLE_VIEW_MODEL)
+
+    // AndroidX - Compose
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
+    // AndroidX - Testes
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    // Coroutines - Test
+    implementation(COROUTINE_TEST)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+
+    // AndroidX - Debug
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation("com.firebaseui:firebase-ui-auth:9.0.0")
+    // Firebase
+    implementation(FIREBASE_AUTHENTICATION)
+
+    // Dagger Hilt
+    kapt(DAGGER_HILT_COMPILER)
+    implementation(DAGGER_HILT_ANDROID)
 
     // Modules
     implementation(project(DESIGN_SYSTEM))

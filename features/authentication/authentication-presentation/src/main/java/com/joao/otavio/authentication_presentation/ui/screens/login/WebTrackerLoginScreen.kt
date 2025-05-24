@@ -1,4 +1,4 @@
-package com.joao.otavio.authentication_presentation.ui.screens
+package com.joao.otavio.authentication_presentation.ui.screens.login
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility

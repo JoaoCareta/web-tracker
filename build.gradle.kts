@@ -39,6 +39,9 @@ plugins {
     alias(libs.plugins.firebase.app.distribuiton.plugin) apply false
     alias(libs.plugins.crashlytics.plugin) apply false
 
+    // Dagger Hilt
+    alias(libs.plugins.dagger.hilt.android) apply false
+
     // JaCoCo
     jacoco
 }

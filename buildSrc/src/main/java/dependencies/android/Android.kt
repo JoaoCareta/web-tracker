@@ -9,5 +9,8 @@ object Android {
 
         private const val COMPOSE_NAVIGATION_VERSION = "2.9.0"
         const val COMPOSE_NAVIGATION = "androidx.navigation:navigation-compose:$COMPOSE_NAVIGATION_VERSION"
+
+        private const val LIFE_CYCLE_VIEW_MODEL_VERSION = "2.9.0"
+        const val LIFE_CYCLE_VIEW_MODEL = "androidx.lifecycle:lifecycle-viewmodel-ktx:$LIFE_CYCLE_VIEW_MODEL_VERSION"
     }
 }
