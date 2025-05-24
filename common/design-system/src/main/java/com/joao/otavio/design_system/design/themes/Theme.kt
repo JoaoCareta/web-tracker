@@ -69,13 +69,13 @@ fun WebTrackerTheme(
         // Error colors
         error = WebTrackerTheme.error,
         onError = Color.White,
-        errorContainer = WebTrackerTheme.error.copy(alpha = 0.8f),
+        errorContainer = WebTrackerTheme.error.copy(alpha = alpha.extraHigh),
         onErrorContainer = Color.White,
 
         // Other colors
         outline = WebTrackerTheme.outline,
         outlineVariant = WebTrackerTheme.outlineVariant,
-        scrim = Color.Black.copy(alpha = 0.3f)
+        scrim = Color.Black.copy(alpha = alpha.light)
     )
 
     val typography = Typography(

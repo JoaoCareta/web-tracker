@@ -307,7 +307,7 @@ fun LoginEmailField(
         theme = MainTheme(),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Email,
-            imeAction = ImeAction.Next
+            imeAction = ImeAction.Done
         )
     )
 }
