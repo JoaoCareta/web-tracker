@@ -26,6 +26,14 @@ plugins {
     jacoco
 }
 
+sonarqube {
+    properties {
+        property ("sonar.sources", "src/main/java")
+        property ("sonar.tests", "src/test/java")
+        property ("sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/jacocoTestReport-staging-unified/jacocoTestReport-staging-unified.xml")
+    }
+}
+
 android {
     compileSdk = COMPILE_SDK
     namespace = AUTHENTICATION_PRESENTATION_NAME_SPACE
