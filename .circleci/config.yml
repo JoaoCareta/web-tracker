@@ -148,7 +148,6 @@ jobs:
               echo "sonar.coverage.jacoco.xmlReportPaths=$(find . -name 'jacocoTestReport*.xml' -type f | tr '\n' ',')"
               echo "sonar.java.binaries=**/build/intermediates/javac/debug/classes,**/build/tmp/kotlin-classes/debug"
               echo "sonar.java.test.binaries=**/build/intermediates/javac/debugUnitTest/classes,**/build/tmp/kotlin-classes/debugUnitTest"
-              echo "sonar.coverage.exclusions=**/webtracker/MainActivity.kt,**/webtracker/navigation/**,**/webtracker/di/**,**/webtracker/application/**,**/design_system/**,**/core/coroutine/**,**/core/navigation/**,**/core/util/**,**/authentication_presentation/events/**,**/authentication_presentation/state/**,**/authentication_presentation/ui/**,**/*Test*/**,**/androidTest/**/*,**/test/**/*"
               echo "sonar.verbose=true"
             } > sonar-project.properties
             
