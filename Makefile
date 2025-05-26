@@ -19,7 +19,7 @@ build-staging:
 
 # Testes unitários
 test:
-	$(GRADLEW) test
+	$(GRADLEW) testStagingDebugUnitTest
 
 # Relatórios de cobertura
 coverage:
