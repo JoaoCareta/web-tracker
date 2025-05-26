@@ -38,4 +38,18 @@ class WebTrackerLoginViewModelTest {
         advanceUntilIdle()
         assertEquals("Completed", viewModel.dummyActionState.value)
     }
+
+    @Test
+    fun `performAnotherDummyAction should update state to Executing and then Completed`() = runTest {
+        // Initial Assert
+        assertEquals("Idle", viewModel.dummyActionState.value)
+
+        // Test
+        viewModel.performAnotherDummyAction()
+
+        // Assert
+        assertEquals("Executing...", viewModel.dummyActionState.value)
+        advanceUntilIdle()
+        assertEquals("Completed", viewModel.dummyActionState.value)
+    }
 }

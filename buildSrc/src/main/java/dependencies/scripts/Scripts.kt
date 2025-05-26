@@ -15,5 +15,6 @@ object Scripts {
      * Reports Paths
      */
     const val DETEKT_REPORT_PATH = "reports/detekt/merge.xml"
-    const val JACOCO_REPORT_PATH = "reports/jacoco/jacocoTestReport-staging-unified/jacocoTestReport-staging-unified.xml"
+    const val JACOCO_STAGING_UNIFIED_REPORT_PATH = "reports/jacoco/jacocoTestReport-staging-unified/jacocoTestReport-staging-unified.xml"
+    const val JACOCO_STAGING_REPORT_PATH = "reports/jacoco/jacocoTestReportStaging/jacocoTestReportStaging.xml"
 }

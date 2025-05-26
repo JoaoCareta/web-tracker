@@ -1,6 +1,13 @@
 def jacocoTaskName = "jacocoTestReport-staging-unified"
 
 tasks.register(jacocoTaskName, JacocoReport) {
+    doFirst {
+        println("Executing Jacoco for ${project.name}")
+        println("Classes directories: ${classDirectories.files}")
+        println("Source directories: ${sourceDirectories.files}")
+        println("Execution data: ${executionData.files}")
+    }
+
     dependsOn 'testStagingDebugUnitTest'
 
     reports {
