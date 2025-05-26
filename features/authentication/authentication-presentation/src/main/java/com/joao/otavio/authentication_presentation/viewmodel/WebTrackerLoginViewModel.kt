@@ -38,16 +38,6 @@ class WebTrackerLoginViewModel @Inject constructor(
             _dummyActionState.value = "Completed"
         }
     }
-
-    fun performOtherDummyAction() {
-        viewModelScope.launch(coroutineContextProvider.IO) {
-            _dummyActionState.value = "Executing..."
-            println("Executando ação dummy em IO...")
-            delay(DELAY_TIME) // Simula um atraso real
-            println("Ação dummy concluída em IO.")
-            _dummyActionState.value = "Completed"
-        }
-    }
 }
 
 private const val DELAY_TIME = 5000L

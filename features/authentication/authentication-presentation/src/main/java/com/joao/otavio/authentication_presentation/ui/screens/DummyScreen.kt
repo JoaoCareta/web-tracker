@@ -26,12 +26,9 @@ import com.joao.otavio.webtracker.common.desygn.system.R
 
 @Composable
 fun DummyScreen(
-    modifier: Modifier = Modifier,
-    viewModel: WebTrackerLoginViewModel = hiltViewModel()
+    modifier: Modifier = Modifier
 ) {
     val dimensions = LocalDimensions.current
-
-    viewModel.performOtherDummyAction()
     WebTrackerScaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = Color.White
