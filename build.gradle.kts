@@ -4,7 +4,8 @@ import dependencies.scripts.Scripts.DETEKT_PATH
 import dependencies.scripts.Scripts.DETEKT_REPORT_PATH
 import dependencies.scripts.Scripts.JACOCO_CONFIG_PATH
 import dependencies.scripts.Scripts.JACOCO_PATH
-import dependencies.scripts.Scripts.JACOCO_REPORT_PATH
+import dependencies.scripts.Scripts.JACOCO_STAGING_REPORT_PATH
+import dependencies.scripts.Scripts.JACOCO_STAGING_UNIFIED_REPORT_PATH
 import dependencies.scripts.Scripts.JACOCO_VERSION
 import dependencies.scripts.Scripts.SONAR_PATH
 import dependencies.tasks.Tasks.COLLECT_JACOCO_REPORTS
@@ -129,7 +130,12 @@ allprojects {
 
         doLast {
             val reportPaths = androidProjects
-                .map { subproject -> "${subproject.buildDir}/$JACOCO_REPORT_PATH" }
+                .flatMap { subproject ->
+                    listOf(
+                        "${subproject.buildDir}/$JACOCO_STAGING_UNIFIED_REPORT_PATH",
+                        "${subproject.buildDir}/$JACOCO_STAGING_REPORT_PATH"
+                    )
+                }
                 .filter { File(it).exists() }
 
             if (reportPaths.isNotEmpty()) {
