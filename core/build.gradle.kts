@@ -1,4 +1,5 @@
 import dependencies.android.Android
+import dependencies.android.Android.AndroidX.DATA_STORE
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_ANDROID
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_COMPILER
 import dependencies.projectconfig.ProjectConfig.COMPILE_SDK
@@ -99,6 +100,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation (DATA_STORE)
 
     // Coroutines
     implementation(COROUTINE_TEST)
