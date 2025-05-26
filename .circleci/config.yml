@@ -138,14 +138,19 @@ jobs:
             mkdir -p coverage-reports
             cp $(find . -name "jacocoTestReport*.xml") coverage-reports/ || echo "No coverage reports found"
       - run:
-          name: Verify Sonar Configuration
+          name: Verify Sonar Environment
           command: |
-            echo "Verifying sonar-project.properties exists:"
+            echo "Checking Sonar environment variables:"
+            if [ -z "$SONAR_TOKEN" ]; then
+              echo "Error: SONAR_TOKEN is not set"
+              exit 1
+            fi
+            
+            echo "Verifying sonar-project.properties:"
             ls -la sonar-project.properties
-            echo "Current sonar-project.properties content:"
-            cat sonar-project.properties
             echo "Setting file permissions:"
             chmod 644 sonar-project.properties
+      - sonarcloud/scan
       - store_artifacts:
           path: app/build/reports/jacoco/jacocoTestReport-staging-unified/html
           destination: reports/coverage
@@ -155,7 +160,6 @@ jobs:
       - store_test_results:
           path: build/test-results
       - android/save-gradle-cache
-      - sonarcloud/scan
 
   # Deployment
   deploy-qa:
