@@ -368,6 +368,7 @@ naming:
       - 'macosX64'
       - 'mingwX64'
       - 'linuxX64'
+    excludes: ['**/DataStoreWebTracker.kt']
   MemberNameEqualsClassName:
     active: true
     ignoreOverridden: true

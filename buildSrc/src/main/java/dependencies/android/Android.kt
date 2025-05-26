@@ -12,5 +12,8 @@ object Android {
 
         private const val LIFE_CYCLE_VIEW_MODEL_VERSION = "2.9.0"
         const val LIFE_CYCLE_VIEW_MODEL = "androidx.lifecycle:lifecycle-viewmodel-ktx:$LIFE_CYCLE_VIEW_MODEL_VERSION"
+
+        private const val DATA_STORE_VERSION = "1.1.7"
+        const val DATA_STORE = "androidx.datastore:datastore-preferences:$DATA_STORE_VERSION"
     }
 }

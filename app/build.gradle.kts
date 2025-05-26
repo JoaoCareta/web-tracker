@@ -1,4 +1,5 @@
 import dependencies.android.Android.AndroidX.COMPOSE_NAVIGATION
+import dependencies.android.Android.AndroidX.DATA_STORE
 import dependencies.firebase.Firebase.FIREBASE_ANALYTICS
 import dependencies.firebase.Firebase.FIREBASE_CRASHLYTICS
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_ANDROID
@@ -166,6 +167,7 @@ dependencies {
     // AndroidX - Core e Lifecycle
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation (DATA_STORE)
 
     // AndroidX - Compose
     implementation(libs.androidx.activity.compose)
