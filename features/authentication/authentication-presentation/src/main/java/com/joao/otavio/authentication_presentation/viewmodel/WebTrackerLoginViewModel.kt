@@ -18,6 +18,10 @@ class WebTrackerLoginViewModel @Inject constructor(
     private val _dummyActionState = MutableStateFlow<String>("Idle")
     val dummyActionState: StateFlow<String> = _dummyActionState
 
+    init {
+        performOtherDummyAction()
+    }
+
     fun performDummyAction() {
         viewModelScope.launch(coroutineContextProvider.IO) {
             _dummyActionState.value = "Executing..."
@@ -29,6 +33,16 @@ class WebTrackerLoginViewModel @Inject constructor(
     }
 
     fun performAnotherDummyAction() {
+        viewModelScope.launch(coroutineContextProvider.IO) {
+            _dummyActionState.value = "Executing..."
+            println("Executando ação dummy em IO...")
+            delay(DELAY_TIME) // Simula um atraso real
+            println("Ação dummy concluída em IO.")
+            _dummyActionState.value = "Completed"
+        }
+    }
+
+    fun performOtherDummyAction() {
         viewModelScope.launch(coroutineContextProvider.IO) {
             _dummyActionState.value = "Executing..."
             println("Executando ação dummy em IO...")

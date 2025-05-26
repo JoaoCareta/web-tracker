@@ -88,8 +88,8 @@ sonarqube {
         property "sonar.java.coveragePlugin", "jacoco"
         property "sonar.coverage.jacoco.xmlReportPaths", [
                 "**/*jacocoTestReport*.xml",
-                "**/build/reports/jacoco/jacocoTestReportStaging/jacocoTestReportStaging.xml",
-                "**/build/reports/jacoco/jacocoTestReport-staging-unified/jacocoTestReport-staging-unified.xml"
+                "**/build/reports/jacoco/jacocoTestReport-staging-unified/jacocoTestReport-staging-unified.xml",
+                "**/build/reports/jacoco/**/jacocoTestReport*.xml"
         ]
     }
 }
