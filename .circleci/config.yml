@@ -98,7 +98,6 @@ commands:
 
 # ----------------------------
 # Jobs Section
-# (Altere os nomes dos jobs abaixo se desejar: build-and-detekt, test-and-sonar, deploy-qa)
 # ----------------------------
 jobs:
   # Debug Environment
@@ -115,32 +114,6 @@ jobs:
             echo "Directory structure:"
             ls -R
 
-  # Build and Static Analysis
-  build-and-detekt:
-    <<: *android_config
-    steps:
-      - set-android-java-version
-      - checkout
-      - android/restore-gradle-cache
-      - setup-keystore
-      - optimize-gradle-build
-      - run:
-          name: Set Gradlew Permissions
-          command: make permissions
-      - run:
-          name: Clean Project
-          command: make clean
-      - run:
-          name: Run Detekt
-          command: make detekt
-      - run:
-          name: Build Staging
-          command: make build-staging
-      - store_artifacts:
-          path: build/reports/detekt
-          destination: reports/detekt
-      - android/save-gradle-cache
-
   # Tests and Code Quality
   test-and-sonar:
     <<: *android_config
@@ -150,9 +123,6 @@ jobs:
       - android/restore-gradle-cache
       - setup-keystore
       - optimize-gradle-build
-      - run:
-          name: Clean Project
-          command: make clean
       - run:
           name: Run Tests
           command: make test
@@ -201,15 +171,10 @@ workflows:
       # Debug Environment
       - debug-environment
 
-      # Build and Analysis
-      - build-and-detekt:
-          requires:
-            - debug-environment
-
       # Tests and Quality Gate
       - test-and-sonar:
           requires:
-            - build-and-detekt
+            - debug-environment
 
       # Deploy to QA
       - deploy-qa:
