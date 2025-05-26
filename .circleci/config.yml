@@ -201,7 +201,7 @@ jobs:
                 **/common/design-system/**,\
                 **/authentication/authentication-presentation/**/events/**,\
                 **/authentication/authentication-presentation/**/state/**,\
-                **/authentication/authentication-presentation/**/ui/**,\
+                **/authentication/authentication-presentation/ui/**,\
                 **/core/navigation/**,\
                 **/core/util/**,\
                 **/webtracker/navigation/**,\
