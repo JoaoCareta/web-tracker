@@ -138,6 +138,7 @@ allprojects {
                 .filter { File(it).exists() }
 
             if (reportPaths.isNotEmpty()) {
+                println(reportPaths)
                 sonarqube {
                     properties {
                         property(SONAR_QUBE_COVERAGE_PROPERTY, reportPaths.joinToString(","))
