@@ -142,75 +142,14 @@ jobs:
           name: Configure Sonar Properties
           command: |
             {
-              # Configurações básicas do projeto
-              echo "sonar.projectKey=JoaoCareta_web-tracker"
-              echo "sonar.organization=web-tracker"
-              echo "sonar.verbose=true"
-              echo "sonar.gradle.skipCompile=true"
-            
-              # Configurações de fonte e testes
-              echo "sonar.sources=app/src/main/java"
-              echo "sonar.tests=app/src/main/java"
-              echo "sonar.test.inclusions=**/*Test*/**"
-              echo "sonar.java.source=17"
-              echo "sonar.sourceEncoding=UTF-8"
-            
-              # Configurações de cobertura e relatórios
+              echo "sonar.projectKey=${SONAR_PROJECT_KEY}"
+              echo "sonar.organization=${SONAR_ORGANIZATION}"
+              echo "sonar.host.url=https://sonarcloud.io"
               echo "sonar.coverage.jacoco.xmlReportPaths=$(find . -name 'jacocoTestReport*.xml' -type f | tr '\n' ',')"
-              echo "sonar.junit.reportPaths=**/build/test-results/test*UnitTest"
-              echo "sonar.java.coveragePlugin=jacoco"
-              echo "sonar.android.lint.report=app/build/reports/detekt/merge.xml"
-            
-              # Configurações de binários
               echo "sonar.java.binaries=**/build/intermediates/javac/debug/classes,**/build/tmp/kotlin-classes/debug"
               echo "sonar.java.test.binaries=**/build/intermediates/javac/debugUnitTest/classes,**/build/tmp/kotlin-classes/debugUnitTest"
-            
-              # Exclusões de cobertura
-              echo "sonar.coverage.exclusions=\
-                **/*Application.kt,\
-                **/WebTrackerApplication.kt,\
-                **/*Activity.kt,\
-                **/*Dialog.kt,\
-                **/*Adapter.kt,\
-                **/*Delegate.kt,\
-                **/App.kt,\
-                **/*Extensions.kt,\
-                **/*Extension.kt,\
-                **/converters/**,\
-                **/*Constants.kt,\
-                **/*DataSource.kt,\
-                **/*Module.kt,\
-                common/metadata-db/**,\
-                **/*Injection.kt,\
-                **/*FlagsImpl.kt,\
-                **/*DataHolder.kt,\
-                **/DialogTemplates.kt,\
-                **/*Dto.kt,\
-                **/*Screen.kt,\
-                **/model/**,\
-                **/models/**,\
-                **/*View.kt,\
-                **/*Layout.kt,\
-                **/viewholders/**,\
-                **/screens/**,\
-                **/migrations/**,\
-                **/*DAO.kt,\
-                **/RawTrackingDataReader.kt,\
-                **/ui/components/**,\
-                **/ui/**,\
-                **/common/design-system/**,\
-                **/core/navigation/**,\
-                **/core/util/**,\
-                **/webtracker/navigation/**,\
-                **/webtracker/di/**,\
-                **/webtracker/application/**"
-            
-              # Configurações adicionais
-              echo "sonar.report.export.path=sonar-report.json"
-              echo "sonar.issuesReport.json.enable=true"
-              echo "sonar.import_unknown_files=true"
-              echo "sonar.host.url=https://sonarcloud.io"
-            
+              echo "sonar.coverage.exclusions=**/webtracker/MainActivity.kt,**/webtracker/navigation/**,**/webtracker/di/**,**/webtracker/application/**,**/design_system/**,**/core/coroutine/**,**/core/navigation/**,**/core/util/**,**/authentication_presentation/events/**,**/authentication_presentation/state/**,**/authentication_presentation/ui/**,**/*Test*/**,**/androidTest/**/*,**/test/**/*"
+              echo "sonar.verbose=true"
             } > sonar-project.properties
             
             echo "Generated sonar-project.properties:"
