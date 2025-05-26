@@ -87,9 +87,7 @@ sonarqube {
         property "sonar.android.lint.report", "./build/outputs/lint-results.xml"
         property "sonar.java.coveragePlugin", "jacoco"
         property "sonar.coverage.jacoco.xmlReportPaths", [
-                "**/*jacocoTestReport*.xml",
                 "**/build/reports/jacoco/jacocoTestReport-staging-unified/jacocoTestReport-staging-unified.xml",
-                "**/build/reports/jacoco/**/jacocoTestReport*.xml"
         ]
     }
 }
