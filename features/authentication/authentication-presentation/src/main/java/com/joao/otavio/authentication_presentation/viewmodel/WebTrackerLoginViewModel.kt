@@ -18,9 +18,6 @@ class WebTrackerLoginViewModel @Inject constructor(
     private val _dummyActionState = MutableStateFlow<String>("Idle")
     val dummyActionState: StateFlow<String> = _dummyActionState
 
-    init {
-        performOtherDummyAction()
-    }
 
     fun performDummyAction() {
         viewModelScope.launch(coroutineContextProvider.IO) {
