@@ -133,7 +133,6 @@ allprojects {
                 .flatMap { subproject ->
                     listOf(
                         "${subproject.buildDir}/$JACOCO_STAGING_UNIFIED_REPORT_PATH",
-                        "${subproject.buildDir}/$JACOCO_STAGING_REPORT_PATH"
                     )
                 }
                 .filter { File(it).exists() }
