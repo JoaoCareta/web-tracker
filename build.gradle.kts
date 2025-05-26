@@ -150,6 +150,6 @@ allprojects {
 
 
     tasks.withType<SonarTask> {
-        dependsOn(COLLECT_JACOCO_REPORTS)
+        dependsOn(COLLECT_JACOCO_REPORTS, TEST_STAGING_DEBUG_UNIT_TEST, JACOCO_TEST_REPORT_STAGING_UNIFIED)
     }
 }

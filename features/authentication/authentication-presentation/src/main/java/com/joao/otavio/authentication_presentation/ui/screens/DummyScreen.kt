@@ -16,6 +16,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.joao.otavio.authentication_presentation.viewmodel.WebTrackerLoginViewModel
 import com.joao.otavio.design_system.design.themes.MainTheme
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
@@ -26,9 +27,11 @@ import com.joao.otavio.webtracker.common.desygn.system.R
 @Composable
 fun DummyScreen(
     modifier: Modifier = Modifier,
+    viewModel: WebTrackerLoginViewModel = hiltViewModel()
 ) {
     val dimensions = LocalDimensions.current
 
+    viewModel.performOtherDummyAction()
     WebTrackerScaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = Color.White
