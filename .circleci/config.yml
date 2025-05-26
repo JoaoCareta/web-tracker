@@ -129,7 +129,6 @@ jobs:
       - run:
           name: Generate Coverage Reports
           command: make coverage
-      - sonarcloud/scan
       - store_artifacts:
           path: app/build/reports/jacoco/jacocoTestReport-staging-unified/html
           destination: reports/coverage
@@ -139,6 +138,7 @@ jobs:
       - store_test_results:
           path: build/test-results
       - android/save-gradle-cache
+      - sonarcloud/scan
 
   # Deployment
   deploy-qa:
