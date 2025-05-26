@@ -3,6 +3,7 @@ import dependencies.android.Android.AndroidX.LIFE_CYCLE_VIEW_MODEL
 import dependencies.firebase.Firebase.FIREBASE_AUTHENTICATION
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_ANDROID
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_COMPILER
+import dependencies.hilt.DaggerHilt.DAGGER_HILT_VIEWMODEL
 import dependencies.modules.Modules.Common.CORE
 import dependencies.modules.Modules.Common.DESIGN_SYSTEM
 import dependencies.projectconfig.ProjectConfig.AUTHENTICATION_PRESENTATION_NAME_SPACE
@@ -118,7 +119,7 @@ dependencies {
 
     // Coroutines - Test
     implementation(COROUTINE_TEST)
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+    testImplementation(COROUTINE_TEST)
 
     // AndroidX - Debug
     debugImplementation(libs.androidx.ui.tooling)
@@ -130,6 +131,7 @@ dependencies {
     // Dagger Hilt
     kapt(DAGGER_HILT_COMPILER)
     implementation(DAGGER_HILT_ANDROID)
+    implementation(DAGGER_HILT_VIEWMODEL)
 
     // Modules
     implementation(project(DESIGN_SYSTEM))
