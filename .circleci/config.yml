@@ -138,7 +138,37 @@ jobs:
             # Criar diretório para relatórios consolidados
             mkdir -p coverage-reports
             cp $(find . -name "jacocoTestReport*.xml") coverage-reports/ || echo "No coverage reports found"
-
+      - run:
+          name: Configure Sonar Properties
+          command: |
+            {
+                echo "sonar.projectKey=${SONAR_PROJECT_KEY}"
+                echo "sonar.organization=${SONAR_ORGANIZATION}"
+                echo "sonar.host.url=https://sonarcloud.io"
+                echo "sonar.coverage.jacoco.xmlReportPaths=$(find . -name 'jacocoTestReport*.xml' -type f | tr '\n' ',')"
+                echo "sonar.java.binaries=**/build/intermediates/javac/debug/classes,**/build/tmp/kotlin-classes/debug"
+                echo "sonar.java.test.binaries=**/build/intermediates/javac/debugUnitTest/classes,**/build/tmp/kotlin-classes/debugUnitTest"
+                echo "sonar.coverage.exclusions=\
+                  **/webtracker/MainActivity.kt,\
+                  **/webtracker/navigation/**,\
+                  **/webtracker/di/**,\
+                  **/webtracker/application/**,\
+                  **/design_system/**,\
+                  **/core/coroutine/**,\
+                  **/core/datastore/**,\
+                  **/core/navigation/**,\
+                  **/core/util/**,\
+                  **/authentication_presentation/events/**,\
+                  **/authentication_presentation/state/**,\
+                  **/authentication_presentation/ui/**,\
+                  **/*Test*/**,\
+                  **/androidTest/**/*,\
+                  **/test/**/*"
+              echo "sonar.verbose=true"
+            } > sonar-project.properties
+            
+            echo "Generated sonar-project.properties:"
+            cat sonar-project.properties
       - store_artifacts:
           path: app/build/reports/jacoco/jacocoTestReport-staging-unified/html
           destination: reports/coverage
