@@ -36,9 +36,10 @@ class FirebaseAuthentication @Inject constructor(
 
     override fun getLoginUserId(): String? {
         return try {
-            val userId = firebaseAuth.currentUser?.uid
-            Log.i(TAG, "Get userId successfully: User $userId")
-            userId
+            firebaseAuth.currentUser?.let { currentUser ->
+                Log.i(TAG, "Get userId successfully: User ${currentUser.uid}")
+                currentUser.uid
+            } ?: run { null }
         } catch (t: Throwable) {
             Log.e(TAG, "Unexpected error during catching userId", t)
             null

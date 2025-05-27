@@ -64,6 +64,29 @@ class FirebaseAuthenticationTest {
     }
 
     @Test
+    fun `given valid credentials when login succeeds but the current user is null then return true`() = runTest {
+        // Mockk
+        val successSlot = slot<OnSuccessListener<AuthResult>>()
+        val failureSlot = slot<OnFailureListener>()
+        val cancelSlot = slot<OnCanceledListener>()
+
+        every { firebaseAuth.signInWithEmailAndPassword(EMAIL, PASSWORD) } returns mockedTask
+        every { mockedTask.addOnSuccessListener(capture(successSlot)) } answers {
+            successSlot.captured.onSuccess(mockedAuthResult)
+            mockedTask
+        }
+        every { mockedTask.addOnFailureListener(capture(failureSlot)) } returns mockedTask
+        every { mockedTask.addOnCanceledListener(capture(cancelSlot)) } returns mockedTask
+        every { mockedAuthResult.user } returns null
+
+        // Run Test
+        val result = firebaseAuthentication.loginUserWithEmailAndPassword(EMAIL, PASSWORD)
+
+        // Assert
+        assertTrue(result)
+    }
+
+    @Test
     fun `given valid credentials when login fails then return false`() = runTest {
         // Mockk
         val successSlot = slot<OnSuccessListener<AuthResult>>()
@@ -132,9 +155,21 @@ class FirebaseAuthenticationTest {
     }
 
     @Test
-    fun `given a logged user, when authentication tries to get the currentUser and ir returns null, then it should return it`() = runTest {
+    fun `given a logged user, when authentication tries to get the currentUser and it returns null, then it should return null`() = runTest {
         // Mockk
         every { firebaseAuth.currentUser?.uid } returns null
+
+        // Run Test
+        val result = firebaseAuthentication.getLoginUserId()
+
+        // Assert
+        assertNull(result)
+    }
+
+    @Test
+    fun `given a logged user, when authentication tries to get the currentUser and it is null, then it should return null`() = runTest {
+        // Mockk
+        every { firebaseAuth.currentUser } returns null
 
         // Run Test
         val result = firebaseAuthentication.getLoginUserId()
