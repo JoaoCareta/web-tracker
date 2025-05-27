@@ -10,11 +10,11 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class CoroutineContextProviderModule {
+fun interface CoroutineContextProviderModule {
 
     @Binds
     @Singleton
-    abstract fun bindsCoroutineContextProvider(
+    fun bindsCoroutineContextProvider(
         webTrackerProvider: WebTrackerContextProvider
     ): CoroutineContextProvider
 }

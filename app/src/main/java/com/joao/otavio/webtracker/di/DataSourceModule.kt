@@ -10,10 +10,10 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class DataSourceModule {
+fun interface DataSourceModule {
     @Binds
     @Singleton
-    abstract fun bindAuthenticationRemoteDataSource(
+    fun bindAuthenticationRemoteDataSource(
         authenticationRemoteDataSourceImpl: AuthenticationRemoteDataSourceImpl
     ) : AuthenticationRemoteDataSource
 }

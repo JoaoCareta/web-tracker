@@ -121,22 +121,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    // AndroidX - Testes
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    testImplementation(MOCKK)
-    androidTestImplementation(MOCKK_ANDROID)
-
     // Coroutines - Test
     implementation(COROUTINE_TEST)
-    testImplementation(COROUTINE_TEST)
-
-    // AndroidX - Debug
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
 
     // Firebase
     implementation(FIREBASE_AUTHENTICATION)
@@ -150,4 +136,19 @@ dependencies {
     implementation(project(AUTHENTICATION_PRESENTATION))
     implementation(project(DESIGN_SYSTEM))
     implementation(project(CORE))
+
+    // AndroidX - Testes
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    testImplementation(MOCKK)
+    androidTestImplementation(MOCKK_ANDROID)
+    // Coroutines - Test
+    testImplementation(COROUTINE_TEST)
+
+    // AndroidX - Debug
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 }
