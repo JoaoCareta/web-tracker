@@ -81,6 +81,14 @@ allprojects {
                     excludes = listOf("jdk.internal.*")
                 }
             }
+
+            tasks.withType<SonarTask> {
+                dependsOn(
+                    tasks.named(COLLECT_JACOCO_REPORTS),
+                    tasks.named(TEST_STAGING_DEBUG_UNIT_TEST),
+                    tasks.named(JACOCO_TEST_REPORT_STAGING_UNIFIED)
+                )
+            }
         }
     }
 
@@ -146,10 +154,5 @@ allprojects {
                 }
             }
         }
-    }
-
-
-    tasks.withType<SonarTask> {
-        dependsOn(COLLECT_JACOCO_REPORTS, TEST_STAGING_DEBUG_UNIT_TEST, JACOCO_TEST_REPORT_STAGING_UNIFIED)
     }
 }
