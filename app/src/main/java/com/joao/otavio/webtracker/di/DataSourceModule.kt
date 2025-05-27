@@ -4,9 +4,11 @@ import com.joao.otavio.authentication_domain.datasource.AuthenticationRemoteData
 import com.joao.otavio.authentication_presentation.datasource.AuthenticationRemoteDataSource
 import dagger.Binds
 import dagger.Module
+import dagger.hilt.InstallIn
 import javax.inject.Singleton
 
 @Module
+@InstallIn
 abstract class DataSourceModule {
     @Binds
     @Singleton
