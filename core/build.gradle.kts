@@ -102,8 +102,16 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation (DATA_STORE)
 
-    // Coroutines
+    // AndroidX - Testes
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    // Coroutines - Test
     implementation(COROUTINE_TEST)
+    testImplementation(COROUTINE_TEST)
 
     // Dagger Hilt
     kapt(DAGGER_HILT_COMPILER)
