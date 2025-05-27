@@ -1,9 +1,11 @@
 import dependencies.android.Android.AndroidX.COMPOSE_NAVIGATION
 import dependencies.android.Android.AndroidX.DATA_STORE
 import dependencies.firebase.Firebase.FIREBASE_ANALYTICS
+import dependencies.firebase.Firebase.FIREBASE_AUTHENTICATION
 import dependencies.firebase.Firebase.FIREBASE_CRASHLYTICS
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_ANDROID
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_COMPILER
+import dependencies.modules.Modules.Common.AUTHENTICATION_DOMAIN
 import dependencies.modules.Modules.Common.AUTHENTICATION_PRESENTATION
 import dependencies.modules.Modules.Common.CORE
 import dependencies.modules.Modules.Common.DESIGN_SYSTEM
@@ -176,6 +178,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.firebase.firestore.ktx)
 
     // AndroidX - Testes
     testImplementation(libs.junit)
@@ -195,6 +198,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(FIREBASE_CRASHLYTICS)
     implementation(FIREBASE_ANALYTICS)
+    implementation(FIREBASE_AUTHENTICATION)
 
     // Hilt
     kapt(DAGGER_HILT_COMPILER)
@@ -203,5 +207,6 @@ dependencies {
     // Modules
     implementation(project(DESIGN_SYSTEM))
     implementation(project(AUTHENTICATION_PRESENTATION))
+    implementation(project(AUTHENTICATION_DOMAIN))
     implementation(project(CORE))
 }

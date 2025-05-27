@@ -4,9 +4,9 @@ import dependencies.firebase.Firebase.FIREBASE_AUTHENTICATION
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_ANDROID
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_COMPILER
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_VIEWMODEL
+import dependencies.modules.Modules.Common.AUTHENTICATION_PRESENTATION
 import dependencies.modules.Modules.Common.CORE
 import dependencies.modules.Modules.Common.DESIGN_SYSTEM
-import dependencies.projectconfig.ProjectConfig.AUTHENTICATION_DOMAIN_NAME_SPACE
 import dependencies.projectconfig.ProjectConfig.AUTHENTICATION_PRESENTATION_NAME_SPACE
 import dependencies.projectconfig.ProjectConfig.COMPILE_SDK
 import dependencies.projectconfig.ProjectConfig.DEBUG
@@ -17,6 +17,8 @@ import dependencies.projectconfig.ProjectConfig.RELEASE
 import dependencies.projectconfig.ProjectConfig.STAGING
 import dependencies.projectconfig.ProjectConfig.VERSION
 import dependencies.testing.Testing.COROUTINE_TEST
+import dependencies.testing.Testing.MOCKK
+import dependencies.testing.Testing.MOCKK_ANDROID
 
 plugins {
     alias(libs.plugins.android.library)
@@ -37,7 +39,7 @@ sonarqube {
 
 android {
     compileSdk = COMPILE_SDK
-    namespace = AUTHENTICATION_DOMAIN_NAME_SPACE
+    namespace = AUTHENTICATION_PRESENTATION_NAME_SPACE
 
     defaultConfig {
         minSdk = MIN_SDK
@@ -125,6 +127,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    testImplementation(MOCKK)
+    androidTestImplementation(MOCKK_ANDROID)
 
     // Coroutines - Test
     implementation(COROUTINE_TEST)
@@ -143,6 +147,7 @@ dependencies {
     implementation(DAGGER_HILT_VIEWMODEL)
 
     // Modules
+    implementation(project(AUTHENTICATION_PRESENTATION))
     implementation(project(DESIGN_SYSTEM))
     implementation(project(CORE))
 }
