@@ -1,9 +1,11 @@
 import dependencies.android.Android.AndroidX.COMPOSE_NAVIGATION
 import dependencies.android.Android.AndroidX.DATA_STORE
 import dependencies.firebase.Firebase.FIREBASE_ANALYTICS
+import dependencies.firebase.Firebase.FIREBASE_AUTHENTICATION
 import dependencies.firebase.Firebase.FIREBASE_CRASHLYTICS
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_ANDROID
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_COMPILER
+import dependencies.modules.Modules.Common.AUTHENTICATION_DOMAIN
 import dependencies.modules.Modules.Common.AUTHENTICATION_PRESENTATION
 import dependencies.modules.Modules.Common.CORE
 import dependencies.modules.Modules.Common.DESIGN_SYSTEM
@@ -177,6 +179,26 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
+    // Navegação com Compose
+    implementation(COMPOSE_NAVIGATION)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.firestore.ktx)
+    implementation(FIREBASE_CRASHLYTICS)
+    implementation(FIREBASE_ANALYTICS)
+    implementation(FIREBASE_AUTHENTICATION)
+
+    // Hilt
+    kapt(DAGGER_HILT_COMPILER)
+    implementation(DAGGER_HILT_ANDROID)
+
+    // Modules
+    implementation(project(DESIGN_SYSTEM))
+    implementation(project(AUTHENTICATION_PRESENTATION))
+    implementation(project(AUTHENTICATION_DOMAIN))
+    implementation(project(CORE))
+
     // AndroidX - Testes
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -187,21 +209,4 @@ dependencies {
     // AndroidX - Debug
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-    // Navegação com Compose
-    implementation(COMPOSE_NAVIGATION)
-
-    // Firebase
-    implementation(platform(libs.firebase.bom))
-    implementation(FIREBASE_CRASHLYTICS)
-    implementation(FIREBASE_ANALYTICS)
-
-    // Hilt
-    kapt(DAGGER_HILT_COMPILER)
-    implementation(DAGGER_HILT_ANDROID)
-
-    // Modules
-    implementation(project(DESIGN_SYSTEM))
-    implementation(project(AUTHENTICATION_PRESENTATION))
-    implementation(project(CORE))
 }

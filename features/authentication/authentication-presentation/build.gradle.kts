@@ -6,6 +6,7 @@ import dependencies.hilt.DaggerHilt.DAGGER_HILT_COMPILER
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_VIEWMODEL
 import dependencies.modules.Modules.Common.CORE
 import dependencies.modules.Modules.Common.DESIGN_SYSTEM
+import dependencies.projectconfig.ProjectConfig.AUTHENTICATION_DOMAIN_NAME_SPACE
 import dependencies.projectconfig.ProjectConfig.AUTHENTICATION_PRESENTATION_NAME_SPACE
 import dependencies.projectconfig.ProjectConfig.COMPILE_SDK
 import dependencies.projectconfig.ProjectConfig.DEBUG
@@ -36,7 +37,7 @@ sonarqube {
 
 android {
     compileSdk = COMPILE_SDK
-    namespace = AUTHENTICATION_PRESENTATION_NAME_SPACE
+    namespace = AUTHENTICATION_DOMAIN_NAME_SPACE
 
     defaultConfig {
         minSdk = MIN_SDK
@@ -118,20 +119,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    // AndroidX - Testes
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-
-    // Coroutines - Test
+    // Coroutines
     implementation(COROUTINE_TEST)
-    testImplementation(COROUTINE_TEST)
-
-    // AndroidX - Debug
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
 
     // Firebase
     implementation(FIREBASE_AUTHENTICATION)
@@ -144,4 +133,17 @@ dependencies {
     // Modules
     implementation(project(DESIGN_SYSTEM))
     implementation(project(CORE))
+
+    // AndroidX - Testes
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    // Coroutines - Test
+    testImplementation(COROUTINE_TEST)
+
+    // AndroidX - Debug
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 }

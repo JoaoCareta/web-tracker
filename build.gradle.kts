@@ -48,12 +48,23 @@ plugins {
 }
 
 allprojects {
+    sonar {
+        properties {
+            property("sonar.projectKey", System.getenv("SONAR_PROJECT_KEY"))
+            property("sonar.organization", System.getenv("SONAR_ORGANIZATION"))
+            property("sonar.sourceEncoding", "UTF-8")
+            property("sonar.host.url", "https://sonarcloud.io")
+            property("sonar.token", System.getenv("SONAR_TOKEN"))
+            property("sonar.gradle.skipCompile", true)
+        }
+    }
     afterEvaluate {
         /**
          * Verificar se é um módulo Android antes de aplicar as configurações
          */
         if (plugins.hasPlugin(ANDROID_APPLICATION) ||
-            plugins.hasPlugin(ANDROID_LIBRARY)) {
+            plugins.hasPlugin(ANDROID_LIBRARY)
+        ) {
 
             /**
              * Aplicar Detekt
@@ -80,6 +91,14 @@ allprojects {
                     isIncludeNoLocationClasses = true
                     excludes = listOf("jdk.internal.*")
                 }
+            }
+
+            tasks.withType<SonarTask> {
+                dependsOn(
+                    tasks.named(COLLECT_JACOCO_REPORTS),
+                    tasks.named(TEST_STAGING_DEBUG_UNIT_TEST),
+                    tasks.named(JACOCO_TEST_REPORT_STAGING_UNIFIED)
+                )
             }
         }
     }
@@ -146,10 +165,5 @@ allprojects {
                 }
             }
         }
-    }
-
-
-    tasks.withType<SonarTask> {
-        dependsOn(COLLECT_JACOCO_REPORTS, TEST_STAGING_DEBUG_UNIT_TEST, JACOCO_TEST_REPORT_STAGING_UNIFIED)
     }
 }

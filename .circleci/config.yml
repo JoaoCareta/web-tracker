@@ -5,7 +5,6 @@ version: 2.1
 # ----------------------------
 orbs:
   android: circleci/android@2.3.0
-  sonarcloud: sonarsource/sonarcloud@2.0.0
 
 # ----------------------------
 # Executors Section
@@ -52,23 +51,23 @@ commands:
           command: |
             # Mostra o diretório de trabalho
             echo "Working directory: $PWD"
-            
+
             # Cria um diretório temporário para a keystore
             mkdir -p ${PWD}/app/keystore
-            
+
             # Define o caminho completo da keystore
             KEYSTORE_PATH="${PWD}/app/keystore/release.keystore"
             echo "Keystore path: $KEYSTORE_PATH"
-            
+
             # Verifica se a variável ENCODED_KEYSTORE existe
             if [ -z "$ENCODED_KEYSTORE" ]; then
               echo "ERROR: ENCODED_KEYSTORE is empty or not set"
               exit 1
             fi
-            
+
             # Decodifica a keystore
             echo $ENCODED_KEYSTORE | base64 -d > $KEYSTORE_PATH
-            
+
             # Verifica se o arquivo foi criado e seu tamanho
             if [ -f "$KEYSTORE_PATH" ]; then
               echo "Keystore created successfully"
@@ -78,7 +77,7 @@ commands:
               echo "ERROR: Failed to create keystore file"
               exit 1
             fi
-            
+
             # Ajusta as permissões
             chmod 600 $KEYSTORE_PATH
 
@@ -131,43 +130,16 @@ jobs:
           command: |
             echo "Generating coverage reports..."
             make coverage
-            
+
             echo "Checking generated reports..."
             find . -name "jacocoTestReport*.xml" -type f -exec echo "=== {} ===" \; -exec cat {} \;
-            
+
             # Criar diretório para relatórios consolidados
             mkdir -p coverage-reports
             cp $(find . -name "jacocoTestReport*.xml") coverage-reports/ || echo "No coverage reports found"
       - run:
-          name: Configure Sonar Properties
-          command: |
-            {
-                echo "sonar.projectKey=${SONAR_PROJECT_KEY}"
-                echo "sonar.organization=${SONAR_ORGANIZATION}"
-                echo "sonar.host.url=https://sonarcloud.io"
-                echo "sonar.coverage.jacoco.xmlReportPaths=$(find . -name 'jacocoTestReport*.xml' -type f | tr '\n' ',')"
-                echo "sonar.java.binaries=**/build/intermediates/javac/debug/classes,**/build/tmp/kotlin-classes/debug"
-                echo "sonar.java.test.binaries=**/build/intermediates/javac/debugUnitTest/classes,**/build/tmp/kotlin-classes/debugUnitTest"
-                echo "sonar.coverage.exclusions=\
-                  **/webtracker/MainActivity.kt,\
-                  **/webtracker/navigation/**,\
-                  **/webtracker/di/**,\
-                  **/webtracker/application/**,\
-                  **/design_system/**,\
-                  **/core/coroutine/**,\
-                  **/core/navigation/**,\
-                  **/core/util/**,\
-                  **/authentication_presentation/events/**,\
-                  **/authentication_presentation/state/**,\
-                  **/authentication_presentation/ui/**,\
-                  **/*Test*/**,\
-                  **/androidTest/**/*,\
-                  **/test/**/*"
-              echo "sonar.verbose=true"
-            } > sonar-project.properties
-            
-            echo "Generated sonar-project.properties:"
-            cat sonar-project.properties
+          name: Execute SonarQube Scanner
+          command: ./gradlew sonarqube -Dsonar.login="$SONAR_TOKEN"
       - store_artifacts:
           path: app/build/reports/jacoco/jacocoTestReport-staging-unified/html
           destination: reports/coverage
@@ -177,7 +149,6 @@ jobs:
       - store_test_results:
           path: build/test-results
       - android/save-gradle-cache
-      - sonarcloud/scan
 
   # Deployment
   deploy-qa:
