@@ -1,4 +1,4 @@
-package com.joao.otavio.authentication_domain.firebase
+package com.joao.otavio.authentication_domain.authentication
 
 import android.util.Log
 import com.google.android.gms.tasks.Task
@@ -18,6 +18,8 @@ import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnCanceledListener
 import io.mockk.slot
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertNull
 
 class FirebaseAuthenticationTest {
     private val firebaseAuth: FirebaseAuth = mockk()
@@ -117,8 +119,45 @@ class FirebaseAuthenticationTest {
         assertFalse(result)
     }
 
+    @Test
+    fun `given a logged user, when authentication tries to get the currentUser and everything went well, then it should return it`() = runTest {
+        // Mockk
+        every { firebaseAuth.currentUser?.uid } returns USER_ID
+
+        // Run Test
+        val result = firebaseAuthentication.getLoginUserId()
+
+        // Assert
+        assertEquals(result, USER_ID)
+    }
+
+    @Test
+    fun `given a logged user, when authentication tries to get the currentUser and ir returns null, then it should return it`() = runTest {
+        // Mockk
+        every { firebaseAuth.currentUser?.uid } returns null
+
+        // Run Test
+        val result = firebaseAuthentication.getLoginUserId()
+
+        // Assert
+        assertNull(result)
+    }
+
+    @Test
+    fun `given a logged user, when authentication tries to get the currentUser and throws and exception, then it should return null`() = runTest {
+        // Mockk
+        every { firebaseAuth.currentUser?.uid } throws Exception()
+
+        // Run Test
+        val result = firebaseAuthentication.getLoginUserId()
+
+        // Assert
+        assertNull(result)
+    }
+
     companion object {
         const val EMAIL = "test@test.com"
         const val PASSWORD = "123456"
+        const val USER_ID = "user_id"
     }
 }

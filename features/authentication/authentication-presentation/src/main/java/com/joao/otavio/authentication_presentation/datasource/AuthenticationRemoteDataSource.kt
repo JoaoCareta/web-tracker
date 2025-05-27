@@ -1,5 +1,6 @@
 package com.joao.otavio.authentication_presentation.datasource
 
-fun interface AuthenticationRemoteDataSource {
+interface AuthenticationRemoteDataSource {
     suspend fun authenticateUser(userEmail: String, userPassword: String): Boolean
+    fun getLoginUserId(): String?
 }

@@ -1,7 +1,8 @@
-package com.joao.otavio.authentication_domain.firebase
+package com.joao.otavio.authentication_domain.authentication
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.joao.otavio.authentication_presentation.authentication.Authentication
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
@@ -9,8 +10,8 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 class FirebaseAuthentication @Inject constructor(
     private val firebaseAuth: FirebaseAuth
-) {
-    suspend fun loginUserWithEmailAndPassword(userEmail: String, userPassword: String): Boolean {
+) : Authentication {
+    override suspend fun loginUserWithEmailAndPassword(userEmail: String, userPassword: String): Boolean {
         return suspendCancellableCoroutine { continuation ->
             try {
                 firebaseAuth.signInWithEmailAndPassword(userEmail, userPassword)
@@ -30,6 +31,17 @@ class FirebaseAuthentication @Inject constructor(
                 Log.e(TAG, "Unexpected error during login", t)
                 continuation.resume(false, onCancellation = null)
             }
+        }
+    }
+
+    override fun getLoginUserId(): String? {
+        return try {
+            val userId = firebaseAuth.currentUser?.uid
+            Log.i(TAG, "Get userId successfully: User $userId")
+            userId
+        } catch (t: Throwable) {
+            Log.e(TAG, "Unexpected error during catching userId", t)
+            null
         }
     }
 
