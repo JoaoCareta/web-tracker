@@ -12,6 +12,8 @@ import dependencies.projectconfig.ProjectConfig.RELEASE
 import dependencies.projectconfig.ProjectConfig.STAGING
 import dependencies.projectconfig.ProjectConfig.VERSION
 import dependencies.testing.Testing.COROUTINE_TEST
+import dependencies.testing.Testing.MOCKK
+import dependencies.testing.Testing.MOCKK_ANDROID
 
 plugins {
     alias(libs.plugins.android.library)
@@ -115,6 +117,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    testImplementation(MOCKK)
+    androidTestImplementation(MOCKK_ANDROID)
 
     // Coroutines - Test
     testImplementation(COROUTINE_TEST)
