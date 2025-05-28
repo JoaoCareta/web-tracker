@@ -1,4 +1,5 @@
 import dependencies.android.Android
+import dependencies.android.Android.AndroidX.DATA_STORE
 import dependencies.android.Android.AndroidX.LIFE_CYCLE_VIEW_MODEL
 import dependencies.firebase.Firebase.FIREBASE_AUTHENTICATION
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_ANDROID
@@ -120,6 +121,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation (DATA_STORE)
 
     // Coroutines - Test
     implementation(COROUTINE_TEST)
