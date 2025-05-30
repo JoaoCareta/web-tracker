@@ -6,5 +6,7 @@
     <string name="authentication_login">Conectar</string>
     <string name="authentication_email">Email</string>
     <string name="authentication_password">Senha</string>
+    <string name="authentication_cancel">Cancelar</string>
+    <string name="authentication_login_error">Error ao efetuar login. Confira suas credenciais</string>
     <!-- endregion -->
 </resources>

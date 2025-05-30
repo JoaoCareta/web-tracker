@@ -6,7 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import com.joao.otavio.design_system.design.themes.*
 import com.joao.otavio.webtracker.navigation.WebTrackerNavigation
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

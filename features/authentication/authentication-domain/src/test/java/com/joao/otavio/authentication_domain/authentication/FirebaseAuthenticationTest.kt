@@ -1,43 +1,40 @@
 package com.joao.otavio.authentication_domain.authentication
 
-import android.util.Log
+import com.google.android.gms.tasks.OnCanceledListener
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.joao.otavio.core.logger.WebTrackerLogger
 import io.mockk.every
+import io.mockk.justRun
 import io.mockk.mockk
-import org.junit.After
-import org.junit.Before
-import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
-import junit.framework.TestCase.assertFalse
-import junit.framework.TestCase.assertTrue
-import kotlinx.coroutines.test.runTest
-import org.junit.Test
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnCanceledListener
 import io.mockk.slot
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertNull
+import junit.framework.TestCase.assertTrue
+import kotlinx.coroutines.test.runTest
+import org.junit.Before
+import org.junit.Test
 
 class FirebaseAuthenticationTest {
     private val firebaseAuth: FirebaseAuth = mockk()
     private val mockedTask = mockk<Task<AuthResult>>()
     private val mockedAuthResult = mockk<AuthResult>()
-    private val firebaseAuthentication = FirebaseAuthentication(firebaseAuth)
+    private val logger: WebTrackerLogger = mockk()
+    private val firebaseAuthentication = FirebaseAuthentication(
+        firebaseAuth = firebaseAuth,
+        logger = logger
+    )
 
     @Before
     fun setUp() {
-        mockkStatic(Log::class)
-        every { Log.i(any(), any()) } returns 0
-        every { Log.e(any(), any(), any()) } returns 0
-        every { Log.w(any(), any(), any()) } returns 0
-    }
-
-    @After
-    fun tearDown() {
-        unmockkStatic(Log::class)
+        every { logger.getTag() } returns CLASS_NAME
+        justRun { logger.i(any(), any()) }
+        justRun { logger.w(any(), any()) }
+        justRun { logger.e(any(), any(), any()) }
     }
 
     @Test
@@ -194,5 +191,6 @@ class FirebaseAuthenticationTest {
         const val EMAIL = "test@test.com"
         const val PASSWORD = "123456"
         const val USER_ID = "user_id"
+        const val CLASS_NAME = "FirebaseAuthentication"
     }
 }

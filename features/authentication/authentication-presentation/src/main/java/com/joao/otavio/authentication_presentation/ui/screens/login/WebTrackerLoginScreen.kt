@@ -1,5 +1,6 @@
 package com.joao.otavio.authentication_presentation.ui.screens.login
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -8,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,13 +27,11 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,8 +41,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.joao.otavio.authentication_presentation.events.AuthenticationEvents
+import com.joao.otavio.authentication_presentation.state.AuthenticateState
+import com.joao.otavio.authentication_presentation.state.WebTrackerAuthenticationState
+import com.joao.otavio.authentication_presentation.viewmodel.IWebTrackerLoginViewModel
+import com.joao.otavio.authentication_presentation.viewmodel.WebTrackerLoginViewModel
 import com.joao.otavio.core.navigation.WebTrackerScreens
 import com.joao.otavio.core.util.UiEvent
 import com.joao.otavio.design_system.buttons.WebTrackerButton
@@ -54,29 +61,48 @@ import com.joao.otavio.design_system.dimensions.LocalAlpha
 import com.joao.otavio.design_system.dimensions.LocalDimensions
 import com.joao.otavio.design_system.outlinedTextField.WebTrackerOutlinedTextField
 import com.joao.otavio.design_system.scaffold.WebTrackerScaffold
+import com.joao.otavio.design_system.snackbar.WebTrackerSnackBar
 import com.joao.otavio.webtracker.common.desygn.system.R
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 
-const val DELAY_TIME = 3000L
 
 @Composable
 fun LoginScreen(
     version: String,
     onEnterClick: (UiEvent.Navigate) -> Unit,
     modifier: Modifier = Modifier,
+    loginViewModel: IWebTrackerLoginViewModel = hiltViewModel<WebTrackerLoginViewModel>()
 ) {
     val dimensions = LocalDimensions.current
     val alpha = LocalAlpha.current
-    var showLoginFields by remember { mutableStateOf(false) }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var isLoading by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
+    val showLoginFields = loginViewModel.webTrackerAuthenticationState.showLoginFields.collectAsState().value
+    val email = loginViewModel.webTrackerAuthenticationState.userEmail.collectAsState().value
+    val password = loginViewModel.webTrackerAuthenticationState.userPassword.collectAsState().value
+    val isLoading = loginViewModel.webTrackerAuthenticationState.isLoading.collectAsState().value
     val buttonText = if (showLoginFields) {
         stringResource(R.string.authentication_login)
     } else {
         stringResource(R.string.authentication_signIn)
+    }
+    val displaySnackBar = loginViewModel.webTrackerAuthenticationState.displayErrorSnackBar.collectAsState().value
+
+    LaunchedEffect(key1 = true) {
+        loginViewModel.webTrackerAuthenticationState.isAuthenticateSucceed.collectLatest { authenticateState ->
+            when(authenticateState) {
+                AuthenticateState.AUTHENTICATE -> {
+                    onEnterClick.invoke(
+                        UiEvent.Navigate(
+                            route = WebTrackerScreens.Dummy.route,
+                            popUpToRoute = WebTrackerScreens.Login.route,
+                            inclusive = true
+                        )
+                    )
+                }
+                AuthenticateState.ERROR,
+                AuthenticateState.IDLE -> Unit
+            }
+        }
     }
 
     WebTrackerScaffold(
@@ -91,21 +117,29 @@ fun LoginScreen(
             password = password,
             buttonText = buttonText,
             version = version,
-            onEmailChange = { email = it },
-            onPasswordChange = { password = it },
             dimensions = dimensions,
             alpha = alpha,
+            displaySnackBar = displaySnackBar,
+            onEmailChange = { newEmailString ->
+                loginViewModel
+                    .onUiEvents(AuthenticationEvents.OnTypingEmail(newEmailString = newEmailString))
+            },
+            onPasswordChange = { newPasswordString ->
+                loginViewModel
+                    .onUiEvents(AuthenticationEvents.OnTypingPassword(newPasswordString = newPasswordString))
+            },
             onButtonClick = {
                 if (!showLoginFields) {
-                    showLoginFields = true
+                    loginViewModel.onUiEvents(AuthenticationEvents.OnDisplayLoginFieldsClick)
                 } else {
-                    scope.launch {
-                        isLoading = true
-                        delay(DELAY_TIME)
-                        isLoading = false
-                        onEnterClick.invoke(UiEvent.Navigate(WebTrackerScreens.Dummy.route))
-                    }
+                    loginViewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
                 }
+            },
+            onCancelClick = {
+                loginViewModel.onUiEvents(AuthenticationEvents.OnDisplayLoginFieldsClick)
+            },
+            onDismissSnackBar = {
+                loginViewModel.onUiEvents(AuthenticationEvents.OnSnackBarDismiss)
             }
         )
     }
@@ -120,9 +154,12 @@ private fun LoginContent(
     password: String,
     buttonText: String,
     version: String,
+    displaySnackBar: Boolean,
+    onDismissSnackBar: () -> Unit,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onButtonClick: () -> Unit,
+    onCancelClick: () -> Unit,
     dimensions: Dimensions,
     alpha: Alpha
 ) {
@@ -143,7 +180,10 @@ private fun LoginContent(
                 onEmailChange = onEmailChange,
                 onPasswordChange = onPasswordChange,
                 onButtonClick = onButtonClick,
-                dimensions = dimensions
+                onCancelClick = onCancelClick,
+                dimensions = dimensions,
+                displaySnackBar = displaySnackBar,
+                onDismissSnackBar = onDismissSnackBar,
             )
         }
 
@@ -172,10 +212,13 @@ private fun LoginMainContent(
     password: String,
     buttonText: String,
     version: String,
+    displaySnackBar: Boolean,
+    onDismissSnackBar: () -> Unit,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onButtonClick: () -> Unit,
-    dimensions: Dimensions
+    onCancelClick: () -> Unit,
+    dimensions: Dimensions,
 ) {
     Column(
         modifier = Modifier
@@ -190,6 +233,12 @@ private fun LoginMainContent(
 
         Spacer(modifier = Modifier.weight(1f))
 
+        ShowLoginErrorSnackBar(
+            displaySnackBar = displaySnackBar,
+            dimensions = dimensions,
+            onDismissSnackBar = onDismissSnackBar
+        )
+
         LoginFooter(
             showLoginFields = showLoginFields,
             email = email,
@@ -199,8 +248,37 @@ private fun LoginMainContent(
             onEmailChange = onEmailChange,
             onPasswordChange = onPasswordChange,
             onButtonClick = onButtonClick,
-            dimensions = dimensions
+            onCancelClick = onCancelClick,
+            dimensions = dimensions,
         )
+    }
+}
+
+@Composable
+fun ShowLoginErrorSnackBar(
+    displaySnackBar: Boolean,
+    onDismissSnackBar: () -> Unit,
+    dimensions: Dimensions
+) {
+    AnimatedVisibility(
+        visible = displaySnackBar,
+        enter = fadeIn(),
+        exit = fadeOut(),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensions.xSmall),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            WebTrackerSnackBar (
+                visible = true,
+                title = stringResource(R.string.authentication_login_error),
+                iconId = R.drawable.ic_close,
+                duration = SnackbarDuration.Long.ordinal,
+                onDismiss = onDismissSnackBar,
+            )
+        }
     }
 }
 
@@ -228,7 +306,8 @@ private fun LoginFooter(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onButtonClick: () -> Unit,
-    dimensions: Dimensions
+    onCancelClick: () -> Unit,
+    dimensions: Dimensions,
 ) {
 
     Column(
@@ -247,6 +326,13 @@ private fun LoginFooter(
             dimensions = dimensions
         )
 
+        if (showLoginFields) {
+            CancelText(
+                dimensions = dimensions,
+                onCancelClick = onCancelClick
+            )
+        }
+
         LoginButton(
             text = buttonText,
             onClick = onButtonClick,
@@ -258,6 +344,24 @@ private fun LoginFooter(
             dimensions = dimensions
         )
     }
+}
+
+@Composable
+fun CancelText(
+    dimensions: Dimensions,
+    onCancelClick: () -> Unit,
+) {
+    Text(
+        text = stringResource(R.string.authentication_cancel),
+        style = MaterialTheme.typography.displaySmall.copy(
+            textDecoration = TextDecoration.Underline,
+            color = MainTheme().secondary
+        ),
+        modifier = Modifier
+            .clickable { onCancelClick.invoke() }
+            .padding(vertical = dimensions.xxxSmall)
+    )
+    Spacer(modifier = Modifier.height(dimensions.xxxSmall))
 }
 
 @Composable
@@ -327,7 +431,8 @@ fun LoginPasswordField(
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done
         ),
-        visualTransformation = PasswordVisualTransformation()
+        visualTransformation = PasswordVisualTransformation(),
+        useSpacer = false
     )
 }
 
@@ -393,6 +498,7 @@ private fun LoadingOverlay(
     }
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenMainThemePreview() {
@@ -400,10 +506,12 @@ fun LoginScreenMainThemePreview() {
         LoginScreen(
             version = "1.0.8-RC.8",
             onEnterClick = {},
+            loginViewModel = WebTrackerViewModelPreview()
         )
     }
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Preview(
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES
@@ -414,6 +522,22 @@ fun LoginScreenDarkThemePreview() {
         LoginScreen(
             version = "1.0.8-RC.8",
             onEnterClick = {},
+            loginViewModel = WebTrackerViewModelPreview()
         )
+    }
+}
+
+class WebTrackerViewModelPreview : IWebTrackerLoginViewModel() {
+    override val webTrackerAuthenticationState: WebTrackerAuthenticationState
+        get() = WebTrackerAuthenticationState(
+            showLoginFields = MutableStateFlow(true)
+        )
+
+    override fun isUserAlreadyLoggedIn() {
+        // Do nothing
+    }
+
+    override fun onUiEvents(authenticationEvents: AuthenticationEvents) {
+        // Do nothing
     }
 }
