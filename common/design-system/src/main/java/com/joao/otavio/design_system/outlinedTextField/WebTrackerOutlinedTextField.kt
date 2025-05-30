@@ -35,14 +35,20 @@ fun WebTrackerOutlinedTextField(
     theme: WebTrackerTheme = MainTheme(),
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    useSpacer: Boolean = true,
+    maxLength: Int = 64
 ) {
     val dimensions = LocalDimensions.current
     val alpha = LocalAlpha.current
 
     OutlinedTextField(
         value = value,
-        onValueChange = onValueChange,
+        onValueChange = { newValue ->
+            if (newValue.length <= maxLength) {
+                onValueChange.invoke(newValue)
+            }
+        },
         label = {
             Text(
                 text = label,
@@ -73,10 +79,11 @@ fun WebTrackerOutlinedTextField(
             disabledTextColor = theme.secondary.copy(alpha = alpha.medium),
             disabledLeadingIconColor = theme.secondary.copy(alpha = alpha.medium),
             disabledLabelColor = theme.secondary.copy(alpha = alpha.medium)
-        )
+        ),
     )
-
-    Spacer(modifier = Modifier.height(dimensions.small))
+    if (useSpacer) {
+        Spacer(modifier = Modifier.height(dimensions.small))
+    }
 }
 
 @Preview(showBackground = true)

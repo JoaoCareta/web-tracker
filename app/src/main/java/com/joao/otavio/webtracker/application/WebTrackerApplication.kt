@@ -4,7 +4,9 @@ import android.app.Application
 import android.content.res.Configuration
 import com.joao.otavio.design_system.design.themes.AppThemes
 import com.joao.otavio.design_system.design.utils.ThemeUtils
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class WebTrackerApplication : Application() {
     override fun onCreate() {
         super.onCreate()

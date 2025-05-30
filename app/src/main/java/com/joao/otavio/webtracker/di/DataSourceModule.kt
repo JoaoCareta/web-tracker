@@ -1,6 +1,8 @@
 package com.joao.otavio.webtracker.di
 
+import com.joao.otavio.authentication_domain.datasource.AuthenticationLocalDataSourceImpl
 import com.joao.otavio.authentication_domain.datasource.AuthenticationRemoteDataSourceImpl
+import com.joao.otavio.authentication_presentation.datasource.AuthenticationLocalDataSource
 import com.joao.otavio.authentication_presentation.datasource.AuthenticationRemoteDataSource
 import dagger.Binds
 import dagger.Module
@@ -10,10 +12,16 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-fun interface DataSourceModule {
+interface DataSourceModule {
     @Binds
     @Singleton
     fun bindAuthenticationRemoteDataSource(
         authenticationRemoteDataSourceImpl: AuthenticationRemoteDataSourceImpl
     ) : AuthenticationRemoteDataSource
+
+    @Binds
+    @Singleton
+    fun bindAuthenticationLocalDataSource(
+        authenticationLocalDataSource: AuthenticationLocalDataSourceImpl
+    ): AuthenticationLocalDataSource
 }

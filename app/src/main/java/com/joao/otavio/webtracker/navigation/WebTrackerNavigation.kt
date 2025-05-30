@@ -44,5 +44,11 @@ fun WebTrackerNavigation(appVersion: String) {
 }
 
 fun NavController.navigateTo(event: UiEvent.Navigate) {
-    this.navigate(event.route)
+    this.navigate(event.route) {
+        event.popUpToRoute?.let { route ->
+            popUpTo(route) {
+                inclusive = event.inclusive
+            }
+        }
+    }
 }
