@@ -9,7 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.joao.otavio.authentication_presentation.ui.screens.DummyScreen
 import com.joao.otavio.core.util.UiEvent
-import com.joao.otavio.authentication_presentation.ui.screens.login.LoginScreen
+import com.joao.otavio.authentication_presentation.ui.screens.authentication.AuthenticationScreen
 import com.joao.otavio.core.navigation.WebTrackerScreens
 
 @Composable
@@ -17,19 +17,19 @@ fun WebTrackerNavigation(appVersion: String) {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = WebTrackerScreens.Login.createRoute(appVersion)
+        startDestination = WebTrackerScreens.Authentication.createRoute(appVersion)
     ) {
         composable(
-            route = WebTrackerScreens.Login.route,
+            route = WebTrackerScreens.Authentication.route,
             arguments = listOf(
-                navArgument(WebTrackerScreens.Login.VERSION_KEY) {
+                navArgument(WebTrackerScreens.Authentication.VERSION_KEY) {
                     type = NavType.StringType
                     defaultValue = "1.0.0"
                 }
             )
         ) { backStackEntry ->
-            val version = backStackEntry.arguments?.getString(WebTrackerScreens.Login.VERSION_KEY) ?: "1.0.0"
-            LoginScreen(
+            val version = backStackEntry.arguments?.getString(WebTrackerScreens.Authentication.VERSION_KEY) ?: "1.0.0"
+            AuthenticationScreen(
                 version = version,
                 onEnterClick = navController::navigateTo
             )

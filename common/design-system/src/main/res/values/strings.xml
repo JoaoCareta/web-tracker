@@ -8,5 +8,9 @@
     <string name="authentication_password">Senha</string>
     <string name="authentication_cancel">Cancelar</string>
     <string name="authentication_login_error">Error ao efetuar login. Confira suas credenciais</string>
+    <string name="authentication_internet_connection_error">Sem conexão a internet</string>
+    <string name="authentication_empty_email_error">Campo do email não deve ser vazio</string>
+    <string name="authentication_wrong_email_format_error">Email com formato invalido</string>
+    <string name="authentication_empty_password_error">Campo da senha não deve ser vazio</string>
     <!-- endregion -->
 </resources>

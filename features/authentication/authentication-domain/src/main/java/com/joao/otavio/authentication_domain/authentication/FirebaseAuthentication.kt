@@ -16,19 +16,18 @@ class FirebaseAuthentication @Inject constructor(
         userEmail: String,
         userPassword: String
     ): Boolean {
-        logger.i(logger.getTag(), "Attempting login for user with email: $userEmail")
+        logger.i(logger.getTag(), "Attempting login for user with email")
         return suspendCancellableCoroutine { continuation ->
             try {
                 firebaseAuth.signInWithEmailAndPassword(userEmail, userPassword)
-                    .addOnSuccessListener { authResult ->
-                        val userId = authResult.user?.uid
-                        logger.i(logger.getTag(), "Login successful for user with UID: $userId")
+                    .addOnSuccessListener { _ ->
+                        logger.i(logger.getTag(), "Login successful for user with UID")
                         continuation.resume(true, onCancellation = null)
                     }
                     .addOnFailureListener { exception ->
                         logger.e(
                             logger.getTag(),
-                            "Login failed for user with email: $userEmail",
+                            "Login failed for user with email",
                             exception
                         )
                         continuation.resume(false, onCancellation = null)
@@ -36,14 +35,14 @@ class FirebaseAuthentication @Inject constructor(
                     .addOnCanceledListener {
                         logger.w(
                             logger.getTag(),
-                            "Login operation cancelled for user with email: $userEmail"
+                            "Login operation cancelled for user with email"
                         )
                         continuation.resume(false, onCancellation = null)
                     }
             } catch (t: Throwable) {
                 logger.e(
                     logger.getTag(),
-                    "Unexpected error during login attempt for user: $userEmail",
+                    "Unexpected error during login attempt for user",
                     t
                 )
                 continuation.resume(false, onCancellation = null)
@@ -56,7 +55,7 @@ class FirebaseAuthentication @Inject constructor(
             firebaseAuth.currentUser?.let { currentUser ->
                 logger.i(
                     logger.getTag(),
-                    "Successfully retrieved current user UID: ${currentUser.uid}"
+                    "Successfully retrieved current user UID"
                 )
                 currentUser.uid
             } ?: run {
