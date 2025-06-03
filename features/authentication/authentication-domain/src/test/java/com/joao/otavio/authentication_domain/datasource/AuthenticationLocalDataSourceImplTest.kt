@@ -1,40 +1,36 @@
 package com.joao.otavio.authentication_domain.datasource
 
-import android.util.Log
 import com.joao.otavio.core.datastore.DataStoreKeyConstants.WebTrackerAuthentication
 import com.joao.otavio.core.datastore.WebTrackerDataStore
+import com.joao.otavio.core.logger.WebTrackerLogger
 import io.mockk.coEvery
 import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.every
+import io.mockk.justRun
 import io.mockk.mockk
-import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertNull
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
 class AuthenticationLocalDataSourceImplTest {
     private val webTrackerDataStore: WebTrackerDataStore = mockk()
+    private val logger: WebTrackerLogger = mockk()
     private val authenticationLocalDataSourceImpl = AuthenticationLocalDataSourceImpl(
-        webTrackerDataStore = webTrackerDataStore
+        webTrackerDataStore = webTrackerDataStore,
+        logger = logger
     )
 
     @Before
     fun setUp() {
-        mockkStatic(Log::class)
-        every { Log.i(any(), any()) } returns 0
-        every { Log.e(any(), any(), any()) } returns 0
-    }
-
-    @After
-    fun tearDown() {
-        unmockkStatic(Log::class)
+        every { logger.getTag() } returns CLASS_NAME
+        justRun { logger.i(any(), any()) }
+        justRun { logger.w(any(), any()) }
+        justRun { logger.e(any(), any(), any()) }
     }
 
     @Test
@@ -49,7 +45,7 @@ class AuthenticationLocalDataSourceImplTest {
         assertTrue(result)
         coVerify {
             webTrackerDataStore.savePreference(WebTrackerAuthentication.FIREBASE_USER_ID, USER_ID)
-            Log.i(any(), any())
+            logger.i(any(), any())
         }
     }
 
@@ -65,7 +61,7 @@ class AuthenticationLocalDataSourceImplTest {
         assertFalse(result)
         coVerify {
             webTrackerDataStore.savePreference(WebTrackerAuthentication.FIREBASE_USER_ID, USER_ID)
-            Log.e(any(), any(), any())
+            logger.e(any(), any(), any())
         }
     }
 
@@ -81,7 +77,7 @@ class AuthenticationLocalDataSourceImplTest {
         assertEquals(result, USER_ID)
         coVerify {
             webTrackerDataStore.getPreference(WebTrackerAuthentication.FIREBASE_USER_ID)
-            Log.i(any(), any())
+            logger.i(any(), any())
         }
     }
 
@@ -97,7 +93,7 @@ class AuthenticationLocalDataSourceImplTest {
         assertNull(result)
         coVerify {
             webTrackerDataStore.getPreference(WebTrackerAuthentication.FIREBASE_USER_ID)
-            Log.i(any(), any())
+            logger.i(any(), any())
         }
     }
 
@@ -113,11 +109,12 @@ class AuthenticationLocalDataSourceImplTest {
         assertNull(result)
         coVerify {
             webTrackerDataStore.getPreference(WebTrackerAuthentication.FIREBASE_USER_ID)
-            Log.e(any(), any(), any())
+            logger.e(any(), any(), any())
         }
     }
 
     companion object {
         const val USER_ID = "user_id"
+        const val CLASS_NAME = "AuthenticationLocalDataSourceImplTest"
     }
 }

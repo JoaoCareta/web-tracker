@@ -16,7 +16,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
         userEmail: String,
         userPassword: String
     ): Boolean {
-        logger.i(logger.getTag(), "Attempting to authenticate user with email: $userEmail")
+        logger.i(logger.getTag(), "Attempting to authenticate user with email")
 
         return try {
             val isAuthenticatedRemotely = authenticationRemoteDataSource.authenticateUser(
@@ -30,7 +30,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
                 authenticatedUserId?.let { userId ->
                     logger.i(
                         logger.getTag(),
-                        "Successfully retrieved userId: $userId after authentication."
+                        "Successfully retrieved userId after authentication."
                     )
                     authenticationLocalDataSource.saveUserIdInDataStore(userId)
                 } ?: run {
@@ -43,14 +43,14 @@ class AuthenticationRepositoryImpl @Inject constructor(
             } else {
                 logger.e(
                     logger.getTag(),
-                    "Authentication failed with remote service for user: $userEmail."
+                    "Authentication failed with remote service for user."
                 )
                 false
             }
         } catch (e: Exception) {
             logger.e(
                 logger.getTag(),
-                "An error occurred during authentication for user: $userEmail.", e
+                "An error occurred during authentication for user.", e
             )
             false
         }
@@ -61,7 +61,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
         val isLoggedIn = userId.isNotNullOrEmptyOrBlank()
         logger.i(
             logger.getTag(),
-            "Checking if user is logged in. UserId in DataStore: '$userId', IsLoggedIn: $isLoggedIn"
+            "Checking if user is logged in. UserId in DataStore', IsLoggedIn: $isLoggedIn"
         )
         return isLoggedIn
     }

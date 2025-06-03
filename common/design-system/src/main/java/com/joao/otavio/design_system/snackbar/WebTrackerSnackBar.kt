@@ -20,15 +20,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
+import com.joao.otavio.design_system.dimensions.LocalDimensions
+import com.joao.otavio.design_system.dimensions.LocalPaddings
 import kotlinx.coroutines.delay
 
 
 @Composable
 fun WebTrackerSnackBar(
     visible: Boolean,
-    title: String,
+    title: String? = null,
     subtitle: String? = null,
     iconId: Int,
     duration: Int = SnackbarDuration.Long.ordinal,
@@ -36,6 +37,8 @@ fun WebTrackerSnackBar(
 ) {
 
     val backgroundColor = WebTrackerTheme.error
+    val paddings = LocalPaddings.current
+    val dimensions = LocalDimensions.current
 
     AnimatedVisibility(
         visible = visible,
@@ -45,20 +48,20 @@ fun WebTrackerSnackBar(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(paddings.xSmall)
         ) {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(dimensions.xxxSmall),
                 color = backgroundColor,
-                tonalElevation = 6.dp
+                tonalElevation = dimensions.mini
             ) {
                 Row(
                     modifier = Modifier
-                        .padding(16.dp)
+                        .padding(paddings.xSmall)
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(dimensions.xxxSmall)
                 ) {
                     Icon(
                         painter = painterResource(id = iconId),
@@ -67,17 +70,19 @@ fun WebTrackerSnackBar(
                     )
 
                     Column {
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        title?.let {
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
 
                         subtitle?.let {
                             Text(
-                                text = it,
+                                text = subtitle,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }

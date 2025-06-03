@@ -6,15 +6,15 @@ sealed class WebTrackerScreens(
     val baseRoute: String = route,
     val hasArguments: Boolean = false
 ) {
-    data object Login : WebTrackerScreens(
-        route = "login?version={version}",
-        title = "Login",
-        baseRoute = "login",
+    data object Authentication : WebTrackerScreens(
+        route = "authentication?version={version}",
+        title = "Authentication",
+        baseRoute = "authentication",
         hasArguments = true
     ) {
         const val VERSION_KEY = "version"
 
-        fun createRoute(version: String) = "login?version=$version"
+        fun createRoute(version: String) = "authentication?version=$version"
     }
 
     data object Dummy : WebTrackerScreens(
@@ -27,8 +27,8 @@ sealed class WebTrackerScreens(
     companion object {
         fun fromRoute(route: String?): WebTrackerScreens {
             return when (route?.substringBefore("?")) {
-                Login.baseRoute -> Login
-                null -> Login
+                Authentication.baseRoute -> Authentication
+                null -> Authentication
                 else -> throw IllegalArgumentException("Route $route is not recognized.")
             }
         }
