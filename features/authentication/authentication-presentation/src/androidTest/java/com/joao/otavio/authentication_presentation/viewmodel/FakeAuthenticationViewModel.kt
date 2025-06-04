@@ -1,17 +1,10 @@
 package com.joao.otavio.authentication_presentation.viewmodel
 
-import androidx.compose.material3.SnackbarDuration
 import com.joao.otavio.authentication_presentation.events.AuthenticationEvents
 import com.joao.otavio.authentication_presentation.state.AuthenticateState
 import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType
 import com.joao.otavio.authentication_presentation.state.WebTrackerAuthenticationState
 import kotlinx.coroutines.flow.MutableStateFlow
-import androidx.compose.ui.semantics.SemanticsProperties
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.hasImeAction
-import kotlinx.coroutines.delay
 
 class FakeAuthenticationViewModel : IWebTrackerAuthenticationViewModel() {
     private val _showLoginFields = MutableStateFlow(false)

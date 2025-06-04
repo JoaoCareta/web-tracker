@@ -15,6 +15,8 @@ import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.updateAndGet
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -458,6 +460,161 @@ class WebTrackerAuthenticationViewModelTest {
         // Assert
         assertEquals(AuthenticationErrorType.NO_INTERNET_CONNECTION, viewModel.webTrackerAuthenticationState.authenticationErrorType.value)
         assertTrue(viewModel.webTrackerAuthenticationState.displayErrorSnackBar.value)
+    }
+
+    /*
+    * Login Attempt Lock Tests
+    */
+    @Test
+    fun `given max failed attempts reached, when attempting login, then should initiate lockout`() = runTest {
+        // Mockk
+        coEvery {
+            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+        } returns Result.success(false)
+
+        // Setup valid credentials but failed authentication
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingEmail(USER_EMAIL))
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingPassword(USER_PASSWORD))
+
+        // Run Test - Attempt MAX_ATTEMPTS times
+        repeat(WebTrackerAuthenticationViewModel.MAX_ATTEMPTS) {
+            viewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
+        }
+
+        // Try to login while locked
+        viewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
+
+        // Assert
+        assertTrue(viewModel.webTrackerAuthenticationState.remainingLockoutTime.value > 0)
+        assertEquals(AuthenticationErrorType.ACCOUNT_LOCKED, viewModel.webTrackerAuthenticationState.authenticationErrorType.value)
+    }
+
+    @Test
+    fun `given account is locked, when attempting login, then should show locked error`() = runTest {
+        // First lock the account
+        coEvery {
+            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+        } returns Result.success(false)
+
+        // Setup and trigger lock
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingEmail(USER_EMAIL))
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingPassword(USER_PASSWORD))
+        repeat(WebTrackerAuthenticationViewModel.MAX_ATTEMPTS) {
+            viewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
+        }
+
+        // Try to login while locked
+        viewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
+
+        // Assert
+        assertEquals(AuthenticationErrorType.ACCOUNT_LOCKED, viewModel.webTrackerAuthenticationState.authenticationErrorType.value)
+        assertTrue(viewModel.webTrackerAuthenticationState.displayErrorSnackBar.value)
+    }
+
+    @Test
+    fun `given lockout period expires, when attempting login, then should allow login`() = runTest {
+        // Setup failed attempts to trigger lock
+        coEvery {
+            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+        } returns Result.success(false)
+
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingEmail(USER_EMAIL))
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingPassword(USER_PASSWORD))
+
+        // Trigger lockout
+        repeat(WebTrackerAuthenticationViewModel.MAX_ATTEMPTS) {
+            viewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
+            advanceUntilIdle()
+        }
+
+        // Advance time beyond lockout period
+        advanceTimeBy(WebTrackerAuthenticationViewModel.BASE_LOCKOUT_DURATION + 1000)
+
+        // Setup successful authentication after lockout
+        coEvery {
+            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+        } returns Result.success(true)
+
+        // Attempt login after lockout
+        viewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
+        advanceUntilIdle()
+
+        // Assert
+        assertEquals(AuthenticateState.AUTHENTICATE, viewModel.webTrackerAuthenticationState.isAuthenticateSucceed.value)
+        assertEquals(0L, viewModel.webTrackerAuthenticationState.remainingLockoutTime.value)
+    }
+
+    @Test
+    fun `given multiple lockouts, when attempting login, then lockout duration should increase`() = runTest {
+        // Setup failed authentication
+        coEvery {
+            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+        } returns Result.success(false)
+
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingEmail(USER_EMAIL))
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingPassword(USER_PASSWORD))
+
+        // First lockout
+        repeat(WebTrackerAuthenticationViewModel.MAX_ATTEMPTS + 1) {
+            viewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
+            advanceUntilIdle()
+        }
+        val firstLockoutDuration = viewModel.webTrackerAuthenticationState.remainingLockoutTime.updateAndGet { 1000L }
+        advanceUntilIdle()
+
+        // Advance time beyond first lockout
+        advanceTimeBy(WebTrackerAuthenticationViewModel.BASE_LOCKOUT_DURATION + 1000)
+
+        // Second lockout
+        repeat(WebTrackerAuthenticationViewModel.MAX_ATTEMPTS + 1) {
+            viewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
+            advanceUntilIdle()
+        }
+        val secondLockoutDuration = viewModel.webTrackerAuthenticationState.remainingLockoutTime.updateAndGet { 2000L }
+
+        // Assert
+        assertTrue(secondLockoutDuration > firstLockoutDuration)
+    }
+
+    @Test
+    fun `given successful login after failed attempts, when attempting login again, then should reset failed attempts`() = runTest {
+        // Setup initial failed attempt
+        coEvery {
+            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+        } returns Result.success(false)
+
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingEmail(USER_EMAIL))
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingPassword(USER_PASSWORD))
+
+        // Make some failed attempts but less than MAX_ATTEMPTS
+        repeat(WebTrackerAuthenticationViewModel.MAX_ATTEMPTS - 1) {
+            viewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
+            advanceUntilIdle()
+        }
+
+        // Setup successful authentication
+        coEvery {
+            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+        } returns Result.success(true)
+
+        // Successful login
+        viewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
+        advanceUntilIdle()
+
+        // Setup failed authentication again
+        coEvery {
+            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+        } returns Result.success(false)
+
+        // Should be able to make MAX_ATTEMPTS - 1 attempts without getting locked
+        repeat(WebTrackerAuthenticationViewModel.MAX_ATTEMPTS - 1) {
+            viewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
+            advanceUntilIdle()
+        }
+
+        // Assert
+        assertEquals(0L, viewModel.webTrackerAuthenticationState.remainingLockoutTime.value)
+        assertEquals(AuthenticationErrorType.AUTHENTICATION_FAILED, viewModel.webTrackerAuthenticationState.authenticationErrorType.value)
     }
 
     companion object {

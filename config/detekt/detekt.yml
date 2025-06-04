@@ -477,6 +477,7 @@ potential-bugs:
     ignoreFunctionCall: [ ]
   ImplicitDefaultLocale:
     active: true
+    excludes: [ '**/util/LongExtensions.kt' ]
   ImplicitUnitReturnType:
     active: false
     allowExplicitReturnType: true
