@@ -11,7 +11,8 @@ data class WebTrackerAuthenticationState(
     val showLoginFields: MutableStateFlow<Boolean> = MutableStateFlow(false),
     val displayErrorSnackBar: MutableStateFlow<Boolean> = MutableStateFlow(false),
     val isAuthenticateSucceed: MutableStateFlow<AuthenticateState> = MutableStateFlow(IDLE),
-    val authenticationErrorType: MutableStateFlow<AuthenticationErrorType> = MutableStateFlow(NONE)
+    val authenticationErrorType: MutableStateFlow<AuthenticationErrorType> = MutableStateFlow(NONE),
+    val remainingLockoutTime: MutableStateFlow<Long> = MutableStateFlow(0L)
 )
 
 enum class AuthenticateState {
@@ -24,5 +25,6 @@ enum class AuthenticationErrorType {
     EMPTY_EMAIL,
     EMAIL_INVALID_FORMAT,
     EMPTY_PASSWORD,
+    ACCOUNT_LOCKED,
     NONE
 }

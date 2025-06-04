@@ -4,6 +4,6 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 
 class DataStoreKeyConstants {
     object WebTrackerAuthentication {
-        val FIREBASE_USER_ID = stringPreferencesKey("firebase_user_id")
+        val FIREBASE_ORG_ID = stringPreferencesKey("firebase_org_id")
     }
 }

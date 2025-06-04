@@ -4,11 +4,12 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import androidx.lifecycle.viewModelScope
 import com.joao.otavio.authentication_presentation.events.AuthenticationEvents
+import com.joao.otavio.authentication_presentation.state.AuthenticateState.IDLE
 import com.joao.otavio.authentication_presentation.state.AuthenticateState.AUTHENTICATE
 import com.joao.otavio.authentication_presentation.state.AuthenticateState.ERROR
-import com.joao.otavio.authentication_presentation.state.AuthenticateState.IDLE
 import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType.AUTHENTICATION_FAILED
 import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType.NO_INTERNET_CONNECTION
+import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType.ACCOUNT_LOCKED
 import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType.EMPTY_EMAIL
 import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType.EMAIL_INVALID_FORMAT
 import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType.EMPTY_PASSWORD
@@ -17,8 +18,11 @@ import com.joao.otavio.authentication_presentation.state.WebTrackerAuthenticatio
 import com.joao.otavio.authentication_presentation.usecases.AuthenticateUserUseCase
 import com.joao.otavio.authentication_presentation.usecases.CheckUserLoginStatusUseCase
 import com.joao.otavio.core.coroutine.CoroutineContextProvider
+import com.joao.otavio.core.util.TimeUtils.ONE_MINUTE
+import com.joao.otavio.core.util.TimeUtils.ONE_SECOND
 import com.joao.otavio.core.util.isValidEmail
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -31,13 +35,20 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
     private val connectivityManager: ConnectivityManager,
     private val coroutineContextProvider: CoroutineContextProvider,
 ) : IWebTrackerAuthenticationViewModel() {
-    override val webTrackerAuthenticationState: WebTrackerAuthenticationState =
-        WebTrackerAuthenticationState()
+    override val webTrackerAuthenticationState: WebTrackerAuthenticationState = WebTrackerAuthenticationState()
+
+    // Lock control variables
+    private var consecutiveFailedAttempts = 0
+    private var lockoutMultiplier = 0
+    private var isLocked = false
+    private var lockoutEndTime = 0L
+    private val lockoutJob = Job()
 
     init {
         isUserAlreadyLoggedIn()
     }
 
+    // Public methods
     override fun onUiEvents(authenticationEvents: AuthenticationEvents) {
         when (authenticationEvents) {
             is AuthenticationEvents.OnLoginUpClick -> handleOnLoginUpClick()
@@ -69,6 +80,7 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
         }
     }
 
+    // Authentication handling
     private fun handleOnLoginUpClick() {
         if (!isUserAbleToProceedWithAuthentication()) return
         viewModelScope.launch(coroutineContextProvider.IO) {
@@ -78,7 +90,7 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
                 webTrackerAuthenticationState.userPassword.value
             )
                 .onSuccess { isAuthenticated ->
-                    handleAuthenticationResult(isAuthenticated)
+                    handleAuthenticationResult(isAuthenticated = isAuthenticated)
                 }
                 .onFailure { _ ->
                     showError(AUTHENTICATION_FAILED)
@@ -88,23 +100,75 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
     }
 
     private fun handleAuthenticationResult(isAuthenticated: Boolean) {
-        webTrackerAuthenticationState.isAuthenticateSucceed.update {
-            if (isAuthenticated) AUTHENTICATE else ERROR
+        updateAuthenticateState(isAuthenticated)
+        if (isAuthenticated) {
+            handleSucceedAuthentication()
+        } else {
+            handleFailedAuthentication()
         }
-        if (!isAuthenticated) {
+    }
+
+    private fun handleSucceedAuthentication() {
+        consecutiveFailedAttempts = 0
+        lockoutMultiplier = 0
+    }
+
+    private fun handleFailedAuthentication() {
+        consecutiveFailedAttempts++
+
+        if (consecutiveFailedAttempts >= MAX_ATTEMPTS) {
+            lockoutMultiplier++
+            consecutiveFailedAttempts = 0
+            initiateLoginLockout()
+        } else {
             showError(AUTHENTICATION_FAILED)
         }
     }
 
+    // Lockout handling
+    private fun initiateLoginLockout() {
+        isLocked = true
+        val lockoutDuration = BASE_LOCKOUT_DURATION * lockoutMultiplier
+        lockoutEndTime = System.currentTimeMillis() + lockoutDuration
+
+        viewModelScope.launch(lockoutJob) {
+            try {
+                delay(lockoutDuration)
+                isLocked = false
+            } finally {
+                if (!isLocked) {
+                    updateRemainingLockoutTime(0L)
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            while (isLocked) {
+                val remaining = (lockoutEndTime - System.currentTimeMillis()).coerceAtLeast(0)
+                updateRemainingLockoutTime(remaining)
+                if (remaining <= 0) break
+                delay(ONE_SECOND.inWholeMilliseconds)
+            }
+        }
+    }
+
+    // Validation methods
     private fun isUserAbleToProceedWithAuthentication(): Boolean {
         return when {
+            isLocked -> {
+                showError(ACCOUNT_LOCKED)
+                false
+            }
+
             !isNetworkAvailable() -> {
                 showError(NO_INTERNET_CONNECTION)
                 false
             }
+
             !validateInputs() -> {
                 false
             }
+
             else -> true
         }
     }
@@ -118,14 +182,17 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
                 showError(EMPTY_EMAIL)
                 false
             }
+
             !email.isValidEmail() -> {
                 showError(EMAIL_INVALID_FORMAT)
                 false
             }
+
             password.isEmpty() -> {
                 showError(EMPTY_PASSWORD)
                 false
             }
+
             else -> true
         }
     }
@@ -139,6 +206,7 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
                 networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))
     }
 
+    // UI state handling
     private fun handleOnDisplayLoginFieldsClick() {
         webTrackerAuthenticationState.showLoginFields.update { showLoginFields -> !showLoginFields }
         handleOnTypingEmail("")
@@ -166,7 +234,20 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
         webTrackerAuthenticationState.displayErrorSnackBar.update { true }
     }
 
+    private fun updateAuthenticateState(authenticationSucceed: Boolean) {
+        val authenticateState = if (authenticationSucceed) AUTHENTICATE else ERROR
+        webTrackerAuthenticationState.isAuthenticateSucceed.update {
+            authenticateState
+        }
+    }
+
+    private fun updateRemainingLockoutTime(remainingTime: Long) {
+        webTrackerAuthenticationState.remainingLockoutTime.update { remainingTime }
+    }
+
     companion object {
-        const val ONE_SECOND = 1000L
+        const val MAX_ATTEMPTS = 5
+        val BASE_LOCKOUT_DURATION = (ONE_MINUTE * 5).inWholeMilliseconds
     }
 }
+

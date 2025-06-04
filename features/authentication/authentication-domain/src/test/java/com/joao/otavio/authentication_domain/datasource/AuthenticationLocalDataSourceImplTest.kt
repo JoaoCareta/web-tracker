@@ -36,7 +36,7 @@ class AuthenticationLocalDataSourceImplTest {
     @Test
     fun `given a userId, when dataStore is able to save it, then it should return true`() = runTest {
         // Mockk
-        coJustRun { webTrackerDataStore.savePreference(WebTrackerAuthentication.FIREBASE_USER_ID, USER_ID) }
+        coJustRun { webTrackerDataStore.savePreference(WebTrackerAuthentication.FIREBASE_ORG_ID, USER_ID) }
 
         // Run Test
         val result = authenticationLocalDataSourceImpl.saveUserIdInDataStore(USER_ID)
@@ -44,7 +44,7 @@ class AuthenticationLocalDataSourceImplTest {
         // Assert
         assertTrue(result)
         coVerify {
-            webTrackerDataStore.savePreference(WebTrackerAuthentication.FIREBASE_USER_ID, USER_ID)
+            webTrackerDataStore.savePreference(WebTrackerAuthentication.FIREBASE_ORG_ID, USER_ID)
             logger.i(any(), any())
         }
     }
@@ -52,7 +52,7 @@ class AuthenticationLocalDataSourceImplTest {
     @Test
     fun `given a userId, when dataStore is not able to save it, then it should return false`() = runTest {
         // Mockk
-        coEvery { webTrackerDataStore.savePreference(WebTrackerAuthentication.FIREBASE_USER_ID, USER_ID) } throws Exception()
+        coEvery { webTrackerDataStore.savePreference(WebTrackerAuthentication.FIREBASE_ORG_ID, USER_ID) } throws Exception()
 
         // Run Test
         val result = authenticationLocalDataSourceImpl.saveUserIdInDataStore(USER_ID)
@@ -60,7 +60,7 @@ class AuthenticationLocalDataSourceImplTest {
         // Assert
         assertFalse(result)
         coVerify {
-            webTrackerDataStore.savePreference(WebTrackerAuthentication.FIREBASE_USER_ID, USER_ID)
+            webTrackerDataStore.savePreference(WebTrackerAuthentication.FIREBASE_ORG_ID, USER_ID)
             logger.e(any(), any(), any())
         }
     }
@@ -68,7 +68,7 @@ class AuthenticationLocalDataSourceImplTest {
     @Test
     fun `given a savedUser, when dataStore succeed in get it, then it should return it`() = runTest {
         // Mockk
-        coEvery { webTrackerDataStore.getPreference(WebTrackerAuthentication.FIREBASE_USER_ID) } returns USER_ID
+        coEvery { webTrackerDataStore.getPreference(WebTrackerAuthentication.FIREBASE_ORG_ID) } returns USER_ID
 
         // Run Test
         val result = authenticationLocalDataSourceImpl.getUserIdInDataStore()
@@ -76,7 +76,7 @@ class AuthenticationLocalDataSourceImplTest {
         // Assert
         assertEquals(result, USER_ID)
         coVerify {
-            webTrackerDataStore.getPreference(WebTrackerAuthentication.FIREBASE_USER_ID)
+            webTrackerDataStore.getPreference(WebTrackerAuthentication.FIREBASE_ORG_ID)
             logger.i(any(), any())
         }
     }
@@ -84,7 +84,7 @@ class AuthenticationLocalDataSourceImplTest {
     @Test
     fun `given a savedUser, when dataStore returns null, then it should return null`() = runTest {
         // Mockk
-        coEvery { webTrackerDataStore.getPreference(WebTrackerAuthentication.FIREBASE_USER_ID) } returns null
+        coEvery { webTrackerDataStore.getPreference(WebTrackerAuthentication.FIREBASE_ORG_ID) } returns null
 
         // Run Test
         val result = authenticationLocalDataSourceImpl.getUserIdInDataStore()
@@ -92,7 +92,7 @@ class AuthenticationLocalDataSourceImplTest {
         // Assert
         assertNull(result)
         coVerify {
-            webTrackerDataStore.getPreference(WebTrackerAuthentication.FIREBASE_USER_ID)
+            webTrackerDataStore.getPreference(WebTrackerAuthentication.FIREBASE_ORG_ID)
             logger.i(any(), any())
         }
     }
@@ -100,7 +100,7 @@ class AuthenticationLocalDataSourceImplTest {
     @Test
     fun `given a savedUser, when dataStore is not able to get it, then it should return null`() = runTest {
         // Mockk
-        coEvery { webTrackerDataStore.getPreference(WebTrackerAuthentication.FIREBASE_USER_ID) } throws Exception()
+        coEvery { webTrackerDataStore.getPreference(WebTrackerAuthentication.FIREBASE_ORG_ID) } throws Exception()
 
         // Run Test
         val result = authenticationLocalDataSourceImpl.getUserIdInDataStore()
@@ -108,7 +108,7 @@ class AuthenticationLocalDataSourceImplTest {
         // Assert
         assertNull(result)
         coVerify {
-            webTrackerDataStore.getPreference(WebTrackerAuthentication.FIREBASE_USER_ID)
+            webTrackerDataStore.getPreference(WebTrackerAuthentication.FIREBASE_ORG_ID)
             logger.e(any(), any(), any())
         }
     }

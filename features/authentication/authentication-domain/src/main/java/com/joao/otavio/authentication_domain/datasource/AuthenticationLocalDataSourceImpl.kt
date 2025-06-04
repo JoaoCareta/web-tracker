@@ -12,7 +12,7 @@ class AuthenticationLocalDataSourceImpl @Inject constructor(
 ): AuthenticationLocalDataSource {
     override suspend fun saveUserIdInDataStore(userId: String): Boolean {
         return try {
-            webTrackerDataStore.savePreference(WebTrackerAuthentication.FIREBASE_USER_ID, userId)
+            webTrackerDataStore.savePreference(WebTrackerAuthentication.FIREBASE_ORG_ID, userId)
             logger.i(logger.getTag(), "Successful save userId in Datastore")
             true
         } catch (t: Throwable) {
@@ -24,7 +24,7 @@ class AuthenticationLocalDataSourceImpl @Inject constructor(
     override suspend fun getUserIdInDataStore(): String? {
         return try {
             logger.i(logger.getTag(), "Successful get userId in Datastore")
-            webTrackerDataStore.getPreference(WebTrackerAuthentication.FIREBASE_USER_ID)
+            webTrackerDataStore.getPreference(WebTrackerAuthentication.FIREBASE_ORG_ID)
         } catch (t: Throwable) {
             logger.e(logger.getTag(), "Unexpected error during catching userId", t)
             null

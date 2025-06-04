@@ -12,5 +12,13 @@
     <string name="authentication_empty_email_error">Campo do email não deve ser vazio</string>
     <string name="authentication_wrong_email_format_error">Email com formato invalido</string>
     <string name="authentication_empty_password_error">Campo da senha não deve ser vazio</string>
+    <string name="login_locked_message">Limite de tentativas excedido. Nova tentativa permitida em %1$s</string>
+    <!-- endregion -->
+
+    <!-- region Test Tags -->
+    <string name="app_name_header_tag_test">app_name_header</string>
+    <string name="app_name_footer_tag_test">app_name_footer</string>
+    <string name="app_version_text_tag_test">version_text</string>
+    <string name="authentication_loading_indicator_tag_test">loading_indicator</string>
     <!-- endregion -->
 </resources>

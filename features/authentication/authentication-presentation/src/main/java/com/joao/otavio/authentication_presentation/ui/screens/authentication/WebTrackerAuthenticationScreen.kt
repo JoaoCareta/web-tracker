@@ -54,6 +54,7 @@ import com.joao.otavio.authentication_presentation.viewmodel.IWebTrackerAuthenti
 import com.joao.otavio.authentication_presentation.viewmodel.WebTrackerAuthenticationViewModel
 import com.joao.otavio.core.navigation.WebTrackerScreens
 import com.joao.otavio.core.util.UiEvent
+import com.joao.otavio.core.util.formatToMinutesAndSeconds
 import com.joao.otavio.design_system.buttons.WebTrackerButton
 import com.joao.otavio.design_system.design.themes.MainTheme
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
@@ -95,8 +96,10 @@ fun AuthenticationScreen(
         authenticationViewModel.webTrackerAuthenticationState.displayErrorSnackBar.collectAsState().value
     val errorType =
         authenticationViewModel.webTrackerAuthenticationState.authenticationErrorType.collectAsState().value
+    val remainingTime =
+        authenticationViewModel.webTrackerAuthenticationState.remainingLockoutTime.collectAsState().value
 
-    val errorMessage = getErrorStringByType(errorType = errorType)
+    val errorMessage = getErrorStringByType(errorType = errorType, remainingTime = remainingTime)
 
     LaunchedEffect(key1 = true) {
         authenticationViewModel.webTrackerAuthenticationState.isAuthenticateSucceed.collectLatest { authenticateState ->
@@ -289,6 +292,9 @@ fun ShowLoginErrorSnackBar(
                 iconId = R.drawable.ic_close,
                 duration = SnackbarDuration.Short.ordinal,
                 onDismiss = onDismissSnackBar,
+                backgroundColor = WebTrackerTheme.error,
+                textColor = MainTheme().primary,
+                iconColor = MainTheme().primary,
             )
         }
     }
@@ -304,7 +310,8 @@ private fun LoginHeader(
         color = MainTheme().primaryText,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
-        modifier = modifier,
+        modifier = modifier
+            .testTag(stringResource(R.string.app_name_footer_tag_test)),
     )
 }
 
@@ -489,7 +496,7 @@ private fun VersionInfo(
         color = MainTheme().primaryText,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
-        modifier = Modifier.testTag("app_name_header")
+        modifier = Modifier.testTag(stringResource(R.string.app_name_header_tag_test))
     )
 
     Box(
@@ -503,7 +510,7 @@ private fun VersionInfo(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .testTag("version_text"),
+                .testTag(stringResource(R.string.app_version_text_tag_test)),
         )
     }
 }
@@ -521,13 +528,13 @@ private fun LoadingOverlay(
         CircularProgressIndicator(
             color = MainTheme().secondary,
             modifier = Modifier
-                .testTag("LoadingIndicator")
+                .testTag(stringResource(R.string.authentication_loading_indicator_tag_test))
         )
     }
 }
 
 @Composable
-private fun getErrorStringByType(errorType: AuthenticationErrorType): String {
+private fun getErrorStringByType(errorType: AuthenticationErrorType, remainingTime: Long): String {
     return when (errorType) {
         AuthenticationErrorType.AUTHENTICATION_FAILED -> {
             stringResource(R.string.authentication_login_error)
@@ -547,6 +554,13 @@ private fun getErrorStringByType(errorType: AuthenticationErrorType): String {
 
         AuthenticationErrorType.EMPTY_PASSWORD -> {
             stringResource(R.string.authentication_empty_password_error)
+        }
+
+        AuthenticationErrorType.ACCOUNT_LOCKED -> {
+            stringResource(
+                id = R.string.login_locked_message,
+                remainingTime.formatToMinutesAndSeconds()
+            )
         }
 
         AuthenticationErrorType.NONE -> ""

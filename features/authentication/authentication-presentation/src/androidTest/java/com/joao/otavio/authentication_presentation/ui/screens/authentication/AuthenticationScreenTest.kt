@@ -148,7 +148,7 @@ class AuthenticationScreenTest {
         composeTestRule.waitForIdle()
 
         // Assert - Loading indicator should be visible and main content hidden
-        composeTestRule.onNode(hasTestTag("LoadingIndicator")).assertIsDisplayed()
+        composeTestRule.onNode(hasTestTag(composeTestRule.activity.getString(R.string.authentication_loading_indicator_tag_test))).assertIsDisplayed()
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_signIn))
             .assertIsNotDisplayed()
     }
@@ -217,11 +217,11 @@ class AuthenticationScreenTest {
     @Test
     fun version_info_should_be_displayed_correctly() = runTest {
         // Assert - Version text should be visible with correct version
-        composeTestRule.onNodeWithTag("version_text")
+        composeTestRule.onNodeWithTag(composeTestRule.activity.getString(R.string.app_version_text_tag_test))
             .assertIsDisplayed()
             .assertTextEquals(expectedVersion)
 
-        composeTestRule.onNodeWithTag("app_name_header")
+        composeTestRule.onNodeWithTag(composeTestRule.activity.getString(R.string.app_name_header_tag_test))
             .assertIsDisplayed()
             .assertTextEquals(composeTestRule.activity.getString(R.string.app_name))
     }
@@ -353,6 +353,43 @@ class AuthenticationScreenTest {
             .assertDoesNotExist()
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_email))
             .assertDoesNotExist()
+    }
+
+    @Test
+    fun loading_indicator_should_be_visible_during_authentication() = runTest {
+        // Setup - Show login fields
+        fakeLoginViewModel.setShowLoginFields(true)
+        composeTestRule.waitForIdle()
+
+        // Set loading state
+        fakeLoginViewModel.setLoading(true)
+        composeTestRule.waitForIdle()
+
+        // Assert - Loading indicator should be visible
+        composeTestRule.onNodeWithTag(
+            composeTestRule.activity.getString(R.string.authentication_loading_indicator_tag_test)
+        ).assertIsDisplayed()
+    }
+
+    @Test
+    fun version_text_should_be_displayed_with_correct_tag() = runTest {
+        composeTestRule.onNodeWithTag(
+            composeTestRule.activity.getString(R.string.app_version_text_tag_test)
+        ).assertTextEquals(expectedVersion)
+    }
+
+    @Test
+    fun app_name_header_should_be_displayed_with_correct_tag() = runTest {
+        composeTestRule.onNodeWithTag(
+            composeTestRule.activity.getString(R.string.app_name_header_tag_test)
+        ).assertIsDisplayed()
+    }
+
+    @Test
+    fun app_name_footer_should_be_displayed_with_correct_tag() = runTest {
+        composeTestRule.onNodeWithTag(
+            composeTestRule.activity.getString(R.string.app_name_footer_tag_test)
+        ).assertIsDisplayed()
     }
 }
 
