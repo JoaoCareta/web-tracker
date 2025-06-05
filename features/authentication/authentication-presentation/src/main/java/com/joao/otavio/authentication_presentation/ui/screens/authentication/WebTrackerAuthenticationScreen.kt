@@ -283,7 +283,8 @@ fun ShowLoginErrorSnackBar(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .testTag(stringResource(R.string.authentication_error_snack_bar_tag_test)),
             contentAlignment = Alignment.BottomCenter
         ) {
             WebTrackerSnackBar(
