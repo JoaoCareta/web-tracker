@@ -6,7 +6,7 @@ set -e  # Script falha se qualquer comando falhar
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 # Função para extrair números da versão
 get_version_numbers() {
@@ -54,9 +54,18 @@ echo -e "${GREEN}Versão atual: $current_version${NC}"
 # Separar números da versão
 read major minor patch <<< $(get_version_numbers $current_version)
 
-# Incrementar patch
-new_patch=$((patch + 1))
-new_version="$major.$minor.$new_patch"
+# Perguntar se deseja incrementar minor version
+read -p "Deseja incrementar a minor version? (y/n) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    new_minor=$((minor + 1))
+    new_patch=0
+    new_version="$major.$new_minor.$new_patch"
+else
+    new_patch=$((patch + 1))
+    new_version="$major.$minor.$new_patch"
+fi
+
 new_tag="release/prod/$new_version"
 
 echo -e "${YELLOW}Nova versão será: $new_version${NC}"
