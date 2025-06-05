@@ -16,6 +16,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.text.input.ImeAction
 import com.joao.otavio.authentication_presentation.state.AuthenticateState
 import com.joao.otavio.authentication_presentation.viewmodel.FakeAuthenticationViewModel
+import com.joao.otavio.core.util.formatToMinutesAndSeconds
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
 import com.joao.otavio.webtracker.common.desygn.system.R
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,7 +34,7 @@ class AuthenticationScreenTest {
     val composeTestRule = createAndroidComposeRule<androidx.activity.ComponentActivity>()
 
     private var navigateCalled = false
-    private val expectedVersion = "1.0.0"
+    private val expectedVersion = APP_VERSION
     private val fakeLoginViewModel = FakeAuthenticationViewModel()
 
     @Before
@@ -108,9 +109,9 @@ class AuthenticationScreenTest {
 
         // Run Test - Enter valid credentials and login
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_email))
-            .performTextInput("test@example.com")
+            .performTextInput(VALID_EMAIL)
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_password))
-            .performTextInput("password")
+            .performTextInput(VALID_PASSWORD)
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_login))
             .performClick()
 
@@ -130,15 +131,39 @@ class AuthenticationScreenTest {
 
         // Run Test - Enter invalid credentials and attempt login
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_email))
-            .performTextInput("wrong@example.com")
+            .performTextInput(WRONG_EMAIL)
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_password))
-            .performTextInput("wrong")
+            .performTextInput(WRONG_PASSWORD)
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_login))
             .performClick()
 
         // Assert - Error snack_bar should be visible
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_login_error))
             .assertIsDisplayed()
+        composeTestRule.waitForIdle()
+    }
+
+    @Test
+    fun multiple_failed_login_attempts_should_trigger_the_lockup() = runTest {
+        // Setup - Show login fields
+        fakeLoginViewModel.setShowLoginFields(true)
+        composeTestRule.waitForIdle()
+
+        // Run Test - Enter invalid credentials and attempt login
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_email))
+            .performTextInput(LOCKUP_EMAIL)
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_password))
+            .performTextInput(WRONG_PASSWORD)
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_login))
+            .performClick()
+
+        // Assert - Error snack_bar should be visible
+        composeTestRule.onNodeWithText(composeTestRule.activity.getString(
+            R.string.login_locked_message,
+            fakeLoginViewModel.webTrackerAuthenticationState.remainingLockoutTime.value.formatToMinutesAndSeconds()
+        ))
+            .assertIsDisplayed()
+        composeTestRule.waitForIdle()
     }
 
     @Test
@@ -185,7 +210,7 @@ class AuthenticationScreenTest {
     fun invalid_email_format_should_show_format_error_snack_bar() = runTest {
         // Setup - Show login fields and set invalid email
         fakeLoginViewModel.setShowLoginFields(true)
-        fakeLoginViewModel.setEmail("invalid-email")
+        fakeLoginViewModel.setEmail(INVALID_EMAIL_PATTERN)
         composeTestRule.waitForIdle()
 
         // Run Test - Attempt login
@@ -201,7 +226,7 @@ class AuthenticationScreenTest {
     fun empty_password_should_show_empty_password_error_snack_bar() = runTest {
         // Setup - Show login fields and set empty password
         fakeLoginViewModel.setShowLoginFields(true)
-        fakeLoginViewModel.setEmail("valid@email.com")
+        fakeLoginViewModel.setEmail(VALID_EMAIL_PATTERN)
         fakeLoginViewModel.setPassword("")
         composeTestRule.waitForIdle()
 
@@ -247,9 +272,9 @@ class AuthenticationScreenTest {
 
         // Run Test - First failed attempt
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_email))
-            .performTextInput("wrong@email.com")
+            .performTextInput(WRONG_EMAIL)
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_password))
-            .performTextInput("wrong")
+            .performTextInput(WRONG_PASSWORD)
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_login))
             .performClick()
         composeTestRule.waitForIdle()
@@ -259,8 +284,8 @@ class AuthenticationScreenTest {
             .assertIsDisplayed()
 
         // Run Test - Second successful attempt
-        fakeLoginViewModel.setEmail("test@example.com")
-        fakeLoginViewModel.setPassword("password")
+        fakeLoginViewModel.setEmail(VALID_EMAIL)
+        fakeLoginViewModel.setPassword(VALID_PASSWORD)
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_login))
             .performClick()
         fakeLoginViewModel.setAuthenticationSucceed(AuthenticateState.AUTHENTICATE)
@@ -294,21 +319,21 @@ class AuthenticationScreenTest {
 
         // Run Test & Assert - Empty email error
         fakeLoginViewModel.setEmail("")
-        fakeLoginViewModel.setPassword("password")
+        fakeLoginViewModel.setPassword(VALID_PASSWORD)
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_login))
             .performClick()
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_empty_email_error))
             .assertIsDisplayed()
 
         // Run Test & Assert - Invalid email format
-        fakeLoginViewModel.setEmail("invalid-email")
+        fakeLoginViewModel.setEmail(INVALID_EMAIL_PATTERN)
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_login))
             .performClick()
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_wrong_email_format_error))
             .assertIsDisplayed()
 
         // Run Test & Assert - Empty password
-        fakeLoginViewModel.setEmail("valid@email.com")
+        fakeLoginViewModel.setEmail(VALID_EMAIL_PATTERN)
         fakeLoginViewModel.setPassword("")
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_login))
             .performClick()
@@ -324,9 +349,9 @@ class AuthenticationScreenTest {
 
         // Run Test - Enter data and hide fields
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_email))
-            .performTextInput("test@email.com")
+            .performTextInput(TEST_EMAIL)
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_password))
-            .performTextInput("password")
+            .performTextInput(VALID_PASSWORD)
 
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_cancel))
             .performClick()
@@ -338,7 +363,7 @@ class AuthenticationScreenTest {
         composeTestRule.waitForIdle()
 
         // Assert - Fields should be empty
-        composeTestRule.onNodeWithText("test@email.com").assertDoesNotExist()
+        composeTestRule.onNodeWithText(TEST_EMAIL).assertDoesNotExist()
     }
 
     @Test
@@ -390,6 +415,18 @@ class AuthenticationScreenTest {
         composeTestRule.onNodeWithTag(
             composeTestRule.activity.getString(R.string.app_name_footer_tag_test)
         ).assertIsDisplayed()
+    }
+
+    companion object {
+        const val VALID_EMAIL = "test@example.com"
+        const val VALID_PASSWORD = "password"
+        const val LOCKUP_EMAIL = "lockup@exemple.com"
+        const val WRONG_PASSWORD = "wrong"
+        const val TEST_EMAIL = "test@email.com"
+        const val INVALID_EMAIL_PATTERN = "invalid-email"
+        const val VALID_EMAIL_PATTERN = "valid@email.com"
+        const val WRONG_EMAIL = "wrong@email.com"
+        const val APP_VERSION = "1.0.0"
     }
 }
 

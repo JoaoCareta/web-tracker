@@ -5,6 +5,8 @@ import com.joao.otavio.authentication_presentation.state.AuthenticateState
 import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType
 import com.joao.otavio.authentication_presentation.state.WebTrackerAuthenticationState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 class FakeAuthenticationViewModel : IWebTrackerAuthenticationViewModel() {
     private val _showLoginFields = MutableStateFlow(false)
@@ -14,6 +16,7 @@ class FakeAuthenticationViewModel : IWebTrackerAuthenticationViewModel() {
     private val _displayErrorSnackBar = MutableStateFlow(false)
     private val _isAuthenticateSucceed = MutableStateFlow(AuthenticateState.IDLE)
     private val _authenticationErrorType = MutableStateFlow(AuthenticationErrorType.NONE)
+    private val _remainingLockoutTime = MutableStateFlow(0L)
 
     override val webTrackerAuthenticationState: WebTrackerAuthenticationState = WebTrackerAuthenticationState(
         showLoginFields = _showLoginFields,
@@ -22,7 +25,8 @@ class FakeAuthenticationViewModel : IWebTrackerAuthenticationViewModel() {
         isLoading = _isLoading,
         displayErrorSnackBar = _displayErrorSnackBar,
         isAuthenticateSucceed = _isAuthenticateSucceed,
-        authenticationErrorType = _authenticationErrorType
+        authenticationErrorType = _authenticationErrorType,
+        remainingLockoutTime = _remainingLockoutTime
     )
 
     override fun isUserAlreadyLoggedIn() {
@@ -61,8 +65,14 @@ class FakeAuthenticationViewModel : IWebTrackerAuthenticationViewModel() {
                         _authenticationErrorType.value = AuthenticationErrorType.EMPTY_PASSWORD
                         _displayErrorSnackBar.value = true
                     }
-                    _userEmail.value == "test@example.com" && _userPassword.value == "password" -> {
+                    _userEmail.value == VALID_EMAIL && _userPassword.value == VALID_PASSWORD -> {
                         _isAuthenticateSucceed.value = AuthenticateState.AUTHENTICATE
+                    }
+                    _userEmail.value == LOCKUP_EMAIL && _userPassword.value == WRONG_PASSWORD -> {
+                        _isAuthenticateSucceed.value = AuthenticateState.ERROR
+                        _authenticationErrorType.value = AuthenticationErrorType.ACCOUNT_LOCKED
+                        _remainingLockoutTime.value = 5.0.toDuration(DurationUnit.MINUTES).inWholeMilliseconds
+                        _displayErrorSnackBar.value = true
                     }
                     else -> {
                         _authenticationErrorType.value = AuthenticationErrorType.AUTHENTICATION_FAILED
@@ -106,5 +116,12 @@ class FakeAuthenticationViewModel : IWebTrackerAuthenticationViewModel() {
     fun setNetworkError() {
         _authenticationErrorType.value = AuthenticationErrorType.NO_INTERNET_CONNECTION
         _displayErrorSnackBar.value = true
+    }
+
+    companion object {
+        const val VALID_EMAIL = "test@example.com"
+        const val VALID_PASSWORD = "password"
+        const val LOCKUP_EMAIL = "lockup@exemple.com"
+        const val WRONG_PASSWORD = "wrong"
     }
 }

@@ -20,5 +20,6 @@
     <string name="app_name_footer_tag_test">app_name_footer</string>
     <string name="app_version_text_tag_test">version_text</string>
     <string name="authentication_loading_indicator_tag_test">loading_indicator</string>
+    <string name="authentication_error_snack_bar_tag_test">error_snack_bar</string>
     <!-- endregion -->
 </resources>
