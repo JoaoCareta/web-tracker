@@ -1,4 +1,4 @@
-package com.joao.otavio.webtracker.di
+package com.joao.otavio.authentication_domain.di
 
 import com.joao.otavio.authentication_domain.repository.AuthenticationRepositoryImpl
 import com.joao.otavio.authentication_presentation.repository.AuthenticationRepository

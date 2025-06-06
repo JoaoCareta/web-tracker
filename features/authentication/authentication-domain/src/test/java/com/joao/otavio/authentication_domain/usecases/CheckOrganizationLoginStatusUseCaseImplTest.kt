@@ -1,9 +1,6 @@
 package com.joao.otavio.authentication_domain.usecases
 
 import com.joao.otavio.authentication_presentation.repository.AuthenticationRepository
-import com.joao.otavio.authentication_presentation.utils.MainDispatcherRule
-import com.joao.otavio.core.coroutine.CoroutineContextProvider
-import com.joao.otavio.core.coroutine.TestContextProvider
 import io.mockk.coEvery
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
@@ -11,24 +8,18 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-class CheckUserLoginStatusUseCaseImplTest {
-    @get:Rule
-    val mainDispatcherRule = MainDispatcherRule()
+class CheckOrganizationLoginStatusUseCaseImplTest {
 
-    private lateinit var useCase: CheckUserLoginStatusUseCaseImpl
+    private lateinit var useCase: CheckOrganizationLoginStatusUseCaseImpl
     private val authenticationRepository: AuthenticationRepository = mockk()
-    private lateinit var testContextProvider: CoroutineContextProvider
 
     @Before
     fun setup() {
-        testContextProvider = TestContextProvider(mainDispatcherRule.testDispatcher)
-        useCase = CheckUserLoginStatusUseCaseImpl(
+        useCase = CheckOrganizationLoginStatusUseCaseImpl(
             authenticationRepository = authenticationRepository,
-            coroutineContextProvider = testContextProvider
         )
     }
 

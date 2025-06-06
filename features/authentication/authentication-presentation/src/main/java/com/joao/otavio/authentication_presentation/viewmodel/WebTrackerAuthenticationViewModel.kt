@@ -16,7 +16,7 @@ import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType
 import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType
 import com.joao.otavio.authentication_presentation.state.WebTrackerAuthenticationState
 import com.joao.otavio.authentication_presentation.usecases.AuthenticateUserUseCase
-import com.joao.otavio.authentication_presentation.usecases.CheckUserLoginStatusUseCase
+import com.joao.otavio.authentication_presentation.usecases.CheckOrganizationLoginStatusUseCase
 import com.joao.otavio.core.coroutine.CoroutineContextProvider
 import com.joao.otavio.core.util.TimeUtils.ONE_MINUTE
 import com.joao.otavio.core.util.TimeUtils.ONE_SECOND
@@ -31,7 +31,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WebTrackerAuthenticationViewModel @Inject constructor(
     private val authenticateUserUseCase: AuthenticateUserUseCase,
-    private val checkUserLoginStatusUseCase: CheckUserLoginStatusUseCase,
+    private val checkOrganizationLoginStatusUseCase: CheckOrganizationLoginStatusUseCase,
     private val connectivityManager: ConnectivityManager,
     private val coroutineContextProvider: CoroutineContextProvider,
 ) : IWebTrackerAuthenticationViewModel() {
@@ -45,7 +45,7 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
     private val lockoutJob = Job()
 
     init {
-        isUserAlreadyLoggedIn()
+        isOrganizationAlreadyLoggedIn()
     }
 
     // Public methods
@@ -59,14 +59,14 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
         }
     }
 
-    override fun isUserAlreadyLoggedIn() {
+    override fun isOrganizationAlreadyLoggedIn() {
         if (!isNetworkAvailable()) {
             showError(NO_INTERNET_CONNECTION)
             return
         }
         viewModelScope.launch(coroutineContextProvider.IO) {
             setLoading(true)
-            checkUserLoginStatusUseCase()
+            checkOrganizationLoginStatusUseCase()
                 .onSuccess { isLoggedIn ->
                     webTrackerAuthenticationState.isAuthenticateSucceed.update {
                         if (isLoggedIn) AUTHENTICATE else IDLE
@@ -82,12 +82,12 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
 
     // Authentication handling
     private fun handleOnLoginUpClick() {
-        if (!isUserAbleToProceedWithAuthentication()) return
+        if (!isOrganizationAbleToProceedWithAuthentication()) return
         viewModelScope.launch(coroutineContextProvider.IO) {
             setLoading(true)
             authenticateUserUseCase(
-                webTrackerAuthenticationState.userEmail.value.trim(),
-                webTrackerAuthenticationState.userPassword.value
+                webTrackerAuthenticationState.organizationEmail.value.trim(),
+                webTrackerAuthenticationState.organizationPassword.value
             )
                 .onSuccess { isAuthenticated ->
                     handleAuthenticationResult(isAuthenticated = isAuthenticated)
@@ -153,7 +153,7 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
     }
 
     // Validation methods
-    private fun isUserAbleToProceedWithAuthentication(): Boolean {
+    private fun isOrganizationAbleToProceedWithAuthentication(): Boolean {
         return when {
             isLocked -> {
                 showError(ACCOUNT_LOCKED)
@@ -174,8 +174,8 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
     }
 
     private fun validateInputs(): Boolean {
-        val email = webTrackerAuthenticationState.userEmail.value.trim()
-        val password = webTrackerAuthenticationState.userPassword.value
+        val email = webTrackerAuthenticationState.organizationEmail.value.trim()
+        val password = webTrackerAuthenticationState.organizationPassword.value
 
         return when {
             email.isEmpty() -> {
@@ -214,11 +214,11 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
     }
 
     private fun handleOnTypingEmail(newEmailString: String) {
-        webTrackerAuthenticationState.userEmail.update { newEmailString }
+        webTrackerAuthenticationState.organizationEmail.update { newEmailString }
     }
 
     private fun handleOnTypingPassword(newPasswordString: String) {
-        webTrackerAuthenticationState.userPassword.update { newPasswordString }
+        webTrackerAuthenticationState.organizationPassword.update { newPasswordString }
     }
 
     private fun handleSnackBarDismiss() {

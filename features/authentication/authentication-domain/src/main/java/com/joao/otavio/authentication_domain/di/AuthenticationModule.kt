@@ -1,4 +1,4 @@
-package com.joao.otavio.webtracker.di
+package com.joao.otavio.authentication_domain.di
 
 import com.joao.otavio.authentication_domain.authentication.FirebaseAuthentication
 import com.joao.otavio.authentication_presentation.authentication.Authentication

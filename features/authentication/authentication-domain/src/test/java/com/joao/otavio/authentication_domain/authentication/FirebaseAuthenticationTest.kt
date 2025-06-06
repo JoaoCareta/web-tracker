@@ -6,6 +6,7 @@ import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.joao.otavio.authentication_data.model.domain.Organization
 import com.joao.otavio.core.logger.WebTrackerLogger
 import io.mockk.every
 import io.mockk.justRun
@@ -54,7 +55,7 @@ class FirebaseAuthenticationTest {
         every { mockedAuthResult.user?.uid } returns "mock-uid"
 
         // Run Test
-        val result = firebaseAuthentication.loginUserWithEmailAndPassword(EMAIL, PASSWORD)
+        val result = firebaseAuthentication.loginOrganizationWithEmailAndPassword(EMAIL, PASSWORD)
 
         // Assert
         assertTrue(result)
@@ -77,7 +78,7 @@ class FirebaseAuthenticationTest {
         every { mockedAuthResult.user } returns null
 
         // Run Test
-        val result = firebaseAuthentication.loginUserWithEmailAndPassword(EMAIL, PASSWORD)
+        val result = firebaseAuthentication.loginOrganizationWithEmailAndPassword(EMAIL, PASSWORD)
 
         // Assert
         assertTrue(result)
@@ -99,7 +100,7 @@ class FirebaseAuthenticationTest {
         every { mockedTask.addOnCanceledListener(capture(cancelSlot)) } returns mockedTask
 
         // Run Test
-        val result = firebaseAuthentication.loginUserWithEmailAndPassword(EMAIL, PASSWORD)
+        val result = firebaseAuthentication.loginOrganizationWithEmailAndPassword(EMAIL, PASSWORD)
 
         // Assert
         assertFalse(result)
@@ -121,7 +122,7 @@ class FirebaseAuthenticationTest {
         }
 
         // Run Test
-        val result = firebaseAuthentication.loginUserWithEmailAndPassword(EMAIL, PASSWORD)
+        val result = firebaseAuthentication.loginOrganizationWithEmailAndPassword(EMAIL, PASSWORD)
 
         // Assert
         assertFalse(result)
@@ -133,7 +134,7 @@ class FirebaseAuthenticationTest {
         every { firebaseAuth.signInWithEmailAndPassword(EMAIL, PASSWORD) } throws Exception("Unexpected error")
 
         // Run Test
-        val result = firebaseAuthentication.loginUserWithEmailAndPassword(EMAIL, PASSWORD)
+        val result = firebaseAuthentication.loginOrganizationWithEmailAndPassword(EMAIL, PASSWORD)
 
         // Assert
         assertFalse(result)
@@ -142,13 +143,14 @@ class FirebaseAuthenticationTest {
     @Test
     fun `given a logged user, when authentication tries to get the currentUser and everything went well, then it should return it`() = runTest {
         // Mockk
-        every { firebaseAuth.currentUser?.uid } returns USER_ID
+        every { firebaseAuth.currentUser?.uid } returns ORGANIZATION_ID
+        every { firebaseAuth.currentUser?.displayName } returns ORGANIZATION_NAME
 
         // Run Test
-        val result = firebaseAuthentication.getLoginUserId()
+        val result = firebaseAuthentication.getLoginOrganization()
 
         // Assert
-        assertEquals(result, USER_ID)
+        assertEquals(result, ORGANIZATION)
     }
 
     @Test
@@ -157,7 +159,7 @@ class FirebaseAuthenticationTest {
         every { firebaseAuth.currentUser?.uid } returns null
 
         // Run Test
-        val result = firebaseAuthentication.getLoginUserId()
+        val result = firebaseAuthentication.getLoginOrganization()
 
         // Assert
         assertNull(result)
@@ -169,7 +171,7 @@ class FirebaseAuthenticationTest {
         every { firebaseAuth.currentUser } returns null
 
         // Run Test
-        val result = firebaseAuthentication.getLoginUserId()
+        val result = firebaseAuthentication.getLoginOrganization()
 
         // Assert
         assertNull(result)
@@ -181,7 +183,7 @@ class FirebaseAuthenticationTest {
         every { firebaseAuth.currentUser?.uid } throws Exception()
 
         // Run Test
-        val result = firebaseAuthentication.getLoginUserId()
+        val result = firebaseAuthentication.getLoginOrganization()
 
         // Assert
         assertNull(result)
@@ -190,7 +192,12 @@ class FirebaseAuthenticationTest {
     companion object {
         const val EMAIL = "test@test.com"
         const val PASSWORD = "123456"
-        const val USER_ID = "user_id"
+        const val ORGANIZATION_ID = "organization_id"
+        const val ORGANIZATION_NAME = "organization_id"
         const val CLASS_NAME = "FirebaseAuthentication"
+        val ORGANIZATION = Organization(
+            organizationId = ORGANIZATION_ID,
+            organizationName = ORGANIZATION_NAME
+        )
     }
 }

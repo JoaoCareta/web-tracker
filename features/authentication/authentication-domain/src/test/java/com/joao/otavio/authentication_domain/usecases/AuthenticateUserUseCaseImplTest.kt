@@ -16,19 +16,13 @@ import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class AuthenticateUserUseCaseImplTest {
-    @get:Rule
-    val mainDispatcherRule = MainDispatcherRule()
-
     private lateinit var useCase: AuthenticateUserUseCaseImpl
     private val authenticationRepository: AuthenticationRepository = mockk()
-    private lateinit var testContextProvider: CoroutineContextProvider
 
     @Before
     fun setup() {
-        testContextProvider = TestContextProvider(mainDispatcherRule.testDispatcher)
         useCase = AuthenticateUserUseCaseImpl(
             authenticationRepository = authenticationRepository,
-            coroutineContextProvider = testContextProvider
         )
     }
 

@@ -1,6 +1,7 @@
 package com.joao.otavio.authentication_domain.authentication
 
 import com.google.firebase.auth.FirebaseAuth
+import com.joao.otavio.authentication_data.model.domain.Organization
 import com.joao.otavio.authentication_presentation.authentication.Authentication
 import com.joao.otavio.core.logger.WebTrackerLogger
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -12,22 +13,22 @@ class FirebaseAuthentication @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val logger: WebTrackerLogger
 ) : Authentication {
-    override suspend fun loginUserWithEmailAndPassword(
+    override suspend fun loginOrganizationWithEmailAndPassword(
         userEmail: String,
         userPassword: String
     ): Boolean {
-        logger.i(logger.getTag(), "Attempting login for user with email")
+        logger.i(logger.getTag(), "Attempting login for organization with email")
         return suspendCancellableCoroutine { continuation ->
             try {
                 firebaseAuth.signInWithEmailAndPassword(userEmail, userPassword)
                     .addOnSuccessListener { _ ->
-                        logger.i(logger.getTag(), "Login successful for user with UID")
+                        logger.i(logger.getTag(), "Login successful for organization with UID")
                         continuation.resume(true, onCancellation = null)
                     }
                     .addOnFailureListener { exception ->
                         logger.e(
                             logger.getTag(),
-                            "Login failed for user with email",
+                            "Login failed for organization with email",
                             exception
                         )
                         continuation.resume(false, onCancellation = null)
@@ -35,14 +36,14 @@ class FirebaseAuthentication @Inject constructor(
                     .addOnCanceledListener {
                         logger.w(
                             logger.getTag(),
-                            "Login operation cancelled for user with email"
+                            "Login operation cancelled for organization with email"
                         )
                         continuation.resume(false, onCancellation = null)
                     }
             } catch (t: Throwable) {
                 logger.e(
                     logger.getTag(),
-                    "Unexpected error during login attempt for user",
+                    "Unexpected error during login attempt for organization",
                     t
                 )
                 continuation.resume(false, onCancellation = null)
@@ -50,20 +51,23 @@ class FirebaseAuthentication @Inject constructor(
         }
     }
 
-    override fun getLoginUserId(): String? {
+    override fun getLoginOrganization(): Organization? {
         return try {
-            firebaseAuth.currentUser?.let { currentUser ->
+            firebaseAuth.currentUser?.let { currentOrganization ->
                 logger.i(
                     logger.getTag(),
-                    "Successfully retrieved current user UID"
+                    "Successfully retrieved current organization UID"
                 )
-                currentUser.uid
+                Organization(
+                    organizationId = currentOrganization.uid,
+                    organizationName = currentOrganization.displayName ?: "no_name_informed"
+                )
             } ?: run {
-                logger.i(logger.getTag(), "No current user logged in.")
+                logger.i(logger.getTag(), "No current organization logged in.")
                 null
             }
         } catch (t: Throwable) {
-            logger.e(logger.getTag(), "Unexpected error while retrieving current user ID", t)
+            logger.e(logger.getTag(), "Unexpected error while retrieving current organization ID", t)
             null
         }
     }

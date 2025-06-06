@@ -4,7 +4,7 @@ import com.joao.otavio.authentication_presentation.events.AuthenticationEvents
 import com.joao.otavio.authentication_presentation.state.AuthenticateState
 import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType
 import com.joao.otavio.authentication_presentation.usecases.AuthenticateUserUseCase
-import com.joao.otavio.authentication_presentation.usecases.CheckUserLoginStatusUseCase
+import com.joao.otavio.authentication_presentation.usecases.CheckOrganizationLoginStatusUseCase
 import com.joao.otavio.authentication_presentation.utils.MainDispatcherRule
 import com.joao.otavio.authentication_presentation.viewmodel.WebTrackerAuthenticationViewModel
 import com.joao.otavio.core.coroutine.CoroutineContextProvider
@@ -31,7 +31,7 @@ class WebTrackerAuthenticationViewModelTest {
 
     private lateinit var testContextProvider: CoroutineContextProvider
     private val authenticationUseCase: AuthenticateUserUseCase = mockk()
-    private val checkUserLoginStatusUseCase: CheckUserLoginStatusUseCase = mockk()
+    private val checkOrganizationLoginStatusUseCase: CheckOrganizationLoginStatusUseCase = mockk()
     private val connectivityManager: ConnectivityManager = mockk()
     private val networkCapabilities: NetworkCapabilities = mockk()
     private lateinit var viewModel: WebTrackerAuthenticationViewModel
@@ -39,7 +39,7 @@ class WebTrackerAuthenticationViewModelTest {
     @Before
     fun setup() {
         testContextProvider = TestContextProvider(mainDispatcherRule.testDispatcher)
-        coEvery { checkUserLoginStatusUseCase() } returns Result.success(false)
+        coEvery { checkOrganizationLoginStatusUseCase() } returns Result.success(false)
         coEvery { connectivityManager.activeNetwork } returns mockk()
         coEvery { connectivityManager.getNetworkCapabilities(any()) } returns networkCapabilities
         coEvery {
@@ -51,7 +51,7 @@ class WebTrackerAuthenticationViewModelTest {
 
         viewModel = WebTrackerAuthenticationViewModel(
             authenticateUserUseCase = authenticationUseCase,
-            checkUserLoginStatusUseCase = checkUserLoginStatusUseCase,
+            checkOrganizationLoginStatusUseCase = checkOrganizationLoginStatusUseCase,
             connectivityManager = connectivityManager,
             coroutineContextProvider = testContextProvider
         )
@@ -64,10 +64,10 @@ class WebTrackerAuthenticationViewModelTest {
     @Test
     fun `given user is logged in, when checking login status, then authentication state should be AUTHENTICATE`() = runTest {
         // Mockk
-        coEvery { checkUserLoginStatusUseCase() } returns Result.success(true)
+        coEvery { checkOrganizationLoginStatusUseCase() } returns Result.success(true)
 
         // Run Test
-        viewModel.isUserAlreadyLoggedIn()
+        viewModel.isOrganizationAlreadyLoggedIn()
         advanceUntilIdle()
 
         // Assert
@@ -78,10 +78,10 @@ class WebTrackerAuthenticationViewModelTest {
     @Test
     fun `given login status check fails, when checking login status, then should show authentication failed error`() = runTest {
         // Mockk
-        coEvery { checkUserLoginStatusUseCase() } returns Result.failure(Exception())
+        coEvery { checkOrganizationLoginStatusUseCase() } returns Result.failure(Exception())
 
         // Run Test
-        viewModel.isUserAlreadyLoggedIn()
+        viewModel.isOrganizationAlreadyLoggedIn()
         advanceUntilIdle()
 
         // Assert
@@ -94,10 +94,10 @@ class WebTrackerAuthenticationViewModelTest {
         // Mockk
         coEvery { connectivityManager.getNetworkCapabilities(any()) } returns networkCapabilities
         coEvery { networkCapabilities.hasTransport(any()) } returns true
-        coEvery { checkUserLoginStatusUseCase() } returns Result.success(false)
+        coEvery { checkOrganizationLoginStatusUseCase() } returns Result.success(false)
 
         // Run Test
-        viewModel.isUserAlreadyLoggedIn()
+        viewModel.isOrganizationAlreadyLoggedIn()
         advanceUntilIdle()
 
         // Assert
@@ -110,10 +110,10 @@ class WebTrackerAuthenticationViewModelTest {
         // Mockk
         coEvery { connectivityManager.getNetworkCapabilities(any()) } returns networkCapabilities
         coEvery { networkCapabilities.hasTransport(any()) } returns true
-        coEvery { checkUserLoginStatusUseCase() } returns Result.success(true)
+        coEvery { checkOrganizationLoginStatusUseCase() } returns Result.success(true)
 
         // Run Test
-        viewModel.isUserAlreadyLoggedIn()
+        viewModel.isOrganizationAlreadyLoggedIn()
 
         // Assert loading is true initially
         assertTrue(viewModel.webTrackerAuthenticationState.isLoading.value)
@@ -131,7 +131,7 @@ class WebTrackerAuthenticationViewModelTest {
         coEvery { connectivityManager.getNetworkCapabilities(any()) } returns null
 
         // Run Test
-        viewModel.isUserAlreadyLoggedIn()
+        viewModel.isOrganizationAlreadyLoggedIn()
 
         // Assert
         assertEquals(AuthenticationErrorType.NO_INTERNET_CONNECTION, viewModel.webTrackerAuthenticationState.authenticationErrorType.value)
@@ -148,7 +148,7 @@ class WebTrackerAuthenticationViewModelTest {
         coEvery { connectivityManager.getNetworkCapabilities(any()) } returns null
 
         // Run Test
-        viewModel.isUserAlreadyLoggedIn()
+        viewModel.isOrganizationAlreadyLoggedIn()
         advanceUntilIdle()
 
         // Assert
@@ -257,8 +257,8 @@ class WebTrackerAuthenticationViewModelTest {
 
         // Assert
         assertTrue(viewModel.webTrackerAuthenticationState.showLoginFields.value)
-        assertEquals("", viewModel.webTrackerAuthenticationState.userEmail.value)
-        assertEquals("", viewModel.webTrackerAuthenticationState.userPassword.value)
+        assertEquals("", viewModel.webTrackerAuthenticationState.organizationEmail.value)
+        assertEquals("", viewModel.webTrackerAuthenticationState.organizationPassword.value)
     }
 
     @Test
@@ -284,7 +284,7 @@ class WebTrackerAuthenticationViewModelTest {
         viewModel.onUiEvents(AuthenticationEvents.OnTypingEmail(newEmail))
 
         // Assert
-        assertEquals(newEmail, viewModel.webTrackerAuthenticationState.userEmail.value)
+        assertEquals(newEmail, viewModel.webTrackerAuthenticationState.organizationEmail.value)
     }
 
     @Test
@@ -315,7 +315,7 @@ class WebTrackerAuthenticationViewModelTest {
         viewModel.onUiEvents(AuthenticationEvents.OnTypingPassword(newPassword))
 
         // Assert
-        assertEquals(newPassword, viewModel.webTrackerAuthenticationState.userPassword.value)
+        assertEquals(newPassword, viewModel.webTrackerAuthenticationState.organizationPassword.value)
     }
 
     /*
@@ -330,7 +330,7 @@ class WebTrackerAuthenticationViewModelTest {
         coEvery { networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) } returns false
 
         // Run Test
-        viewModel.isUserAlreadyLoggedIn()
+        viewModel.isOrganizationAlreadyLoggedIn()
         advanceUntilIdle()
 
         // Assert
@@ -345,7 +345,7 @@ class WebTrackerAuthenticationViewModelTest {
         coEvery { networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) } returns true
 
         // Run Test
-        viewModel.isUserAlreadyLoggedIn()
+        viewModel.isOrganizationAlreadyLoggedIn()
         advanceUntilIdle()
 
         // Assert
@@ -378,8 +378,8 @@ class WebTrackerAuthenticationViewModelTest {
         viewModel.onUiEvents(AuthenticationEvents.OnDisplayLoginFieldsClick)
 
         // Assert
-        assertEquals("", viewModel.webTrackerAuthenticationState.userEmail.value)
-        assertEquals("", viewModel.webTrackerAuthenticationState.userPassword.value)
+        assertEquals("", viewModel.webTrackerAuthenticationState.organizationEmail.value)
+        assertEquals("", viewModel.webTrackerAuthenticationState.organizationPassword.value)
     }
 
     /*

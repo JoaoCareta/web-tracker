@@ -7,8 +7,10 @@ object ProjectConfig {
     const val APP_NAME = "Web Tracker"
     const val NAME_SPACE = "com.joao.otavio.webtracker"
     const val DESIGN_SYSTEM_NAME_SPACE = "com.joao.otavio.webtracker.common.desygn.system"
+    const val UTILS_NAME_SPACE = "com.joao.otavio.webtracker.common.utils"
     const val AUTHENTICATION_PRESENTATION_NAME_SPACE = "com.joao.otavio.webtracker.features.authentication.authentication.presentation"
     const val AUTHENTICATION_DOMAIN_NAME_SPACE = "com.joao.otavio.webtracker.features.authentication.authentication.domain"
+    const val AUTHENTICATION_DATA_NAME_SPACE = "com.joao.otavio.webtracker.features.authentication.authentication.data"
     const val CORE_NAME_SPACE = "com.joao.otavio.webtracker.core"
     const val APP_ID = "com.joao.otavio.webtracker"
     const val COMPILE_SDK = 35

@@ -20,8 +20,8 @@ class FakeAuthenticationViewModel : IWebTrackerAuthenticationViewModel() {
 
     override val webTrackerAuthenticationState: WebTrackerAuthenticationState = WebTrackerAuthenticationState(
         showLoginFields = _showLoginFields,
-        userEmail = _userEmail,
-        userPassword = _userPassword,
+        organizationEmail = _userEmail,
+        organizationPassword = _userPassword,
         isLoading = _isLoading,
         displayErrorSnackBar = _displayErrorSnackBar,
         isAuthenticateSucceed = _isAuthenticateSucceed,
@@ -29,7 +29,7 @@ class FakeAuthenticationViewModel : IWebTrackerAuthenticationViewModel() {
         remainingLockoutTime = _remainingLockoutTime
     )
 
-    override fun isUserAlreadyLoggedIn() {
+    override fun isOrganizationAlreadyLoggedIn() {
         _isLoading.value = true
         _isAuthenticateSucceed.value = AuthenticateState.IDLE
         _isLoading.value = false

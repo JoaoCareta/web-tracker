@@ -1,5 +1,5 @@
 package com.joao.otavio.authentication_presentation.usecases
 
-fun interface CheckUserLoginStatusUseCase {
+fun interface CheckOrganizationLoginStatusUseCase {
     suspend operator fun invoke() : Result<Boolean>
 }

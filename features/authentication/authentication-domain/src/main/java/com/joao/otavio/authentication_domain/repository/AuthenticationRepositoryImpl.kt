@@ -3,6 +3,7 @@ package com.joao.otavio.authentication_domain.repository
 import com.joao.otavio.authentication_presentation.datasource.AuthenticationLocalDataSource
 import com.joao.otavio.authentication_presentation.datasource.AuthenticationRemoteDataSource
 import com.joao.otavio.authentication_presentation.repository.AuthenticationRepository
+import com.joao.otavio.authentication_presentation.usecases.SaveOrganizationUseCase
 import com.joao.otavio.core.logger.WebTrackerLogger
 import com.joao.otavio.core.util.isNotNullOrEmptyOrBlank
 import javax.inject.Inject
@@ -10,6 +11,7 @@ import javax.inject.Inject
 class AuthenticationRepositoryImpl @Inject constructor(
     private val authenticationLocalDataSource: AuthenticationLocalDataSource,
     private val authenticationRemoteDataSource: AuthenticationRemoteDataSource,
+    private val saveOrganizationUseCase: SaveOrganizationUseCase,
     private val logger: WebTrackerLogger
 ) : AuthenticationRepository {
     override suspend fun authenticateUserWithEmailAndPassword(
@@ -19,20 +21,20 @@ class AuthenticationRepositoryImpl @Inject constructor(
         logger.i(logger.getTag(), "Attempting to authenticate user with email")
 
         return try {
-            val isAuthenticatedRemotely = authenticationRemoteDataSource.authenticateUser(
-                userEmail = userEmail,
-                userPassword = userPassword
+            val isAuthenticatedRemotely = authenticationRemoteDataSource.authenticateOrganization(
+                organizationEmail = userEmail,
+                organizationPassword = userPassword
             )
 
             if (isAuthenticatedRemotely) {
                 logger.i(logger.getTag(), "User authenticated successfully with remote service.")
-                val authenticatedUserId = authenticationRemoteDataSource.getLoginUserId()
-                authenticatedUserId?.let { userId ->
+                val authenticatedUserId = authenticationRemoteDataSource.getLoginOrganization()
+                authenticatedUserId?.let { organization ->
                     logger.i(
                         logger.getTag(),
                         "Successfully retrieved userId after authentication."
                     )
-                    authenticationLocalDataSource.saveUserIdInDataStore(userId)
+                    saveOrganizationUseCase.invoke(organization)
                 } ?: run {
                     logger.w(
                         logger.getTag(),
@@ -57,7 +59,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
     }
 
     override suspend fun isUserLoggedIn(): Boolean {
-        val userId = authenticationLocalDataSource.getUserIdInDataStore()
+        val userId = authenticationLocalDataSource.getOrganizationIdInDataStore()
         val isLoggedIn = userId.isNotNullOrEmptyOrBlank()
         logger.i(
             logger.getTag(),

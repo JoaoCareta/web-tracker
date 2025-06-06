@@ -82,9 +82,9 @@ fun AuthenticationScreen(
     val showLoginFields =
         authenticationViewModel.webTrackerAuthenticationState.showLoginFields.collectAsState().value
     val email =
-        authenticationViewModel.webTrackerAuthenticationState.userEmail.collectAsState().value
+        authenticationViewModel.webTrackerAuthenticationState.organizationEmail.collectAsState().value
     val password =
-        authenticationViewModel.webTrackerAuthenticationState.userPassword.collectAsState().value
+        authenticationViewModel.webTrackerAuthenticationState.organizationPassword.collectAsState().value
     val isLoading =
         authenticationViewModel.webTrackerAuthenticationState.isLoading.collectAsState().value
     val buttonText = if (showLoginFields) {
@@ -603,7 +603,7 @@ class WebTrackerViewModelPreview : IWebTrackerAuthenticationViewModel() {
             showLoginFields = MutableStateFlow(true)
         )
 
-    override fun isUserAlreadyLoggedIn() {
+    override fun isOrganizationAlreadyLoggedIn() {
         // Do nothing
     }
 
