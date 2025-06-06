@@ -4,7 +4,6 @@ import dependencies.scripts.Scripts.DETEKT_PATH
 import dependencies.scripts.Scripts.DETEKT_REPORT_PATH
 import dependencies.scripts.Scripts.JACOCO_CONFIG_PATH
 import dependencies.scripts.Scripts.JACOCO_PATH
-import dependencies.scripts.Scripts.JACOCO_STAGING_REPORT_PATH
 import dependencies.scripts.Scripts.JACOCO_STAGING_UNIFIED_REPORT_PATH
 import dependencies.scripts.Scripts.JACOCO_VERSION
 import dependencies.scripts.Scripts.SONAR_PATH

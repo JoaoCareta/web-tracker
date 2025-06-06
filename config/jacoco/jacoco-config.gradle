@@ -35,6 +35,7 @@ tasks.register(jacocoTaskName, JacocoReport) {
             '**/*Extension.class',
             '**/converters/**',
             '**/*Constants.class',
+            '**/*DataSource.class',
             '**/*Module.class',
             'common/metadata-db/**',
             '**/*Injection.class',
