@@ -1,5 +1,6 @@
 package com.joao.otavio.authentication_domain.datasource
 
+import com.joao.otavio.authentication_data.model.domain.Organization
 import com.joao.otavio.authentication_presentation.authentication.Authentication
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -18,66 +19,71 @@ class AuthenticationRemoteDataSourceImplTest {
     @Test
     fun `given a userEmail and userPassword, when firebase is able to authenticate, then it should return true`() = runTest {
         // Mockk
-        coEvery { authentication.loginUserWithEmailAndPassword(EMAIL, PASSWORD) } returns true
+        coEvery { authentication.loginOrganizationWithEmailAndPassword(EMAIL, PASSWORD) } returns true
 
         // Run Test
-        val result = authenticationRemoteDataSourceImpl.authenticateUser(EMAIL, PASSWORD)
+        val result = authenticationRemoteDataSourceImpl.authenticateOrganization(EMAIL, PASSWORD)
 
         // Assert
         assertTrue(result)
         coVerify {
-            authentication.loginUserWithEmailAndPassword(EMAIL, PASSWORD)
+            authentication.loginOrganizationWithEmailAndPassword(EMAIL, PASSWORD)
         }
     }
 
     @Test
     fun `given a userEmail and userPassword, when firebase is not able to authenticate, then it should return false`() = runTest {
         // Mockk
-        coEvery { authentication.loginUserWithEmailAndPassword(EMAIL, PASSWORD) } returns false
+        coEvery { authentication.loginOrganizationWithEmailAndPassword(EMAIL, PASSWORD) } returns false
 
         // Run Test
-        val result = authenticationRemoteDataSourceImpl.authenticateUser(EMAIL, PASSWORD)
+        val result = authenticationRemoteDataSourceImpl.authenticateOrganization(EMAIL, PASSWORD)
 
         // Assert
         assertFalse(result)
         coVerify {
-            authentication.loginUserWithEmailAndPassword(EMAIL, PASSWORD)
+            authentication.loginOrganizationWithEmailAndPassword(EMAIL, PASSWORD)
         }
     }
 
     @Test
     fun `given a loggedUser, when we try to get the userId and the authentication runs fine, then it should returns it`() = runTest {
         // Mockk
-        coEvery { authentication.getLoginUserId() } returns USER_ID
+        coEvery { authentication.getLoginOrganization() } returns ORGANIZATION
 
         // Run Test
-        val result = authenticationRemoteDataSourceImpl.getLoginUserId()
+        val result = authenticationRemoteDataSourceImpl.getLoginOrganization()
 
         // Assert
-        assertEquals(result, USER_ID)
+        assertEquals(result, ORGANIZATION)
         coVerify {
-            authentication.getLoginUserId()
+            authentication.getLoginOrganization()
         }
     }
 
     @Test
     fun `given a loggedUser, when we try to get the userId and the authentication fails, then it should returns null`() = runTest {
         // Mockk
-        coEvery { authentication.getLoginUserId() } returns null
+        coEvery { authentication.getLoginOrganization() } returns null
 
         // Run Test
-        val result = authenticationRemoteDataSourceImpl.getLoginUserId()
+        val result = authenticationRemoteDataSourceImpl.getLoginOrganization()
 
         // Assert
         assertNull(result)
         coVerify {
-            authentication.getLoginUserId()
+            authentication.getLoginOrganization()
         }
     }
 
     companion object {
-        const val USER_ID = "user_id"
+        private const val ORGANIZATION_ID = "organization_id"
+        private const val ORGANIZATION_NAME = "organization_name"
         const val EMAIL = "test@test.com"
         const val PASSWORD = "123456"
+        val ORGANIZATION = Organization(
+            organizationId = ORGANIZATION_ID,
+            organizationName = ORGANIZATION_NAME
+        )
     }
 }

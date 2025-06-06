@@ -5,8 +5,8 @@ import com.joao.otavio.authentication_presentation.state.AuthenticateState.IDLE
 import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType.NONE
 
 data class WebTrackerAuthenticationState(
-    val userEmail: MutableStateFlow<String> = MutableStateFlow(""),
-    val userPassword: MutableStateFlow<String> = MutableStateFlow(""),
+    val organizationEmail: MutableStateFlow<String> = MutableStateFlow(""),
+    val organizationPassword: MutableStateFlow<String> = MutableStateFlow(""),
     val isLoading: MutableStateFlow<Boolean> = MutableStateFlow(false),
     val showLoginFields: MutableStateFlow<Boolean> = MutableStateFlow(false),
     val displayErrorSnackBar: MutableStateFlow<Boolean> = MutableStateFlow(false),

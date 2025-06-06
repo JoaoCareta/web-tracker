@@ -4,6 +4,7 @@ import dependencies.firebase.Firebase.FIREBASE_AUTHENTICATION
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_ANDROID
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_COMPILER
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_VIEWMODEL
+import dependencies.modules.Modules.Common.AUTHENTICATION_DATA
 import dependencies.modules.Modules.Common.CORE
 import dependencies.modules.Modules.Common.DESIGN_SYSTEM
 import dependencies.projectconfig.ProjectConfig.AUTHENTICATION_DOMAIN_NAME_SPACE
@@ -134,6 +135,7 @@ dependencies {
 
     // Modules
     implementation(project(DESIGN_SYSTEM))
+    implementation(project(AUTHENTICATION_DATA))
     implementation(project(CORE))
 
     // AndroidX - Testes

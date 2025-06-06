@@ -5,9 +5,11 @@ import dependencies.firebase.Firebase.FIREBASE_AUTHENTICATION
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_ANDROID
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_COMPILER
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_VIEWMODEL
+import dependencies.modules.Modules.Common.AUTHENTICATION_DATA
 import dependencies.modules.Modules.Common.AUTHENTICATION_PRESENTATION
 import dependencies.modules.Modules.Common.CORE
 import dependencies.modules.Modules.Common.DESIGN_SYSTEM
+import dependencies.modules.Modules.Common.UTILS
 import dependencies.projectconfig.ProjectConfig.AUTHENTICATION_PRESENTATION_NAME_SPACE
 import dependencies.projectconfig.ProjectConfig.COMPILE_SDK
 import dependencies.projectconfig.ProjectConfig.DEBUG
@@ -17,6 +19,9 @@ import dependencies.projectconfig.ProjectConfig.PROD
 import dependencies.projectconfig.ProjectConfig.RELEASE
 import dependencies.projectconfig.ProjectConfig.STAGING
 import dependencies.projectconfig.ProjectConfig.VERSION
+import dependencies.room.Room.ROOM_COMPILER
+import dependencies.room.Room.ROOM_KTX
+import dependencies.room.Room.ROOM_RUN_TIME
 import dependencies.testing.Testing.COROUTINE_TEST
 import dependencies.testing.Testing.MOCKK
 import dependencies.testing.Testing.MOCKK_ANDROID
@@ -134,10 +139,17 @@ dependencies {
     implementation(DAGGER_HILT_ANDROID)
     implementation(DAGGER_HILT_VIEWMODEL)
 
+    // Room
+    kapt(ROOM_COMPILER)
+    implementation(ROOM_RUN_TIME)
+    implementation(ROOM_KTX)
+
     // Modules
     implementation(project(AUTHENTICATION_PRESENTATION))
+    implementation(project(AUTHENTICATION_DATA))
     implementation(project(DESIGN_SYSTEM))
     implementation(project(CORE))
+    implementation(project(UTILS))
 
     // AndroidX - Testes
     testImplementation(libs.junit)

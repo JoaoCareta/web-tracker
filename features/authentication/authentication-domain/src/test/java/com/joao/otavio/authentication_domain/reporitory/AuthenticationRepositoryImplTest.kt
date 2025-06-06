@@ -1,9 +1,11 @@
 package com.joao.otavio.authentication_domain.reporitory
 
 import android.util.Log
+import com.joao.otavio.authentication_data.model.domain.Organization
 import com.joao.otavio.authentication_domain.repository.AuthenticationRepositoryImpl
 import com.joao.otavio.authentication_presentation.datasource.AuthenticationLocalDataSource
 import com.joao.otavio.authentication_presentation.datasource.AuthenticationRemoteDataSource
+import com.joao.otavio.authentication_presentation.usecases.SaveOrganizationUseCase
 import com.joao.otavio.core.logger.WebTrackerLogger
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -20,11 +22,13 @@ import org.junit.Test
 class AuthenticationRepositoryImplTest {
     private val authenticationLocalDataSource: AuthenticationLocalDataSource = mockk()
     private val authenticationRemoteDataSource: AuthenticationRemoteDataSource = mockk()
+    private val saveOrganizationUseCase: SaveOrganizationUseCase = mockk()
     private val logger: WebTrackerLogger = mockk()
 
     private val authenticationRepositoryImpl = AuthenticationRepositoryImpl(
         authenticationLocalDataSource = authenticationLocalDataSource,
         authenticationRemoteDataSource = authenticationRemoteDataSource,
+        saveOrganizationUseCase = saveOrganizationUseCase,
         logger = logger
     )
 
@@ -41,7 +45,7 @@ class AuthenticationRepositoryImplTest {
     @Test
     fun `given a userEmail and userPassword, when remoteDataSource fails to authenticate, then it should return false`() = runTest {
         // Mockk
-        coEvery { authenticationRemoteDataSource.authenticateUser(USER_EMAIL, USER_PASSWORD) } returns false
+        coEvery { authenticationRemoteDataSource.authenticateOrganization(USER_EMAIL, USER_PASSWORD) } returns false
 
         // Run Test
         val result = authenticationRepositoryImpl.authenticateUserWithEmailAndPassword(USER_EMAIL, USER_PASSWORD)
@@ -49,7 +53,7 @@ class AuthenticationRepositoryImplTest {
         // Assert
         assertFalse(result)
         coVerify {
-            authenticationRemoteDataSource.authenticateUser(USER_EMAIL, USER_PASSWORD)
+            authenticationRemoteDataSource.authenticateOrganization(USER_EMAIL, USER_PASSWORD)
             logger.e(any(), any())
         }
     }
@@ -57,7 +61,7 @@ class AuthenticationRepositoryImplTest {
     @Test
     fun `given a userEmail and userPassword, when remoteDataSource fails to authenticate and throw and exception, then it should return false`() = runTest {
         // Mockk
-        coEvery { authenticationRemoteDataSource.authenticateUser(USER_EMAIL, USER_PASSWORD) } throws Exception()
+        coEvery { authenticationRemoteDataSource.authenticateOrganization(USER_EMAIL, USER_PASSWORD) } throws Exception()
 
         // Run Test
         val result = authenticationRepositoryImpl.authenticateUserWithEmailAndPassword(USER_EMAIL, USER_PASSWORD)
@@ -65,7 +69,7 @@ class AuthenticationRepositoryImplTest {
         // Assert
         assertFalse(result)
         coVerify {
-            authenticationRemoteDataSource.authenticateUser(USER_EMAIL, USER_PASSWORD)
+            authenticationRemoteDataSource.authenticateOrganization(USER_EMAIL, USER_PASSWORD)
             logger.e(any(), any(), any())
         }
     }
@@ -73,8 +77,8 @@ class AuthenticationRepositoryImplTest {
     @Test
     fun `given a userEmail and userPassword, when remoteDataSource succeed to authenticate but return a null userId, then it should return false`() = runTest {
         // Mockk
-        coEvery { authenticationRemoteDataSource.authenticateUser(USER_EMAIL, USER_PASSWORD) } returns true
-        coEvery { authenticationRemoteDataSource.getLoginUserId() } returns null
+        coEvery { authenticationRemoteDataSource.authenticateOrganization(USER_EMAIL, USER_PASSWORD) } returns true
+        coEvery { authenticationRemoteDataSource.getLoginOrganization() } returns null
 
         // Run Test
         val result = authenticationRepositoryImpl.authenticateUserWithEmailAndPassword(USER_EMAIL, USER_PASSWORD)
@@ -82,8 +86,8 @@ class AuthenticationRepositoryImplTest {
         // Assert
         assertFalse(result)
         coVerify {
-            authenticationRemoteDataSource.authenticateUser(USER_EMAIL, USER_PASSWORD)
-            authenticationRemoteDataSource.getLoginUserId()
+            authenticationRemoteDataSource.authenticateOrganization(USER_EMAIL, USER_PASSWORD)
+            authenticationRemoteDataSource.getLoginOrganization()
             logger.i(any(), any())
             logger.w(any(), any())
         }
@@ -92,9 +96,9 @@ class AuthenticationRepositoryImplTest {
     @Test
     fun `given a userEmail and userPassword, when remoteDataSource succeed to authenticate and return a valid userId but the localDataSource fails to save it, then it should return false`() = runTest {
         // Mockk
-        coEvery { authenticationRemoteDataSource.authenticateUser(USER_EMAIL, USER_PASSWORD) } returns true
-        coEvery { authenticationRemoteDataSource.getLoginUserId() } returns USER_ID
-        coEvery { authenticationLocalDataSource.saveUserIdInDataStore(USER_ID) } returns false
+        coEvery { authenticationRemoteDataSource.authenticateOrganization(USER_EMAIL, USER_PASSWORD) } returns true
+        coEvery { authenticationRemoteDataSource.getLoginOrganization() } returns ORGANIZATION
+        coEvery { saveOrganizationUseCase.invoke(ORGANIZATION) } returns false
 
         // Run Test
         val result = authenticationRepositoryImpl.authenticateUserWithEmailAndPassword(USER_EMAIL, USER_PASSWORD)
@@ -102,9 +106,9 @@ class AuthenticationRepositoryImplTest {
         // Assert
         assertFalse(result)
         coVerify {
-            authenticationRemoteDataSource.authenticateUser(USER_EMAIL, USER_PASSWORD)
-            authenticationRemoteDataSource.getLoginUserId()
-            authenticationLocalDataSource.saveUserIdInDataStore(USER_ID)
+            authenticationRemoteDataSource.authenticateOrganization(USER_EMAIL, USER_PASSWORD)
+            authenticationRemoteDataSource.getLoginOrganization()
+            saveOrganizationUseCase.invoke(ORGANIZATION)
             logger.i(any(), any())
         }
     }
@@ -112,9 +116,9 @@ class AuthenticationRepositoryImplTest {
     @Test
     fun `given a userEmail and userPassword, when remoteDataSource succeed to authenticate and return a valid userId and everything succeed, then it should return true`() = runTest {
         // Mockk
-        coEvery { authenticationRemoteDataSource.authenticateUser(USER_EMAIL, USER_PASSWORD) } returns true
-        coEvery { authenticationRemoteDataSource.getLoginUserId() } returns USER_ID
-        coEvery { authenticationLocalDataSource.saveUserIdInDataStore(USER_ID) } returns true
+        coEvery { authenticationRemoteDataSource.authenticateOrganization(USER_EMAIL, USER_PASSWORD) } returns true
+        coEvery { authenticationRemoteDataSource.getLoginOrganization() } returns ORGANIZATION
+        coEvery { saveOrganizationUseCase.invoke(ORGANIZATION) } returns true
 
         // Run Test
         val result = authenticationRepositoryImpl.authenticateUserWithEmailAndPassword(USER_EMAIL, USER_PASSWORD)
@@ -122,9 +126,9 @@ class AuthenticationRepositoryImplTest {
         // Assert
         assertTrue(result)
         coVerify {
-            authenticationRemoteDataSource.authenticateUser(USER_EMAIL, USER_PASSWORD)
-            authenticationRemoteDataSource.getLoginUserId()
-            authenticationLocalDataSource.saveUserIdInDataStore(USER_ID)
+            authenticationRemoteDataSource.authenticateOrganization(USER_EMAIL, USER_PASSWORD)
+            authenticationRemoteDataSource.getLoginOrganization()
+            saveOrganizationUseCase.invoke(ORGANIZATION)
             logger.i(any(), any())
         }
     }
@@ -132,7 +136,7 @@ class AuthenticationRepositoryImplTest {
     @Test
     fun `given a not logged user, when it tries to get the userId, then it should return false`() = runTest {
         // Mockk
-        coEvery { authenticationLocalDataSource.getUserIdInDataStore() } returns null
+        coEvery { authenticationLocalDataSource.getOrganizationIdInDataStore() } returns null
 
         // Run Test
         val result = authenticationRepositoryImpl.isUserLoggedIn()
@@ -140,7 +144,7 @@ class AuthenticationRepositoryImplTest {
         // Assert
         assertFalse(result)
         coVerify {
-            authenticationLocalDataSource.getUserIdInDataStore()
+            authenticationLocalDataSource.getOrganizationIdInDataStore()
             logger.i(any(), any())
         }
     }
@@ -148,7 +152,7 @@ class AuthenticationRepositoryImplTest {
     @Test
     fun `given a logged user, when it tries to get the userId and return a blank string, then it should return false`() = runTest {
         // Mockk
-        coEvery { authenticationLocalDataSource.getUserIdInDataStore() } returns BLANK_STRING
+        coEvery { authenticationLocalDataSource.getOrganizationIdInDataStore() } returns BLANK_STRING
 
         // Run Test
         val result = authenticationRepositoryImpl.isUserLoggedIn()
@@ -156,7 +160,7 @@ class AuthenticationRepositoryImplTest {
         // Assert
         assertFalse(result)
         coVerify {
-            authenticationLocalDataSource.getUserIdInDataStore()
+            authenticationLocalDataSource.getOrganizationIdInDataStore()
             logger.i(any(), any())
         }
     }
@@ -164,7 +168,7 @@ class AuthenticationRepositoryImplTest {
     @Test
     fun `given a logged user, when it tries to get the userId and return a empty string, then it should return false`() = runTest {
         // Mockk
-        coEvery { authenticationLocalDataSource.getUserIdInDataStore() } returns EMPTY_STRING
+        coEvery { authenticationLocalDataSource.getOrganizationIdInDataStore() } returns EMPTY_STRING
 
         // Run Test
         val result = authenticationRepositoryImpl.isUserLoggedIn()
@@ -172,7 +176,7 @@ class AuthenticationRepositoryImplTest {
         // Assert
         assertFalse(result)
         coVerify {
-            authenticationLocalDataSource.getUserIdInDataStore()
+            authenticationLocalDataSource.getOrganizationIdInDataStore()
             logger.i(any(), any())
         }
     }
@@ -180,7 +184,7 @@ class AuthenticationRepositoryImplTest {
     @Test
     fun `given a logged user, when it tries to get the userId and return it, then it should return true`() = runTest {
         // Mockk
-        coEvery { authenticationLocalDataSource.getUserIdInDataStore() } returns USER_ID
+        coEvery { authenticationLocalDataSource.getOrganizationIdInDataStore() } returns ORGANIZATION_ID
 
         // Run Test
         val result = authenticationRepositoryImpl.isUserLoggedIn()
@@ -188,7 +192,7 @@ class AuthenticationRepositoryImplTest {
         // Assert
         assertTrue(result)
         coVerify {
-            authenticationLocalDataSource.getUserIdInDataStore()
+            authenticationLocalDataSource.getOrganizationIdInDataStore()
             logger.i(any(), any())
         }
     }
@@ -196,9 +200,14 @@ class AuthenticationRepositoryImplTest {
     companion object {
         const val USER_EMAIL = "user_email"
         const val USER_PASSWORD = "user_password"
-        const val USER_ID = "user_id"
+        const val ORGANIZATION_ID = "organization_id"
+        const val ORGANIZATION_NAME = "organization_name"
         const val BLANK_STRING = " "
         const val EMPTY_STRING = ""
         const val CLASS_NAME = "AuthenticationRepositoryImpl"
+        val ORGANIZATION = Organization(
+            organizationId = ORGANIZATION_ID,
+            organizationName = ORGANIZATION_NAME
+        )
     }
 }

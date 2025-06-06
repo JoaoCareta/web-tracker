@@ -2,6 +2,8 @@ import dependencies.android.Android
 import dependencies.android.Android.AndroidX.DATA_STORE
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_ANDROID
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_COMPILER
+import dependencies.modules.Modules.Common.AUTHENTICATION_DATA
+import dependencies.modules.Modules.Common.UTILS
 import dependencies.projectconfig.ProjectConfig.COMPILE_SDK
 import dependencies.projectconfig.ProjectConfig.CORE_NAME_SPACE
 import dependencies.projectconfig.ProjectConfig.DEBUG
@@ -11,6 +13,9 @@ import dependencies.projectconfig.ProjectConfig.PROD
 import dependencies.projectconfig.ProjectConfig.RELEASE
 import dependencies.projectconfig.ProjectConfig.STAGING
 import dependencies.projectconfig.ProjectConfig.VERSION
+import dependencies.room.Room.ROOM_COMPILER
+import dependencies.room.Room.ROOM_KTX
+import dependencies.room.Room.ROOM_RUN_TIME
 import dependencies.testing.Testing.COROUTINE_TEST
 import dependencies.testing.Testing.MOCKK
 import dependencies.testing.Testing.MOCKK_ANDROID
@@ -110,6 +115,15 @@ dependencies {
     // Dagger Hilt
     kapt(DAGGER_HILT_COMPILER)
     implementation(DAGGER_HILT_ANDROID)
+
+    // Room
+    kapt(ROOM_COMPILER)
+    implementation(ROOM_RUN_TIME)
+    implementation(ROOM_KTX)
+
+    // Modules
+    implementation(project(UTILS))
+    implementation(project(AUTHENTICATION_DATA))
 
     // AndroidX - Testes
     testImplementation(libs.junit)

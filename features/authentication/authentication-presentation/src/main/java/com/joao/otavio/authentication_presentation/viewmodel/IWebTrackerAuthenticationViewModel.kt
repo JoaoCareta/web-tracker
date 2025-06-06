@@ -6,6 +6,6 @@ import com.joao.otavio.authentication_presentation.state.WebTrackerAuthenticatio
 
 abstract class IWebTrackerAuthenticationViewModel: ViewModel() {
     abstract val webTrackerAuthenticationState: WebTrackerAuthenticationState
-    abstract fun isUserAlreadyLoggedIn()
+    abstract fun isOrganizationAlreadyLoggedIn()
     abstract fun onUiEvents(authenticationEvents: AuthenticationEvents)
 }
