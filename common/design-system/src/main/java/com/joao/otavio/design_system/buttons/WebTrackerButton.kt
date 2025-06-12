@@ -8,18 +8,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.joao.otavio.design_system.design.themes.DarkTheme
+import com.joao.otavio.design_system.design.themes.MainTheme
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
 import com.joao.otavio.design_system.dimensions.LocalDimensions
+import com.joao.otavio.design_system.dimensions.LocalFontSize
 
 @Composable
 fun WebTrackerButton(
@@ -31,18 +32,20 @@ fun WebTrackerButton(
 ) {
     val dimensionsValues = LocalDimensions.current
     val configuration = LocalConfiguration.current
+    val fontSize = LocalFontSize.current
     val fontScale = configuration.fontScale
     val adjustedPadding = dimensionsValues.xSmall / fontScale.coerceAtLeast(1f)
 
     Button(
         onClick = onClick,
         modifier = modifier
+            .padding(dimensionsValues.medium)
             .fillMaxWidth()
             .height(dimensionsValues.xHuge),
         enabled = enabled,
         colors = ButtonDefaults.buttonColors(
             containerColor = theme.secondary,
-            contentColor = theme.primary,
+            contentColor = MainTheme().primary,
             disabledContainerColor = theme.secondaryButtonEnabled,
             disabledContentColor = theme.thirdText
         ),
@@ -51,7 +54,10 @@ fun WebTrackerButton(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.labelLarge,
+            style = TextStyle(
+                fontSize = fontSize.xSmall,
+                fontFamily = WebTrackerTheme.FontFamily.Rubik,
+            ),
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -65,7 +71,6 @@ fun WebTrackerMainThemeButtonPreview() {
     WebTrackerButton(
         text = CLICK_ME,
         onClick = {},
-        modifier = Modifier.padding(24.dp)
     )
 }
 
@@ -76,7 +81,6 @@ fun WebTrackerMainThemeButtonDisabledPreview() {
         text = CLICK_ME,
         onClick = {},
         enabled = false,
-        modifier = Modifier.padding(24.dp)
     )
 }
 
@@ -90,7 +94,6 @@ fun WebTrackerDarkThemeButtonPreview() {
     WebTrackerButton(
         text = CLICK_ME,
         onClick = {},
-        modifier = Modifier.padding(24.dp),
         theme = DarkTheme()
     )
 }
@@ -106,7 +109,6 @@ fun WebTrackerDarkThemeButtonDisabledPreview() {
         text = CLICK_ME,
         onClick = {},
         enabled = false,
-        modifier = Modifier.padding(24.dp),
         theme = DarkTheme()
     )
 }

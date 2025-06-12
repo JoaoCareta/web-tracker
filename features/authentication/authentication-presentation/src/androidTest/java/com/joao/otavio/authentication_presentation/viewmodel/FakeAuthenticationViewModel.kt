@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-class FakeAuthenticationViewModel : IWebTrackerAuthenticationViewModel() {
+class FakeAuthenticationViewModel : BaseWebTrackerAuthenticationViewModel() {
     private val _showLoginFields = MutableStateFlow(false)
     private val _userEmail = MutableStateFlow("")
     private val _userPassword = MutableStateFlow("")
@@ -22,9 +22,8 @@ class FakeAuthenticationViewModel : IWebTrackerAuthenticationViewModel() {
         showLoginFields = _showLoginFields,
         organizationEmail = _userEmail,
         organizationPassword = _userPassword,
-        isLoading = _isLoading,
         displayErrorSnackBar = _displayErrorSnackBar,
-        isAuthenticateSucceed = _isAuthenticateSucceed,
+        authenticateState = _isAuthenticateSucceed,
         authenticationErrorType = _authenticationErrorType,
         remainingLockoutTime = _remainingLockoutTime
     )
@@ -43,14 +42,14 @@ class FakeAuthenticationViewModel : IWebTrackerAuthenticationViewModel() {
             is AuthenticationEvents.OnTypingPassword -> {
                 _userPassword.value = authenticationEvents.newPasswordString
             }
-            AuthenticationEvents.OnDisplayLoginFieldsClick -> {
+            is AuthenticationEvents.OnDisplayLoginFieldsClick -> {
                 _showLoginFields.value = !_showLoginFields.value
                 if (_showLoginFields.value) {
                     _userEmail.value = ""
                     _userPassword.value = ""
                 }
             }
-            AuthenticationEvents.OnLoginUpClick -> {
+            is AuthenticationEvents.OnLoginUpClick -> {
                 _isLoading.value = true
                 when {
                     _userEmail.value.isEmpty() -> {
@@ -81,9 +80,13 @@ class FakeAuthenticationViewModel : IWebTrackerAuthenticationViewModel() {
                 }
                 _isLoading.value = false
             }
-            AuthenticationEvents.OnSnackBarDismiss -> {
+            is AuthenticationEvents.OnSnackBarDismiss -> {
                 _displayErrorSnackBar.value = false
                 _authenticationErrorType.value = AuthenticationErrorType.NONE
+            }
+
+            is AuthenticationEvents.OnAuthenticationStateUpdate -> {
+                _isAuthenticateSucceed.value = AuthenticateState.IDLE
             }
         }
     }
@@ -94,7 +97,7 @@ class FakeAuthenticationViewModel : IWebTrackerAuthenticationViewModel() {
     }
 
     fun setLoading(loading: Boolean) {
-        _isLoading.value = loading
+        _isAuthenticateSucceed.value = AuthenticateState.LOADING
     }
 
     fun setAuthenticationSucceed(state: AuthenticateState) {

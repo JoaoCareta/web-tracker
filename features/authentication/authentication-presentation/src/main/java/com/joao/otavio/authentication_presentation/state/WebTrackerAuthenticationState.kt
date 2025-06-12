@@ -7,16 +7,15 @@ import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType
 data class WebTrackerAuthenticationState(
     val organizationEmail: MutableStateFlow<String> = MutableStateFlow(""),
     val organizationPassword: MutableStateFlow<String> = MutableStateFlow(""),
-    val isLoading: MutableStateFlow<Boolean> = MutableStateFlow(false),
     val showLoginFields: MutableStateFlow<Boolean> = MutableStateFlow(false),
     val displayErrorSnackBar: MutableStateFlow<Boolean> = MutableStateFlow(false),
-    val isAuthenticateSucceed: MutableStateFlow<AuthenticateState> = MutableStateFlow(IDLE),
+    val authenticateState: MutableStateFlow<AuthenticateState> = MutableStateFlow(IDLE),
     val authenticationErrorType: MutableStateFlow<AuthenticationErrorType> = MutableStateFlow(NONE),
     val remainingLockoutTime: MutableStateFlow<Long> = MutableStateFlow(0L)
 )
 
 enum class AuthenticateState {
-    IDLE, AUTHENTICATE, ERROR
+    IDLE, AUTHENTICATE, ERROR, LOADING
 }
 
 enum class AuthenticationErrorType {

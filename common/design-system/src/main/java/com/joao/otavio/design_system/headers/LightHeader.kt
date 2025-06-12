@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -36,7 +37,9 @@ import com.joao.otavio.webtracker.common.desygn.system.R
 @Composable
 fun LightHeader(
     title: String,
-    onClickLeft: () -> Unit,
+    onClickLeftIcon: Painter = painterResource(R.drawable.ic_arrow_left),
+    onClickLeft: (() -> Unit)? = null,
+    onClickRightIcon: Painter = painterResource(R.drawable.ic_search),
     onClickRight: (() -> Unit)? = null,
     theme: WebTrackerTheme = WebTrackerTheme,
 ) {
@@ -45,36 +48,37 @@ fun LightHeader(
     val fontValues = LocalFontSize.current
     val alpha = LocalAlpha.current
 
-    Box(Modifier.background(theme.primary)) {
+    Box(Modifier.background(theme.secondary)) {
         Row(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .background(theme.primary)
+                .background(theme.secondary)
                 .fillMaxWidth()
                 .statusBarsPadding()
                 .padding(
                     start = paddingValues.xSmall,
                     end = paddingValues.xSmall,
-                    bottom = paddingValues.xxSmall,
+                    bottom = paddingValues.medium,
                     top = paddingValues.xSmall
                 )
         ) {
             Button(
                 elevation = ButtonDefaults.buttonElevation(dimensionsValues.none, dimensionsValues.none),
-                onClick = onClickLeft,
+                onClick = { onClickLeft?.invoke() },
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = theme.primaryDark
+                    containerColor = theme.secondaryDark
                 ),
                 contentPadding = PaddingValues(paddingValues.none),
                 modifier = Modifier
                     .width(dimensionsValues.xHuge)
                     .height(dimensionsValues.xHuge)
+                    .alpha(onClickLeft?.let { alpha.opaque } ?: alpha.transparent)
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow_left),
-                    tint = theme.primaryIcon,
+                    painter = onClickLeftIcon,
+                    tint = MainTheme().primary,
                     contentDescription = null
                 )
             }
@@ -85,10 +89,10 @@ fun LightHeader(
                     .padding(horizontal = paddingValues.xSmall)
                     .weight(1f)
                     .fillMaxWidth(),
-                fontSize = fontValues.small,
+                fontSize = fontValues.xSmall,
                 fontWeight = FontWeight.Bold,
-                color = theme.primaryText,
-                maxLines = 2,
+                color = MainTheme().primary,
+                maxLines = 1,
                 textAlign = TextAlign.Center,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -98,7 +102,7 @@ fun LightHeader(
                 onClick = { onClickRight?.invoke() },
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = theme.primaryDark
+                    containerColor = theme.secondaryDark
                 ),
                 contentPadding = PaddingValues(paddingValues.none),
                 modifier = Modifier
@@ -107,8 +111,8 @@ fun LightHeader(
                     .alpha(onClickRight?.let { alpha.opaque } ?: alpha.transparent)
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_search),
-                    tint = theme.primaryIcon,
+                    painter = onClickRightIcon,
+                    tint = MainTheme().primary,
                     contentDescription = null
                 )
             }
@@ -120,7 +124,7 @@ fun LightHeader(
 @Composable
 private fun LightHeaderPreview() {
     LightHeader(
-        "Web Tracker",
+        "Web Tracker Organization",
         onClickLeft = {},
         onClickRight = {},
         theme = MainTheme()

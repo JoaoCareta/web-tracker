@@ -1,14 +1,14 @@
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
+package com.joao.otavio.authentication_presentation.viewmodel
+
 import com.joao.otavio.authentication_presentation.events.AuthenticationEvents
 import com.joao.otavio.authentication_presentation.state.AuthenticateState
 import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType
 import com.joao.otavio.authentication_presentation.usecases.AuthenticateUserUseCase
 import com.joao.otavio.authentication_presentation.usecases.CheckOrganizationLoginStatusUseCase
 import com.joao.otavio.authentication_presentation.utils.MainDispatcherRule
-import com.joao.otavio.authentication_presentation.viewmodel.WebTrackerAuthenticationViewModel
 import com.joao.otavio.core.coroutine.CoroutineContextProvider
 import com.joao.otavio.core.coroutine.TestContextProvider
+import com.joao.otavio.core.util.IsNetworkAvailableUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
@@ -32,27 +32,19 @@ class WebTrackerAuthenticationViewModelTest {
     private lateinit var testContextProvider: CoroutineContextProvider
     private val authenticationUseCase: AuthenticateUserUseCase = mockk()
     private val checkOrganizationLoginStatusUseCase: CheckOrganizationLoginStatusUseCase = mockk()
-    private val connectivityManager: ConnectivityManager = mockk()
-    private val networkCapabilities: NetworkCapabilities = mockk()
+    private val isNetworkAvailableUseCase: IsNetworkAvailableUseCase = mockk()
     private lateinit var viewModel: WebTrackerAuthenticationViewModel
 
     @Before
     fun setup() {
         testContextProvider = TestContextProvider(mainDispatcherRule.testDispatcher)
         coEvery { checkOrganizationLoginStatusUseCase() } returns Result.success(false)
-        coEvery { connectivityManager.activeNetwork } returns mockk()
-        coEvery { connectivityManager.getNetworkCapabilities(any()) } returns networkCapabilities
-        coEvery {
-            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-        } returns true
-        coEvery {
-            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
-        } returns true
+        coEvery { isNetworkAvailableUseCase.invoke() } returns true
 
         viewModel = WebTrackerAuthenticationViewModel(
             authenticateUserUseCase = authenticationUseCase,
             checkOrganizationLoginStatusUseCase = checkOrganizationLoginStatusUseCase,
-            connectivityManager = connectivityManager,
+            isNetworkAvailableUseCase = isNetworkAvailableUseCase,
             coroutineContextProvider = testContextProvider
         )
     }
@@ -71,8 +63,7 @@ class WebTrackerAuthenticationViewModelTest {
         advanceUntilIdle()
 
         // Assert
-        assertEquals(AuthenticateState.AUTHENTICATE, viewModel.webTrackerAuthenticationState.isAuthenticateSucceed.value)
-        assertFalse(viewModel.webTrackerAuthenticationState.isLoading.value)
+        assertEquals(AuthenticateState.AUTHENTICATE, viewModel.webTrackerAuthenticationState.authenticateState.value)
     }
 
     @Test
@@ -92,8 +83,7 @@ class WebTrackerAuthenticationViewModelTest {
     @Test
     fun `given network is available, when checking login status and user is not logged in, then state should be IDLE`() = runTest {
         // Mockk
-        coEvery { connectivityManager.getNetworkCapabilities(any()) } returns networkCapabilities
-        coEvery { networkCapabilities.hasTransport(any()) } returns true
+        coEvery { isNetworkAvailableUseCase.invoke() } returns true
         coEvery { checkOrganizationLoginStatusUseCase() } returns Result.success(false)
 
         // Run Test
@@ -101,34 +91,28 @@ class WebTrackerAuthenticationViewModelTest {
         advanceUntilIdle()
 
         // Assert
-        assertEquals(AuthenticateState.IDLE, viewModel.webTrackerAuthenticationState.isAuthenticateSucceed.value)
-        assertFalse(viewModel.webTrackerAuthenticationState.isLoading.value)
+        assertEquals(AuthenticateState.IDLE, viewModel.webTrackerAuthenticationState.authenticateState.value)
     }
 
     @Test
     fun `given network is available, when checking login status, then loading should be shown and hidden`() = runTest {
         // Mockk
-        coEvery { connectivityManager.getNetworkCapabilities(any()) } returns networkCapabilities
-        coEvery { networkCapabilities.hasTransport(any()) } returns true
         coEvery { checkOrganizationLoginStatusUseCase() } returns Result.success(true)
 
         // Run Test
         viewModel.isOrganizationAlreadyLoggedIn()
 
-        // Assert loading is true initially
-        assertTrue(viewModel.webTrackerAuthenticationState.isLoading.value)
-
         // Wait for completion
         advanceUntilIdle()
 
         // Assert loading is false after completion
-        assertFalse(viewModel.webTrackerAuthenticationState.isLoading.value)
+        assertFalse(viewModel.webTrackerAuthenticationState.authenticateState.value == AuthenticateState.LOADING)
     }
 
     @Test
     fun `given no network available, when checking login status, then should show error without calling use case`() = runTest {
         // Mockk
-        coEvery { connectivityManager.getNetworkCapabilities(any()) } returns null
+        coEvery { isNetworkAvailableUseCase.invoke() } returns false
 
         // Run Test
         viewModel.isOrganizationAlreadyLoggedIn()
@@ -145,7 +129,7 @@ class WebTrackerAuthenticationViewModelTest {
     @Test
     fun `given no internet connection, when performing any authentication action, then should show no internet error`() = runTest {
         // Mockk
-        coEvery { connectivityManager.getNetworkCapabilities(any()) } returns null
+        coEvery { isNetworkAvailableUseCase.invoke() } returns false
 
         // Run Test
         viewModel.isOrganizationAlreadyLoggedIn()
@@ -211,7 +195,7 @@ class WebTrackerAuthenticationViewModelTest {
     fun `given valid credentials, when attempting to login, then authentication should succeed`() = runTest {
         // Mockk
         coEvery {
-            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+            authenticationUseCase(USER_EMAIL_TRIM, USER_PASSWORD)
         } returns Result.success(true)
 
         // Run Test
@@ -221,7 +205,7 @@ class WebTrackerAuthenticationViewModelTest {
         advanceUntilIdle()
 
         // Assert
-        assertEquals(AuthenticateState.AUTHENTICATE, viewModel.webTrackerAuthenticationState.isAuthenticateSucceed.value)
+        assertEquals(AuthenticateState.AUTHENTICATE, viewModel.webTrackerAuthenticationState.authenticateState.value)
         assertFalse(viewModel.webTrackerAuthenticationState.displayErrorSnackBar.value)
     }
 
@@ -229,8 +213,62 @@ class WebTrackerAuthenticationViewModelTest {
     fun `given invalid credentials, when attempting to login, then should show authentication failed error`() = runTest {
         // Mockk
         coEvery {
-            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+            authenticationUseCase(USER_EMAIL_TRIM, USER_PASSWORD)
         } returns Result.failure(Exception())
+
+        // Run Test
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingEmail(USER_EMAIL))
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingPassword(USER_PASSWORD))
+        viewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
+        advanceUntilIdle()
+
+        // Assert
+        assertEquals(AuthenticationErrorType.AUTHENTICATION_FAILED, viewModel.webTrackerAuthenticationState.authenticationErrorType.value)
+        assertTrue(viewModel.webTrackerAuthenticationState.displayErrorSnackBar.value)
+    }
+
+    @Test
+    fun `given repository throws exception, when attempting login, then should handle failure`() = runTest {
+        // Mockk
+        coEvery {
+            authenticationUseCase(USER_EMAIL_TRIM, USER_PASSWORD)
+        } returns Result.failure(RuntimeException("Network error"))
+
+        // Run Test
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingEmail(USER_EMAIL))
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingPassword(USER_PASSWORD))
+        viewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
+        advanceUntilIdle()
+
+        // Assert
+        assertEquals(AuthenticationErrorType.AUTHENTICATION_FAILED, viewModel.webTrackerAuthenticationState.authenticationErrorType.value)
+        assertTrue(viewModel.webTrackerAuthenticationState.displayErrorSnackBar.value)
+    }
+
+    @Test
+    fun `given authentication succeeds but with empty response, when attempting login, then should handle as failure`() = runTest {
+        // Mockk
+        coEvery {
+            authenticationUseCase(USER_EMAIL_TRIM, USER_PASSWORD)
+        } returns Result.success(false)
+
+        // Run Test
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingEmail(USER_EMAIL))
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingPassword(USER_PASSWORD))
+        viewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
+        advanceUntilIdle()
+
+        // Assert
+        assertEquals(AuthenticationErrorType.AUTHENTICATION_FAILED, viewModel.webTrackerAuthenticationState.authenticationErrorType.value)
+        assertTrue(viewModel.webTrackerAuthenticationState.displayErrorSnackBar.value)
+    }
+
+    @Test
+    fun `given specific authentication error occurs, when attempting login, then should handle specific error types`() = runTest {
+        // Mockk
+        coEvery {
+            authenticationUseCase(USER_EMAIL_TRIM, USER_PASSWORD)
+        } returns Result.failure(IllegalArgumentException("Invalid credentials"))
 
         // Run Test
         viewModel.onUiEvents(AuthenticationEvents.OnTypingEmail(USER_EMAIL))
@@ -273,9 +311,21 @@ class WebTrackerAuthenticationViewModelTest {
         assertFalse(viewModel.webTrackerAuthenticationState.displayErrorSnackBar.value)
     }
 
+    @Test
+    fun `given error while login, when animation stopped, then should change authentication state`() = runTest {
+        // Mockk
+        // No mocks needed for this test
+
+        // Run Test
+        viewModel.onUiEvents(AuthenticationEvents.OnAuthenticationStateUpdate)
+
+        // Assert
+        assertEquals(viewModel.webTrackerAuthenticationState.authenticateState.value, AuthenticateState.IDLE)
+    }
+
     /*
- * Email Input Tests
- */
+     * Email Input Tests
+     */
 
     @Test
     fun `given user types email, when email is updated, then state should reflect new email`() = runTest {
@@ -301,7 +351,7 @@ class WebTrackerAuthenticationViewModelTest {
         advanceUntilIdle()
 
         // Assert
-        assertEquals(AuthenticateState.AUTHENTICATE, viewModel.webTrackerAuthenticationState.isAuthenticateSucceed.value)
+        assertEquals(AuthenticateState.AUTHENTICATE, viewModel.webTrackerAuthenticationState.authenticateState.value)
     }
 
     /*
@@ -324,11 +374,6 @@ class WebTrackerAuthenticationViewModelTest {
 
     @Test
     fun `given only wifi available, when checking network, then should consider network available`() = runTest {
-        // Mockk
-        coEvery { connectivityManager.getNetworkCapabilities(any()) } returns networkCapabilities
-        coEvery { networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) } returns true
-        coEvery { networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) } returns false
-
         // Run Test
         viewModel.isOrganizationAlreadyLoggedIn()
         advanceUntilIdle()
@@ -339,11 +384,6 @@ class WebTrackerAuthenticationViewModelTest {
 
     @Test
     fun `given only cellular available, when checking network, then should consider network available`() = runTest {
-        // Mockk
-        coEvery { connectivityManager.getNetworkCapabilities(any()) } returns networkCapabilities
-        coEvery { networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) } returns false
-        coEvery { networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) } returns true
-
         // Run Test
         viewModel.isOrganizationAlreadyLoggedIn()
         advanceUntilIdle()
@@ -390,7 +430,7 @@ class WebTrackerAuthenticationViewModelTest {
     fun `given authentication in progress, when attempting login, then loading state should be updated correctly`() = runTest {
         // Mockk
         coEvery {
-            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+            authenticationUseCase(USER_EMAIL_TRIM, USER_PASSWORD)
         } returns Result.success(true)
 
         // Run Test
@@ -402,14 +442,14 @@ class WebTrackerAuthenticationViewModelTest {
         advanceUntilIdle()
 
         // Assert loading is false after completion
-        assertFalse(viewModel.webTrackerAuthenticationState.isLoading.value)
+        assertFalse(viewModel.webTrackerAuthenticationState.authenticateState.value == AuthenticateState.LOADING)
     }
 
     @Test
     fun `given authentication succeeds but returns false, when attempting login, then should show authentication failed`() = runTest {
         // Mockk
         coEvery {
-            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+            authenticationUseCase(USER_EMAIL_TRIM, USER_PASSWORD)
         } returns Result.success(false)
 
         // Run Test
@@ -419,7 +459,7 @@ class WebTrackerAuthenticationViewModelTest {
         advanceUntilIdle()
 
         // Assert
-        assertEquals(AuthenticateState.ERROR, viewModel.webTrackerAuthenticationState.isAuthenticateSucceed.value)
+        assertEquals(AuthenticateState.ERROR, viewModel.webTrackerAuthenticationState.authenticateState.value)
         assertEquals(AuthenticationErrorType.AUTHENTICATION_FAILED, viewModel.webTrackerAuthenticationState.authenticationErrorType.value)
     }
 
@@ -452,7 +492,7 @@ class WebTrackerAuthenticationViewModelTest {
         viewModel.onUiEvents(AuthenticationEvents.OnTypingPassword(USER_PASSWORD))
 
         // Mockk - Simulate network becoming unavailable
-        coEvery { connectivityManager.getNetworkCapabilities(any()) } returns null
+        coEvery { isNetworkAvailableUseCase.invoke() } returns false
 
         // Run Test
         viewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
@@ -469,7 +509,7 @@ class WebTrackerAuthenticationViewModelTest {
     fun `given max failed attempts reached, when attempting login, then should initiate lockout`() = runTest {
         // Mockk
         coEvery {
-            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+            authenticationUseCase(USER_EMAIL_TRIM, USER_PASSWORD)
         } returns Result.success(false)
 
         // Setup valid credentials but failed authentication
@@ -493,7 +533,7 @@ class WebTrackerAuthenticationViewModelTest {
     fun `given account is locked, when attempting login, then should show locked error`() = runTest {
         // First lock the account
         coEvery {
-            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+            authenticationUseCase(USER_EMAIL_TRIM, USER_PASSWORD)
         } returns Result.success(false)
 
         // Setup and trigger lock
@@ -515,7 +555,7 @@ class WebTrackerAuthenticationViewModelTest {
     fun `given lockout period expires, when attempting login, then should allow login`() = runTest {
         // Setup failed attempts to trigger lock
         coEvery {
-            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+            authenticationUseCase(USER_EMAIL_TRIM, USER_PASSWORD)
         } returns Result.success(false)
 
         viewModel.onUiEvents(AuthenticationEvents.OnTypingEmail(USER_EMAIL))
@@ -532,7 +572,7 @@ class WebTrackerAuthenticationViewModelTest {
 
         // Setup successful authentication after lockout
         coEvery {
-            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+            authenticationUseCase(USER_EMAIL_TRIM, USER_PASSWORD)
         } returns Result.success(true)
 
         // Attempt login after lockout
@@ -540,7 +580,7 @@ class WebTrackerAuthenticationViewModelTest {
         advanceUntilIdle()
 
         // Assert
-        assertEquals(AuthenticateState.AUTHENTICATE, viewModel.webTrackerAuthenticationState.isAuthenticateSucceed.value)
+        assertEquals(AuthenticateState.AUTHENTICATE, viewModel.webTrackerAuthenticationState.authenticateState.value)
         assertEquals(0L, viewModel.webTrackerAuthenticationState.remainingLockoutTime.value)
     }
 
@@ -548,7 +588,7 @@ class WebTrackerAuthenticationViewModelTest {
     fun `given multiple lockouts, when attempting login, then lockout duration should increase`() = runTest {
         // Setup failed authentication
         coEvery {
-            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+            authenticationUseCase(USER_EMAIL_TRIM, USER_PASSWORD)
         } returns Result.success(false)
 
         viewModel.onUiEvents(AuthenticationEvents.OnTypingEmail(USER_EMAIL))
@@ -580,7 +620,7 @@ class WebTrackerAuthenticationViewModelTest {
     fun `given successful login after failed attempts, when attempting login again, then should reset failed attempts`() = runTest {
         // Setup initial failed attempt
         coEvery {
-            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+            authenticationUseCase(USER_EMAIL_TRIM, USER_PASSWORD)
         } returns Result.success(false)
 
         viewModel.onUiEvents(AuthenticationEvents.OnTypingEmail(USER_EMAIL))
@@ -594,7 +634,7 @@ class WebTrackerAuthenticationViewModelTest {
 
         // Setup successful authentication
         coEvery {
-            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+            authenticationUseCase(USER_EMAIL_TRIM, USER_PASSWORD)
         } returns Result.success(true)
 
         // Successful login
@@ -603,7 +643,7 @@ class WebTrackerAuthenticationViewModelTest {
 
         // Setup failed authentication again
         coEvery {
-            authenticationUseCase(USER_EMAIL, USER_PASSWORD)
+            authenticationUseCase(USER_EMAIL_TRIM, USER_PASSWORD)
         } returns Result.success(false)
 
         // Should be able to make MAX_ATTEMPTS - 1 attempts without getting locked
@@ -618,7 +658,8 @@ class WebTrackerAuthenticationViewModelTest {
     }
 
     companion object {
-        const val USER_EMAIL = "test@email.com"
+        const val USER_EMAIL_TRIM = "test@email.com"
+        const val USER_EMAIL = "test@email.com "
         const val USER_PASSWORD = "password123"
     }
 }

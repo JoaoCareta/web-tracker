@@ -9,6 +9,7 @@ import androidx.compose.ui.test.hasImeAction
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -117,7 +118,9 @@ class AuthenticationScreenTest {
 
         // Simulate successful authentication
         fakeLoginViewModel.setAuthenticationSucceed(AuthenticateState.AUTHENTICATE)
-        composeTestRule.waitForIdle()
+        composeTestRule.waitUntil(timeoutMillis = 5000) {
+            navigateCalled
+        }
 
         // Assert - Navigation should be triggered
         assert(navigateCalled) { "Navigation was not called after successful login" }
@@ -156,6 +159,14 @@ class AuthenticationScreenTest {
             .performTextInput(WRONG_PASSWORD)
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_login))
             .performClick()
+        composeTestRule.waitForIdle()
+
+        composeTestRule.waitUntil(timeoutMillis = 5000) {
+            composeTestRule.onAllNodesWithText(composeTestRule.activity.getString(
+                R.string.login_locked_message,
+                fakeLoginViewModel.webTrackerAuthenticationState.remainingLockoutTime.value.formatToMinutesAndSeconds()
+            )).fetchSemanticsNodes().isNotEmpty()
+        }
 
         // Assert - Error snack_bar should be visible
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(
@@ -289,7 +300,9 @@ class AuthenticationScreenTest {
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.authentication_login))
             .performClick()
         fakeLoginViewModel.setAuthenticationSucceed(AuthenticateState.AUTHENTICATE)
-        composeTestRule.waitForIdle()
+        composeTestRule.waitUntil(timeoutMillis = 5000) {
+            navigateCalled
+        }
 
         // Assert - Navigation should occur
         assert(navigateCalled)

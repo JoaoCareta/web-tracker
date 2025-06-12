@@ -30,7 +30,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,7 +49,7 @@ import com.joao.otavio.authentication_presentation.events.AuthenticationEvents
 import com.joao.otavio.authentication_presentation.state.AuthenticateState
 import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType
 import com.joao.otavio.authentication_presentation.state.WebTrackerAuthenticationState
-import com.joao.otavio.authentication_presentation.viewmodel.IWebTrackerAuthenticationViewModel
+import com.joao.otavio.authentication_presentation.viewmodel.BaseWebTrackerAuthenticationViewModel
 import com.joao.otavio.authentication_presentation.viewmodel.WebTrackerAuthenticationViewModel
 import com.joao.otavio.core.navigation.WebTrackerScreens
 import com.joao.otavio.core.util.UiEvent
@@ -65,9 +64,9 @@ import com.joao.otavio.design_system.dimensions.LocalDimensions
 import com.joao.otavio.design_system.outlinedTextField.WebTrackerOutlinedTextField
 import com.joao.otavio.design_system.scaffold.WebTrackerScaffold
 import com.joao.otavio.design_system.snackbar.WebTrackerSnackBar
+import com.joao.otavio.design_system.animationScreen.SuccessAnimationScreen
 import com.joao.otavio.webtracker.common.desygn.system.R
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
 
 
 @Composable
@@ -75,7 +74,7 @@ fun AuthenticationScreen(
     version: String,
     onEnterClick: (UiEvent.Navigate) -> Unit,
     modifier: Modifier = Modifier,
-    authenticationViewModel: IWebTrackerAuthenticationViewModel = hiltViewModel<WebTrackerAuthenticationViewModel>()
+    authenticationViewModel: BaseWebTrackerAuthenticationViewModel = hiltViewModel<WebTrackerAuthenticationViewModel>()
 ) {
     val dimensions = LocalDimensions.current
     val alpha = LocalAlpha.current
@@ -85,8 +84,6 @@ fun AuthenticationScreen(
         authenticationViewModel.webTrackerAuthenticationState.organizationEmail.collectAsState().value
     val password =
         authenticationViewModel.webTrackerAuthenticationState.organizationPassword.collectAsState().value
-    val isLoading =
-        authenticationViewModel.webTrackerAuthenticationState.isLoading.collectAsState().value
     val buttonText = if (showLoginFields) {
         stringResource(R.string.authentication_login)
     } else {
@@ -101,70 +98,86 @@ fun AuthenticationScreen(
 
     val errorMessage = getErrorStringByType(errorType = errorType, remainingTime = remainingTime)
 
-    LaunchedEffect(key1 = true) {
-        authenticationViewModel.webTrackerAuthenticationState.isAuthenticateSucceed.collectLatest { authenticateState ->
-            when (authenticateState) {
-                AuthenticateState.AUTHENTICATE -> {
+    val authenticateState =
+        authenticationViewModel.webTrackerAuthenticationState.authenticateState.collectAsState().value
+
+    when (authenticateState) {
+        AuthenticateState.ERROR -> {
+            SuccessAnimationScreen(
+                animationResId = R.raw.anim_error,
+                animatedText = stringResource(R.string.commons_error),
+                animatedTextColor = WebTrackerTheme.error,
+                onAnimationEnd = {
+                    authenticationViewModel.onUiEvents(AuthenticationEvents.OnAuthenticationStateUpdate)
+                }
+            )
+        }
+        AuthenticateState.IDLE -> {
+            WebTrackerScaffold(
+                modifier = modifier.fillMaxSize(),
+                containerColor = Color.White
+            ) { paddingValues ->
+                LoginContent(
+                    paddingValues = paddingValues,
+                    showLoginFields = showLoginFields,
+                    email = email,
+                    password = password,
+                    buttonText = buttonText,
+                    version = version,
+                    dimensions = dimensions,
+                    displaySnackBar = displaySnackBar,
+                    errorMessage = errorMessage,
+                    onEmailChange = { newEmailString ->
+                        authenticationViewModel
+                            .onUiEvents(AuthenticationEvents.OnTypingEmail(newEmailString = newEmailString))
+                    },
+                    onPasswordChange = { newPasswordString ->
+                        authenticationViewModel
+                            .onUiEvents(AuthenticationEvents.OnTypingPassword(newPasswordString = newPasswordString))
+                    },
+                    onButtonClick = {
+                        if (!showLoginFields) {
+                            authenticationViewModel.onUiEvents(AuthenticationEvents.OnDisplayLoginFieldsClick)
+                        } else {
+                            authenticationViewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
+                        }
+                    },
+                    onCancelClick = {
+                        authenticationViewModel.onUiEvents(AuthenticationEvents.OnDisplayLoginFieldsClick)
+                    },
+                    onDismissSnackBar = {
+                        authenticationViewModel.onUiEvents(AuthenticationEvents.OnSnackBarDismiss)
+                    }
+                )
+            }
+        }
+        AuthenticateState.AUTHENTICATE -> {
+            SuccessAnimationScreen(
+                animationResId = R.raw.anim_check,
+                animatedText = stringResource(R.string.commons_done),
+                animatedTextColor = WebTrackerTheme.secondary,
+                onAnimationEnd = {
                     onEnterClick.invoke(
                         UiEvent.Navigate(
-                            route = WebTrackerScreens.Dummy.route,
+                            route = WebTrackerScreens.EmployeeIdentification.route,
                             popUpToRoute = WebTrackerScreens.Authentication.route,
                             inclusive = true
                         )
                     )
                 }
-
-                AuthenticateState.ERROR,
-                AuthenticateState.IDLE -> Unit
-            }
+            )
         }
-    }
-
-    WebTrackerScaffold(
-        modifier = modifier.fillMaxSize(),
-        containerColor = Color.White
-    ) { paddingValues ->
-        LoginContent(
-            paddingValues = paddingValues,
-            isLoading = isLoading,
-            showLoginFields = showLoginFields,
-            email = email,
-            password = password,
-            buttonText = buttonText,
-            version = version,
-            dimensions = dimensions,
-            alpha = alpha,
-            displaySnackBar = displaySnackBar,
-            errorMessage = errorMessage,
-            onEmailChange = { newEmailString ->
-                authenticationViewModel
-                    .onUiEvents(AuthenticationEvents.OnTypingEmail(newEmailString = newEmailString))
-            },
-            onPasswordChange = { newPasswordString ->
-                authenticationViewModel
-                    .onUiEvents(AuthenticationEvents.OnTypingPassword(newPasswordString = newPasswordString))
-            },
-            onButtonClick = {
-                if (!showLoginFields) {
-                    authenticationViewModel.onUiEvents(AuthenticationEvents.OnDisplayLoginFieldsClick)
-                } else {
-                    authenticationViewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
-                }
-            },
-            onCancelClick = {
-                authenticationViewModel.onUiEvents(AuthenticationEvents.OnDisplayLoginFieldsClick)
-            },
-            onDismissSnackBar = {
-                authenticationViewModel.onUiEvents(AuthenticationEvents.OnSnackBarDismiss)
-            }
-        )
+        AuthenticateState.LOADING -> {
+            LoadingOverlay(
+                alpha = alpha
+            )
+        }
     }
 }
 
 @Composable
 private fun LoginContent(
     paddingValues: PaddingValues,
-    isLoading: Boolean,
     showLoginFields: Boolean,
     email: String,
     password: String,
@@ -178,7 +191,6 @@ private fun LoginContent(
     onButtonClick: () -> Unit,
     onCancelClick: () -> Unit,
     dimensions: Dimensions,
-    alpha: Alpha
 ) {
     Box(
         modifier = Modifier
@@ -187,29 +199,21 @@ private fun LoginContent(
     ) {
         LoginBackground()
 
-        if (!isLoading) {
-            LoginMainContent(
-                showLoginFields = showLoginFields,
-                email = email,
-                password = password,
-                buttonText = buttonText,
-                version = version,
-                onEmailChange = onEmailChange,
-                onPasswordChange = onPasswordChange,
-                onButtonClick = onButtonClick,
-                onCancelClick = onCancelClick,
-                dimensions = dimensions,
-                displaySnackBar = displaySnackBar,
-                errorMessage = errorMessage,
-                onDismissSnackBar = onDismissSnackBar,
-            )
-        }
-
-        if (isLoading) {
-            LoadingOverlay(
-                alpha = alpha
-            )
-        }
+        LoginMainContent(
+            showLoginFields = showLoginFields,
+            email = email,
+            password = password,
+            buttonText = buttonText,
+            version = version,
+            onEmailChange = onEmailChange,
+            onPasswordChange = onPasswordChange,
+            onButtonClick = onButtonClick,
+            onCancelClick = onCancelClick,
+            dimensions = dimensions,
+            displaySnackBar = displaySnackBar,
+            errorMessage = errorMessage,
+            onDismissSnackBar = onDismissSnackBar,
+        )
     }
 }
 
@@ -597,7 +601,7 @@ fun LoginScreenDarkThemePreview() {
     }
 }
 
-class WebTrackerViewModelPreview : IWebTrackerAuthenticationViewModel() {
+class WebTrackerViewModelPreview : BaseWebTrackerAuthenticationViewModel() {
     override val webTrackerAuthenticationState: WebTrackerAuthenticationState
         get() = WebTrackerAuthenticationState(
             showLoginFields = MutableStateFlow(true)

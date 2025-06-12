@@ -28,8 +28,8 @@ class AuthenticationRepositoryImpl @Inject constructor(
 
             if (isAuthenticatedRemotely) {
                 logger.i(logger.getTag(), "User authenticated successfully with remote service.")
-                val authenticatedUserId = authenticationRemoteDataSource.getLoginOrganization()
-                authenticatedUserId?.let { organization ->
+                val authenticatedOrganization = authenticationRemoteDataSource.getLoginOrganization()
+                authenticatedOrganization?.let { organization ->
                     logger.i(
                         logger.getTag(),
                         "Successfully retrieved userId after authentication."

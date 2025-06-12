@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">Web Tracker</string>
 
+    <!-- region Commons -->
+    <string name="commons_done">Concluído</string>
+    <string name="commons_error">Erro</string>
+    <!-- endregion -->
+
     <!-- region Authentication -->
     <string name="authentication_signIn">Entrar</string>
     <string name="authentication_login">Conectar</string>
@@ -13,6 +18,11 @@
     <string name="authentication_wrong_email_format_error">Email com formato invalido</string>
     <string name="authentication_empty_password_error">Campo da senha não deve ser vazio</string>
     <string name="login_locked_message">Limite de tentativas excedido. Nova tentativa permitida em %1$s</string>
+    <!-- endregion -->
+
+    <!-- region Employee Identification -->
+    <string name="employee_identification_confirm">Confirmar</string>
+    <string name="employee_identification_type_employee_number">Insira seu numero de matricula</string>
     <!-- endregion -->
 
     <!-- region Test Tags -->
