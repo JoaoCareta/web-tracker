@@ -1,4 +1,4 @@
-package com.joao.otavio.authentication_domain.di
+package com.joao.otavio.webtracker.di
 
 import android.content.Context
 import android.net.ConnectivityManager

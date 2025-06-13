@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.joao.otavio.authentication_presentation.ui.screens.DummyScreen
+import com.joao.otavio.identification_presentation.ui.screens.identification.EmployeeIdentificationScreen
 import com.joao.otavio.core.util.UiEvent
 import com.joao.otavio.authentication_presentation.ui.screens.authentication.AuthenticationScreen
 import com.joao.otavio.core.navigation.WebTrackerScreens
@@ -36,9 +36,9 @@ fun WebTrackerNavigation(appVersion: String) {
         }
 
         composable(
-            route = WebTrackerScreens.Dummy.route
+            route = WebTrackerScreens.EmployeeIdentification.route
         ) {
-            DummyScreen()
+            com.joao.otavio.identification_presentation.ui.screens.identification.EmployeeIdentificationScreen()
         }
     }
 }

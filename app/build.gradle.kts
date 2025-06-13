@@ -5,10 +5,12 @@ import dependencies.firebase.Firebase.FIREBASE_AUTHENTICATION
 import dependencies.firebase.Firebase.FIREBASE_CRASHLYTICS
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_ANDROID
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_COMPILER
+import dependencies.modules.Modules.Common.AUTHENTICATION_DATA
 import dependencies.modules.Modules.Common.AUTHENTICATION_DOMAIN
 import dependencies.modules.Modules.Common.AUTHENTICATION_PRESENTATION
 import dependencies.modules.Modules.Common.CORE
 import dependencies.modules.Modules.Common.DESIGN_SYSTEM
+import dependencies.modules.Modules.Common.IDENTIFICATION_PRESENTATION
 import dependencies.projectconfig.ProjectConfig.APP_ID
 import dependencies.projectconfig.ProjectConfig.APP_NAME
 import dependencies.projectconfig.ProjectConfig.COMPILE_SDK
@@ -195,9 +197,10 @@ dependencies {
 
     // Modules
     implementation(project(DESIGN_SYSTEM))
+    implementation(project(CORE))
     implementation(project(AUTHENTICATION_PRESENTATION))
     implementation(project(AUTHENTICATION_DOMAIN))
-    implementation(project(CORE))
+    implementation(project(IDENTIFICATION_PRESENTATION))
 
     // AndroidX - Testes
     testImplementation(libs.junit)

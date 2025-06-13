@@ -1,23 +1,23 @@
 package com.joao.otavio.authentication_presentation.viewmodel
 
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import androidx.lifecycle.viewModelScope
 import com.joao.otavio.authentication_presentation.events.AuthenticationEvents
-import com.joao.otavio.authentication_presentation.state.AuthenticateState.IDLE
 import com.joao.otavio.authentication_presentation.state.AuthenticateState.AUTHENTICATE
 import com.joao.otavio.authentication_presentation.state.AuthenticateState.ERROR
-import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType.AUTHENTICATION_FAILED
-import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType.NO_INTERNET_CONNECTION
-import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType.ACCOUNT_LOCKED
-import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType.EMPTY_EMAIL
-import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType.EMAIL_INVALID_FORMAT
-import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType.EMPTY_PASSWORD
+import com.joao.otavio.authentication_presentation.state.AuthenticateState.IDLE
+import com.joao.otavio.authentication_presentation.state.AuthenticateState.LOADING
 import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType
+import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType.ACCOUNT_LOCKED
+import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType.AUTHENTICATION_FAILED
+import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType.EMAIL_INVALID_FORMAT
+import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType.EMPTY_EMAIL
+import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType.EMPTY_PASSWORD
+import com.joao.otavio.authentication_presentation.state.AuthenticationErrorType.NO_INTERNET_CONNECTION
 import com.joao.otavio.authentication_presentation.state.WebTrackerAuthenticationState
 import com.joao.otavio.authentication_presentation.usecases.AuthenticateUserUseCase
 import com.joao.otavio.authentication_presentation.usecases.CheckOrganizationLoginStatusUseCase
 import com.joao.otavio.core.coroutine.CoroutineContextProvider
+import com.joao.otavio.core.util.IsNetworkAvailableUseCase
 import com.joao.otavio.core.util.TimeUtils.ONE_MINUTE
 import com.joao.otavio.core.util.TimeUtils.ONE_SECOND
 import com.joao.otavio.core.util.isValidEmail
@@ -32,9 +32,9 @@ import javax.inject.Inject
 class WebTrackerAuthenticationViewModel @Inject constructor(
     private val authenticateUserUseCase: AuthenticateUserUseCase,
     private val checkOrganizationLoginStatusUseCase: CheckOrganizationLoginStatusUseCase,
-    private val connectivityManager: ConnectivityManager,
+    private val isNetworkAvailableUseCase: IsNetworkAvailableUseCase,
     private val coroutineContextProvider: CoroutineContextProvider,
-) : IWebTrackerAuthenticationViewModel() {
+) : BaseWebTrackerAuthenticationViewModel() {
     override val webTrackerAuthenticationState: WebTrackerAuthenticationState = WebTrackerAuthenticationState()
 
     // Lock control variables
@@ -56,6 +56,7 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
             is AuthenticationEvents.OnTypingEmail -> handleOnTypingEmail(authenticationEvents.newEmailString)
             is AuthenticationEvents.OnTypingPassword -> handleOnTypingPassword(authenticationEvents.newPasswordString)
             is AuthenticationEvents.OnSnackBarDismiss -> handleSnackBarDismiss()
+            is AuthenticationEvents.OnAuthenticationStateUpdate -> handleAuthenticationStateUpdate()
         }
     }
 
@@ -65,18 +66,17 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
             return
         }
         viewModelScope.launch(coroutineContextProvider.IO) {
-            setLoading(true)
+            setLoading()
             checkOrganizationLoginStatusUseCase()
                 .onSuccess { isLoggedIn ->
-                    webTrackerAuthenticationState.isAuthenticateSucceed.update {
+                    webTrackerAuthenticationState.authenticateState.update {
                         if (isLoggedIn) AUTHENTICATE else IDLE
                     }
                 }
                 .onFailure { _ ->
                     showError(AUTHENTICATION_FAILED)
                 }
-            delay(ONE_SECOND)
-            setLoading(false)
+            delay(ONE_SECOND.inWholeMilliseconds)
         }
     }
 
@@ -84,7 +84,7 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
     private fun handleOnLoginUpClick() {
         if (!isOrganizationAbleToProceedWithAuthentication()) return
         viewModelScope.launch(coroutineContextProvider.IO) {
-            setLoading(true)
+            setLoading()
             authenticateUserUseCase(
                 webTrackerAuthenticationState.organizationEmail.value.trim(),
                 webTrackerAuthenticationState.organizationPassword.value
@@ -95,7 +95,6 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
                 .onFailure { _ ->
                     showError(AUTHENTICATION_FAILED)
                 }
-            setLoading(false)
         }
     }
 
@@ -198,12 +197,7 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
     }
 
     private fun isNetworkAvailable(): Boolean {
-        val networkCapabilities = connectivityManager.getNetworkCapabilities(
-            connectivityManager.activeNetwork
-        )
-        return networkCapabilities != null &&
-            (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))
+        return isNetworkAvailableUseCase.invoke()
     }
 
     // UI state handling
@@ -225,8 +219,12 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
         webTrackerAuthenticationState.displayErrorSnackBar.update { false }
     }
 
-    private fun setLoading(isLoading: Boolean) {
-        webTrackerAuthenticationState.isLoading.update { isLoading }
+    private fun handleAuthenticationStateUpdate() {
+        webTrackerAuthenticationState.authenticateState.update { IDLE }
+    }
+
+    private fun setLoading() {
+        webTrackerAuthenticationState.authenticateState.update { LOADING }
     }
 
     private fun showError(errorType: AuthenticationErrorType) {
@@ -236,7 +234,7 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
 
     private fun updateAuthenticateState(authenticationSucceed: Boolean) {
         val authenticateState = if (authenticationSucceed) AUTHENTICATE else ERROR
-        webTrackerAuthenticationState.isAuthenticateSucceed.update {
+        webTrackerAuthenticationState.authenticateState.update {
             authenticateState
         }
     }
@@ -250,4 +248,3 @@ class WebTrackerAuthenticationViewModel @Inject constructor(
         val BASE_LOCKOUT_DURATION = (ONE_MINUTE * 5).inWholeMilliseconds
     }
 }
-

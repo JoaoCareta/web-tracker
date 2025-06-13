@@ -6,6 +6,7 @@ import androidx.compose.ui.unit.dp
 
 data class Dimensions(
     val none: Dp = 0.dp,
+    val xNano: Dp = 0.5.dp,
     val nano: Dp = 1.dp,
     val micro: Dp = 2.dp,
     val tiny: Dp = 3.dp,

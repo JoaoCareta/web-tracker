@@ -1,4 +1,5 @@
 import dependencies.android.Android
+import dependencies.android.Android.AndroidX.LOTTIE_COMPOSE
 import dependencies.modules.Modules.Common.CORE
 import dependencies.projectconfig.ProjectConfig.COMPILE_SDK
 import dependencies.projectconfig.ProjectConfig.DEBUG
@@ -95,6 +96,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(LOTTIE_COMPOSE)
 
     // Modules
     implementation(project(CORE))

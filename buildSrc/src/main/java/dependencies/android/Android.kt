@@ -15,5 +15,8 @@ object Android {
 
         private const val DATA_STORE_VERSION = "1.1.7"
         const val DATA_STORE = "androidx.datastore:datastore-preferences:$DATA_STORE_VERSION"
+
+        private const val LOTTIE_VERSION = "6.6.0"
+        const val LOTTIE_COMPOSE = "com.airbnb.android:lottie-compose:${LOTTIE_VERSION}"
     }
 }
