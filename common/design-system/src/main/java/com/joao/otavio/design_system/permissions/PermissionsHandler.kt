@@ -1,4 +1,5 @@
 package com.joao.otavio.design_system.permissions
+
 import android.content.Context
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -15,6 +16,7 @@ import com.joao.otavio.core.navigation.WebTrackerScreens
 import com.joao.otavio.core.util.NavigationEvent
 import com.joao.otavio.core.util.PermissionUtils
 import com.joao.otavio.core.util.PermissionUtils.areAllPermissionsGranted
+import com.joao.otavio.utils.click.ClickUtils.doIfCanClick
 
 
 @Composable
@@ -178,24 +180,15 @@ private fun onMissingPermission(onNavigate: (NavigationEvent.Navigate) -> Unit) 
 @Composable
 fun rememberPermissionHandler(
     context: Context,
-    navigation: (NavigationEvent.Navigate) -> Unit
-): (action: () -> Unit) -> Unit {
-    val requestGeneralPermissions = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        if (!permissions.areAllPermissionsGranted()) {
-            onMissingPermission(navigation)
-        }
-    }
-
+): (action: () -> Unit, onDenied: () -> Unit) -> Unit {
     return remember(context) {
-        { action ->
-            if (PermissionUtils.checkAllPermissionsGranted(context)) {
-                action()
-            } else {
-                requestGeneralPermissions.launch(
-                    PermissionUtils.appGeneralPermissions()
-                )
+        { action, onDenied ->
+            doIfCanClick {
+                if (PermissionUtils.checkAllPermissionsGranted(context)) {
+                    action()
+                } else {
+                    onDenied()
+                }
             }
         }
     }

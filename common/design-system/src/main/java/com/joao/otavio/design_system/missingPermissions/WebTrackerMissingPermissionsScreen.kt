@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,10 +15,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -35,7 +40,9 @@ import com.joao.otavio.design_system.design.themes.WebTrackerTheme
 import com.joao.otavio.design_system.dimensions.LocalDimensions
 import com.joao.otavio.design_system.dimensions.LocalPaddings
 import com.joao.otavio.design_system.headers.LightHeader
+import com.joao.otavio.design_system.permissions.rememberPermissionHandler
 import com.joao.otavio.design_system.scaffold.WebTrackerScaffold
+import com.joao.otavio.design_system.snackbar.WebTrackerSnackBar
 import com.joao.otavio.webtracker.common.desygn.system.R
 
 @Composable
@@ -47,6 +54,21 @@ fun WebTrackerMissingPermissionsScreen(
     val dimensions = LocalDimensions.current
     val context = LocalContext.current
     val activity = context as? Activity
+    var showSnackBar by remember { mutableStateOf(false) }
+    val doWithGrantedPermissions = rememberPermissionHandler(
+        context = context,
+    )
+
+    BackHandler(enabled = true) {
+        doWithGrantedPermissions(
+            {
+                navigation.invoke(NavigationEvent.NavigateUp)
+            },
+            {
+                showSnackBar = true
+            }
+        )
+    }
 
     val areAllPermissionsGranted = remember(context) {
         PermissionUtils.checkAllPermissionsGranted(context)
@@ -75,7 +97,14 @@ fun WebTrackerMissingPermissionsScreen(
             LightHeader(
                 title = stringResource(R.string.missingPermissionsScreen_screen_title),
                 onClickLeft = {
-                    navigation.invoke(NavigationEvent.NavigateUp)
+                    doWithGrantedPermissions(
+                        {
+                            navigation.invoke(NavigationEvent.NavigateUp)
+                        },
+                        {
+                            showSnackBar = true
+                        }
+                    )
                 }
             )
         }
@@ -122,6 +151,18 @@ fun WebTrackerMissingPermissionsScreen(
                     )
                 }
             }
+
+            WebTrackerSnackBar(
+                visible = showSnackBar,
+                title = stringResource(R.string.missingPermissionsScreen_snackBar_title),
+                subtitle = stringResource(R.string.missingPermissionsScreen_snackBar_subtitle),
+                iconId = R.drawable.ic_close,
+                backgroundColor = MaterialTheme.colorScheme.error,
+                textColor = MaterialTheme.colorScheme.onError,
+                iconColor = MaterialTheme.colorScheme.onError,
+                duration = SnackbarDuration.Short.ordinal,
+                onDismiss = { showSnackBar = false }
+            )
 
             WebTrackerButton(
                 text = stringResource(R.string.missingPermissionsScreen_openSettings),
