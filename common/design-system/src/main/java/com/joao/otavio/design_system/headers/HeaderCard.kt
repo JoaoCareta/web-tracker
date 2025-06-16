@@ -38,10 +38,10 @@ fun HeaderCard(
     val dimensions = LocalDimensions.current
     Box(
         modifier = Modifier
-            .offset(y = -paddings.xSmall)
+            .offset(y = -paddings.xxxSmall)
             .padding(
-                start = paddings.xLarge,
-                end = paddings.xLarge,
+                start = paddings.xSmall,
+                end = paddings.xSmall,
             )
             .fillMaxWidth()
             .height(dimensions.giant)
@@ -61,7 +61,6 @@ fun HeaderCard(
             text = headerText,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = paddings.xSmall)
                 .clickable { onInitialTextClick.invoke() },
             theme = webTrackerTheme
         )
@@ -87,7 +86,7 @@ fun InitialsWithText(
             end = paddings.xSmall
         ),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
+        horizontalArrangement = Arrangement.Start,
     ) {
         Box(
             modifier = Modifier
@@ -110,7 +109,7 @@ fun InitialsWithText(
             )
         }
 
-        Spacer(modifier = Modifier.width(dimensions.xxSmall))
+        Spacer(modifier = Modifier.width(dimensions.xSmall))
 
         Text(
             text = text,

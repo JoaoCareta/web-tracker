@@ -21,6 +21,7 @@ import com.joao.otavio.design_system.design.themes.MainTheme
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
 import com.joao.otavio.design_system.dimensions.LocalDimensions
 import com.joao.otavio.design_system.dimensions.LocalFontSize
+import com.joao.otavio.utils.click.ClickUtils.doIfCanClick
 
 @Composable
 fun WebTrackerButton(
@@ -37,7 +38,11 @@ fun WebTrackerButton(
     val adjustedPadding = dimensionsValues.xSmall / fontScale.coerceAtLeast(1f)
 
     Button(
-        onClick = onClick,
+        onClick = {
+            doIfCanClick {
+                onClick.invoke()
+            }
+        },
         modifier = modifier
             .padding(dimensionsValues.medium)
             .fillMaxWidth()

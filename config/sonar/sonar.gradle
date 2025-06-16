@@ -74,6 +74,7 @@ sonarqube {
                 "src/**/screens/**",
                 "src/**/migrations/**",
                 "src/**/*DAO.kt",
+                "src/**/utils/**",
                 "src/**/RawTrackingDataReader.kt",
                 "src/**/authentication_data/**",
                 "src/**/authentication_domain/di/**",
