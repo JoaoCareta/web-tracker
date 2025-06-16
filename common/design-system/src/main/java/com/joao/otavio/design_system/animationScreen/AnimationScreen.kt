@@ -21,7 +21,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.joao.otavio.core.util.TimeUtils.ONE_SECOND
+import com.joao.otavio.core.util.TimeUtils.HALF_SECOND
 import com.joao.otavio.design_system.dimensions.LocalDimensions
 import com.joao.otavio.design_system.dimensions.LocalFontSize
 import kotlinx.coroutines.delay
@@ -49,7 +49,7 @@ fun SuccessAnimationScreen(
     LaunchedEffect(animationState.isAtEnd && composition != null) {
         if (animationState.isAtEnd && isPlaying) {
             isPlaying = false
-            delay(ONE_SECOND.inWholeMilliseconds)
+            delay(HALF_SECOND)
             onAnimationEnd()
         }
     }

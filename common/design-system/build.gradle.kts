@@ -1,6 +1,7 @@
 import dependencies.android.Android
 import dependencies.android.Android.AndroidX.LOTTIE_COMPOSE
 import dependencies.modules.Modules.Common.CORE
+import dependencies.modules.Modules.Common.UTILS
 import dependencies.projectconfig.ProjectConfig.COMPILE_SDK
 import dependencies.projectconfig.ProjectConfig.DEBUG
 import dependencies.projectconfig.ProjectConfig.DESIGN_SYSTEM_NAME_SPACE
@@ -100,6 +101,7 @@ dependencies {
 
     // Modules
     implementation(project(CORE))
+    implementation(project(UTILS))
 
     // AndroidX - Testes
     testImplementation(libs.junit)

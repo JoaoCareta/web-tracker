@@ -1,5 +1,6 @@
 package com.joao.otavio.identification_presentation.ui.screens.identification
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,10 +21,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import com.joao.otavio.core.util.NavigationEvent
 import com.joao.otavio.design_system.buttons.WebTrackerButton
 import com.joao.otavio.design_system.design.themes.DarkTheme
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
@@ -32,19 +35,31 @@ import com.joao.otavio.design_system.dimensions.Paddings
 import com.joao.otavio.design_system.headers.HeaderCard
 import com.joao.otavio.design_system.headers.LightHeader
 import com.joao.otavio.design_system.outlinedTextField.WebTrackerOutlinedTextField
+import com.joao.otavio.design_system.permissions.PermissionsHandler
 import com.joao.otavio.design_system.scaffold.WebTrackerScaffold
+import com.joao.otavio.utils.click.ClickUtils.doIfCanClick
 import com.joao.otavio.webtracker.common.desygn.system.R
 
 @Composable
 fun EmployeeIdentificationScreen(
-    webTrackerTheme: WebTrackerTheme = WebTrackerTheme
+    webTrackerTheme: WebTrackerTheme = WebTrackerTheme,
+    navigation: (NavigationEvent.Navigate) -> Unit,
 ) {
     val paddings = LocalPaddings.current
+    val context = LocalContext.current
+
+    PermissionsHandler(
+        navigation = navigation,
+        context = context
+    )
 
     WebTrackerScaffold(
         topBar = {
             EmployeeIdentificationTopAppBar(
-                webTrackerTheme = webTrackerTheme
+                webTrackerTheme = webTrackerTheme,
+                onClickLeft = {
+                    Toast.makeText(context, "Engine click", Toast.LENGTH_SHORT).show()
+                }
             )
         },
         contentColor = webTrackerTheme.background
@@ -57,7 +72,10 @@ fun EmployeeIdentificationScreen(
         ) {
             EmployeeIdentification(
                 paddings = paddings,
-                webTrackerTheme = webTrackerTheme
+                webTrackerTheme = webTrackerTheme,
+                onConfirmClick = {
+                    Toast.makeText(context, "Confirm click", Toast.LENGTH_SHORT).show()
+                }
             )
         }
     }
@@ -66,7 +84,8 @@ fun EmployeeIdentificationScreen(
 @Composable
 private fun EmployeeIdentification(
     paddings: Paddings,
-    webTrackerTheme: WebTrackerTheme
+    webTrackerTheme: WebTrackerTheme,
+    onConfirmClick: () -> Unit
 ) {
     var employeeIdentification by remember { mutableStateOf("") }
     Column(
@@ -93,14 +112,18 @@ private fun EmployeeIdentification(
         )
         WebTrackerButton(
             text = stringResource(R.string.employee_identification_confirm),
-            onClick = { },
+            onClick = onConfirmClick,
             theme = webTrackerTheme,
         )
     }
 }
 
 @Composable
-fun EmployeeIdentificationTopAppBar(webTrackerTheme: WebTrackerTheme) {
+fun EmployeeIdentificationTopAppBar(
+    webTrackerTheme: WebTrackerTheme,
+    onClickLeft: () -> Unit
+) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .background(webTrackerTheme.primary)
@@ -109,13 +132,17 @@ fun EmployeeIdentificationTopAppBar(webTrackerTheme: WebTrackerTheme) {
             title = "Matricula do operador",
             theme = webTrackerTheme,
             onClickLeftIcon = rememberVectorPainter(Icons.Default.Settings),
-            onClickLeft = {  }
+            onClickLeft = onClickLeft
         )
 
         HeaderCard(
             headerText = "Web Tracker Organization",
             webTrackerTheme = webTrackerTheme,
-            onInitialTextClick = {  }
+            onInitialTextClick = {
+                doIfCanClick {
+                    Toast.makeText(context, "Organization click", Toast.LENGTH_SHORT).show()
+                }
+            }
         )
     }
 }
@@ -124,7 +151,9 @@ fun EmployeeIdentificationTopAppBar(webTrackerTheme: WebTrackerTheme) {
 @Composable
 fun EmployeeIdentificationScreenPreview() {
     WebTrackerTheme {
-        EmployeeIdentificationScreen()
+        EmployeeIdentificationScreen(
+            navigation = {}
+        )
     }
 }
 
@@ -132,6 +161,6 @@ fun EmployeeIdentificationScreenPreview() {
 @Composable
 fun EmployeeIdentificationScreenDarkPreview() {
     WebTrackerTheme {
-        EmployeeIdentificationScreen(webTrackerTheme = DarkTheme())
+        EmployeeIdentificationScreen(webTrackerTheme = DarkTheme(), navigation = {})
     }
 }

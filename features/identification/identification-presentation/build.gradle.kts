@@ -7,6 +7,7 @@ import dependencies.hilt.DaggerHilt.DAGGER_HILT_VIEWMODEL
 import dependencies.modules.Modules.Common.AUTHENTICATION_DATA
 import dependencies.modules.Modules.Common.CORE
 import dependencies.modules.Modules.Common.DESIGN_SYSTEM
+import dependencies.modules.Modules.Common.UTILS
 import dependencies.projectconfig.ProjectConfig.AUTHENTICATION_DOMAIN_NAME_SPACE
 import dependencies.projectconfig.ProjectConfig.AUTHENTICATION_PRESENTATION_NAME_SPACE
 import dependencies.projectconfig.ProjectConfig.COMPILE_SDK
@@ -138,6 +139,7 @@ dependencies {
     implementation(project(DESIGN_SYSTEM))
     implementation(project(AUTHENTICATION_DATA))
     implementation(project(CORE))
+    implementation(project(UTILS))
 
     // AndroidX - Testes
     testImplementation(libs.junit)

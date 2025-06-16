@@ -59,7 +59,7 @@ fun LightHeader(
                 .padding(
                     start = paddingValues.xSmall,
                     end = paddingValues.xSmall,
-                    bottom = paddingValues.medium,
+                    bottom = paddingValues.xSmall,
                     top = paddingValues.xSmall
                 )
         ) {
@@ -89,7 +89,7 @@ fun LightHeader(
                     .padding(horizontal = paddingValues.xSmall)
                     .weight(1f)
                     .fillMaxWidth(),
-                fontSize = fontValues.xSmall,
+                fontSize = fontValues.small,
                 fontWeight = FontWeight.Bold,
                 color = MainTheme().primary,
                 maxLines = 1,

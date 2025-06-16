@@ -25,11 +25,22 @@
     <string name="employee_identification_type_employee_number">Insira seu numero de matricula</string>
     <!-- endregion -->
 
+    <!-- region Missing permissions -->
+    <string name="missingPermissionsScreen_screen_title">Permissões</string>
+    <string name="missingPermissionsScreen_title">Aguarde...</string>
+    <string name="missingPermissionsScreen_explanationText">Para um bom funcionamento, o WebTracker app precisa de todas as permissões solicitadas. \n\n Ative as permissões nas configurações do dispositivo.\n\n* Obs.: O aplicativo coleta dados de localização para habilitar atividades de monitoramento nos talhões, mesmo quando o aplicativo está fechado ou não esta em uso, para isso é necessário que seja dada permissão para acessar o GPS \"o tempo todo\".</string>
+    <string name="missingPermissionsScreen_openSettings">Acessar configurações</string>
+    <!-- endregion -->
+
     <!-- region Test Tags -->
     <string name="app_name_header_tag_test">app_name_header</string>
     <string name="app_name_footer_tag_test">app_name_footer</string>
     <string name="app_version_text_tag_test">version_text</string>
     <string name="authentication_loading_indicator_tag_test">loading_indicator</string>
     <string name="authentication_error_snack_bar_tag_test">error_snack_bar</string>
+    <string name="popup_location_permission_checkbox">Autorizar acesso a localização o tempo todo.</string>
+    <string name="popup_location_permission_description">O aplicativo coleta dados de localização para habilitar atividades de monitoramento nos talhões, mesmo quando o aplicativo está fechado ou não esta em uso.\\nAutorize o acesso a localização para continuar usando o app.</string>
+    <string name="popup_permission_cancel">Cancelar</string>
+    <string name="popup_permission_confirm">Confirmar</string>
     <!-- endregion -->
 </resources>

@@ -52,8 +52,9 @@ import com.joao.otavio.authentication_presentation.state.WebTrackerAuthenticatio
 import com.joao.otavio.authentication_presentation.viewmodel.BaseWebTrackerAuthenticationViewModel
 import com.joao.otavio.authentication_presentation.viewmodel.WebTrackerAuthenticationViewModel
 import com.joao.otavio.core.navigation.WebTrackerScreens
-import com.joao.otavio.core.util.UiEvent
+import com.joao.otavio.core.util.NavigationEvent
 import com.joao.otavio.core.util.formatToMinutesAndSeconds
+import com.joao.otavio.design_system.animationScreen.SuccessAnimationScreen
 import com.joao.otavio.design_system.buttons.WebTrackerButton
 import com.joao.otavio.design_system.design.themes.MainTheme
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
@@ -64,7 +65,6 @@ import com.joao.otavio.design_system.dimensions.LocalDimensions
 import com.joao.otavio.design_system.outlinedTextField.WebTrackerOutlinedTextField
 import com.joao.otavio.design_system.scaffold.WebTrackerScaffold
 import com.joao.otavio.design_system.snackbar.WebTrackerSnackBar
-import com.joao.otavio.design_system.animationScreen.SuccessAnimationScreen
 import com.joao.otavio.webtracker.common.desygn.system.R
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -72,7 +72,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 @Composable
 fun AuthenticationScreen(
     version: String,
-    onEnterClick: (UiEvent.Navigate) -> Unit,
+    onEnterClick: (NavigationEvent.Navigate) -> Unit,
     modifier: Modifier = Modifier,
     authenticationViewModel: BaseWebTrackerAuthenticationViewModel = hiltViewModel<WebTrackerAuthenticationViewModel>()
 ) {
@@ -158,11 +158,7 @@ fun AuthenticationScreen(
                 animatedTextColor = WebTrackerTheme.secondary,
                 onAnimationEnd = {
                     onEnterClick.invoke(
-                        UiEvent.Navigate(
-                            route = WebTrackerScreens.EmployeeIdentification.route,
-                            popUpToRoute = WebTrackerScreens.Authentication.route,
-                            inclusive = true
-                        )
+                        WebTrackerScreens.EmployeeIdentification.navigateReplacingStack()
                     )
                 }
             )
