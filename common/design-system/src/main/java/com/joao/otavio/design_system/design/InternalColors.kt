@@ -1,9 +1,9 @@
 package com.joao.otavio.design_system.design
 
 object InternalColors {
-    // region Protector - Main Theme
-    const val green1a = 0xFF198746
-    const val green2a = 0xFF16793E
+    // region WebTracker - Main Theme
+    const val green1a = 0xFF00573E
+    const val green2a = 0xFF004331
     const val green2_5b = 0xFF2E957C
     const val green3a = 0xFF8CC3A3
     const val green4a = 0xFFD3F6D9
@@ -36,7 +36,7 @@ object InternalColors {
     const val white = 0xFFFFFFFF
     // endregion
 
-    // region Protector - Dark Theme
+    // region WebTracker - Dark Theme
     // includes gray1
     const val dark1 = 0xFF121212
     const val dark2 = 0xFF1E1E1E
@@ -73,7 +73,7 @@ object InternalColors {
     const val genericPoint = 0xFF779D09
     // endregion
 
-    // region Protector Scout App - Menu Navigation
+    // region WebTracker - Menu Navigation
     const val monitoring = green1a
     const val phenology = 0xFF7ED66B
     const val fixedPoint = 0xFF48CB7D

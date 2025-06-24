@@ -7,8 +7,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.joao.otavio.design_system.dimensions.LocalDimensions
+import com.joao.otavio.design_system.dimensions.LocalPaddings
 
 @Composable
 fun UnitList(
@@ -18,14 +18,15 @@ fun UnitList(
     onEnterUnitClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val paddings = LocalPaddings.current
     val sortedUnitsList = units.sortedByDescending { it.isDownloadedUnit }
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
             .padding(
-                top = 16.dp,
-                start = 4.dp,
-                end = 4.dp
+                top = paddings.xSmall,
+                start = paddings.mini,
+                end = paddings.mini
             ),
         verticalArrangement = Arrangement.spacedBy(LocalDimensions.current.xxxSmall)
     ) {
@@ -46,7 +47,6 @@ fun UnitList(
     }
 }
 
-// Preview
 @Preview(showBackground = true)
 @Composable
 fun UnitListPreview() {
@@ -101,7 +101,6 @@ fun UnitListPreview() {
     )
 }
 
-// Classe Unit
 data class Units(
     val unitUuid: String,
     val unitName: String,

@@ -30,9 +30,10 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
+import com.joao.otavio.design_system.dimensions.LocalDimensions
+import com.joao.otavio.design_system.dimensions.LocalFontSize
+import com.joao.otavio.design_system.dimensions.LocalPaddings
 import com.joao.otavio.webtracker.common.desygn.system.R
 
 @Composable
@@ -42,15 +43,18 @@ fun LocationPermissionDialog(
     webTrackerTheme: WebTrackerTheme = WebTrackerTheme
 ) {
     val isChecked = remember { mutableStateOf(false) }
+    val fontSize = LocalFontSize.current
+    val paddings = LocalPaddings.current
+    val dimensions = LocalDimensions.current
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .background(
                 color = webTrackerTheme.background,
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(paddings.xSmall)
             )
-            .padding(24.dp)
+            .padding(paddings.large)
     ) {
         Column {
             Row(
@@ -60,32 +64,32 @@ fun LocationPermissionDialog(
                     painter = painterResource(id = R.drawable.ic_location_permission),
                     contentDescription = "",
                     modifier = Modifier
-                        .size(36.dp)
+                        .size(dimensions.xxLarge)
                 )
 
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(dimensions.xSmall))
 
                 Text(
                     text = stringResource(id = R.string.popup_location_permission_description),
                     style = MaterialTheme.typography.bodyLarge.copy(
-                        fontSize = 16.sp,
+                        fontSize = fontSize.xSmall,
                         color = webTrackerTheme.primaryText
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(dimensions.xSmall))
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 52.dp)
+                    .padding(start = paddings.xxHuge)
             ) {
                 Checkbox(
                     checked = isChecked.value,
                     onCheckedChange = { isChecked.value = it },
-                    modifier = Modifier.padding(end = 8.dp),
+                    modifier = Modifier.padding(end = paddings.xxxSmall),
                     colors = CheckboxDefaults.colors(
                         checkedColor = webTrackerTheme.secondary,
                         uncheckedColor = webTrackerTheme.outline,
@@ -96,14 +100,14 @@ fun LocationPermissionDialog(
                 Text(
                     text = stringResource(id = R.string.popup_location_permission_checkbox),
                     style = MaterialTheme.typography.bodyLarge.copy(
-                        fontSize = 16.sp,
+                        fontSize = fontSize.xSmall,
                         color = webTrackerTheme.primaryText,
                         fontWeight = FontWeight.Bold
                     )
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(dimensions.xSmall))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -115,12 +119,12 @@ fun LocationPermissionDialog(
                         containerColor = webTrackerTheme.secondaryButtonEnabled
                     ),
                     modifier = Modifier
-                        .height(36.dp)
-                        .padding(end = 40.dp)
+                        .height(dimensions.xxLarge)
+                        .padding(end = paddings.xHuge)
                 ) {
                     Text(
                         text = stringResource(id = R.string.popup_permission_cancel),
-                        fontSize = 16.sp,
+                        fontSize = fontSize.xSmall,
                         fontFamily = FontFamily(Font(R.font.rubik)),
                         color = webTrackerTheme.primaryText
                     )
@@ -135,12 +139,16 @@ fun LocationPermissionDialog(
                         else
                             webTrackerTheme.secondaryButtonEnabled
                     ),
-                    modifier = Modifier.height(36.dp)
+                    modifier = Modifier.height(dimensions.xxLarge)
                 ) {
                     Text(
                         text = stringResource(id = R.string.popup_permission_confirm),
-                        fontSize = 16.sp,
-                        fontFamily = FontFamily(Font(R.font.rubik))
+                        fontSize = fontSize.xSmall,
+                        fontFamily = FontFamily(Font(R.font.rubik)),
+                        color = if (isChecked.value)
+                            webTrackerTheme.secondaryText
+                        else
+                            webTrackerTheme.primaryText
                     )
                 }
             }
@@ -156,4 +164,3 @@ fun LocationPermissionDialogPreview() {
         onCancel = {}
     )
 }
-
