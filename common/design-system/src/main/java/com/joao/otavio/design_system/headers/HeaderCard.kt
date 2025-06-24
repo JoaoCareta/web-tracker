@@ -38,7 +38,7 @@ fun HeaderCard(
     val dimensions = LocalDimensions.current
     Box(
         modifier = Modifier
-            .offset(y = -paddings.xxxSmall)
+            .offset(y = -paddings.small)
             .padding(
                 start = paddings.xSmall,
                 end = paddings.xSmall,

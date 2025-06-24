@@ -27,11 +27,17 @@
 
     <!-- region Missing permissions -->
     <string name="missingPermissionsScreen_screen_title">Permissões</string>
-    <string name="missingPermissionsScreen_title">Aguarde...</string>
-    <string name="missingPermissionsScreen_explanationText">Para um bom funcionamento, o WebTracker app precisa de todas as permissões solicitadas. \n\n Ative as permissões nas configurações do dispositivo.\n\n* Obs.: O aplicativo coleta dados de localização para habilitar atividades de monitoramento nos talhões, mesmo quando o aplicativo está fechado ou não esta em uso, para isso é necessário que seja dada permissão para acessar o GPS \"o tempo todo\".</string>
+    <string name="missingPermissionsScreen_title">Ops...</string>
+    <string name="missingPermissionsScreen_explanationText">Para funcionar corretamente, o aplicativo necessita de todas as autorizações requisitadas. \n\n Configure as permissões através das configurações do seu smartphone.\n\n* Nota: O app utiliza dados de GPS para permitir o monitoramento das áreas agrícolas, inclusive quando estiver em segundo plano ou não estiver sendo usado, por isso é necessário conceder acesso à localização \"sempre\".</string>
     <string name="missingPermissionsScreen_openSettings">Acessar configurações</string>
     <string name="missingPermissionsScreen_snackBar_title">Permissões Necessárias</string>
     <string name="missingPermissionsScreen_snackBar_subtitle">Por favor, conceda as permissões necessárias para continuar</string>
+    <!-- endregion -->
+
+    <!-- region Units list -->
+    <string name="unitListItem_download_unit">Baixar</string>
+    <string name="unitListItem_access_unit">Acessar unidade</string>
+    <string name="unitListItem_update_unit">Atualizar</string>
     <!-- endregion -->
 
     <!-- region Test Tags -->

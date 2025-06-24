@@ -55,6 +55,7 @@ object InternalColors {
     const val acceptance = 0xFF2FB966
     const val control = 0xFFFFCA28
     const val damage = 0xFFF74141
+    const val damageDark = 0xFFD13636
     // endregion
 
     // region Tags

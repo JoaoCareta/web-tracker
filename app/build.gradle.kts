@@ -126,13 +126,12 @@ android {
 
     productFlavors {
         create(STAGING) {
-            /**
-             * manifestPlaceholders += mapOf(
-             *                 "appIcon" to "@mipmap/ic_launcher_qa",
-             *                 "appRoundIcon" to "@mipmap/ic_launcher_qa_round",
-             *                 "appAuthRedirectScheme" to "com.cropwise.scout.staging"
-             *             )
-             */
+
+            manifestPlaceholders += mapOf(
+                "appIcon" to "@mipmap/ic_launcher_qa",
+                "appRoundIcon" to "@mipmap/ic_launcher_qa_round",
+            )
+
 
             dimension = VERSION
             applicationIdSuffix = STAGING_SUFFIX
@@ -141,13 +140,12 @@ android {
         }
 
         create(PROD) {
-            /**
-             * manifestPlaceholders += mapOf(
-             *                 "appIcon" to "@mipmap/ic_launcher",
-             *                 "appRoundIcon" to "@mipmap/ic_launcher_round",
-             *                 "appAuthRedirectScheme" to "com.cropwise.scout"
-             *             )
-             */
+
+            manifestPlaceholders += mapOf(
+                "appIcon" to "@mipmap/ic_launcher",
+                "appRoundIcon" to "@mipmap/ic_launcher_round",
+            )
+
             dimension = VERSION
             applicationIdSuffix = PROD_SUFFIX
             resValue("string", "app_name", appName)
@@ -171,7 +169,7 @@ dependencies {
     // AndroidX - Core e Lifecycle
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation (DATA_STORE)
+    implementation(DATA_STORE)
 
     // AndroidX - Compose
     implementation(libs.androidx.activity.compose)
