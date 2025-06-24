@@ -32,6 +32,6 @@ class MainTheme : WebTrackerTheme {
 
     override val neutralStatus by lazy { Color(InternalColors.gray4) }
     override val doneStatus by lazy { Color(InternalColors.acceptance) }
-    override val lateStatus by lazy { Color(InternalColors.damage) }
+    override val lateStatus by lazy { Color(InternalColors.damageDark) }
     override val error by lazy { Color(InternalColors.damage) }
 }

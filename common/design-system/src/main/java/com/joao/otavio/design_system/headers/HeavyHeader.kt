@@ -36,7 +36,7 @@ import com.joao.otavio.design_system.dimensions.LocalDimensions
 import com.joao.otavio.webtracker.common.desygn.system.R
 
 @Composable
-fun LightHeader(
+fun HeavyHeader(
     title: String,
     onClickLeftIcon: Painter = painterResource(R.drawable.ic_arrow_left),
     onClickLeft: (() -> Unit)? = null,
@@ -62,8 +62,8 @@ fun LightHeader(
                 .padding(
                     start = paddingValues.xSmall,
                     end = paddingValues.xSmall,
-                    bottom = paddingValues.xxxSmall,
-                    top = paddingValues.xxxSmall
+                    bottom = paddingValues.large,
+                    top = paddingValues.xSmall
                 )
         ) {
             Button(
@@ -126,7 +126,7 @@ fun LightHeader(
 @Preview
 @Composable
 private fun LightHeaderPreview() {
-    LightHeader(
+    HeavyHeader(
         "Web Tracker Organization",
         onClickLeft = {},
         onClickRight = {},
@@ -137,7 +137,7 @@ private fun LightHeaderPreview() {
 @Preview
 @Composable
 private fun LightHeaderDarkPreview() {
-    LightHeader(
+    HeavyHeader(
         "Web Tracker - Preview with two lines",
         onClickLeft = {},
         onClickRight = {},
@@ -148,7 +148,7 @@ private fun LightHeaderDarkPreview() {
 @Preview
 @Composable
 private fun LightHeaderTextOverLimitPreview() {
-    LightHeader(
+    HeavyHeader(
         "Web Tracker - Preview with more than two lines to preview",
         onClickLeft = {},
         onClickRight = {},
@@ -159,7 +159,7 @@ private fun LightHeaderTextOverLimitPreview() {
 @Preview
 @Composable
 private fun LightHeaderTextOverLimitDarkPreview() {
-    LightHeader(
+    HeavyHeader(
         "Web Tracker - Preview with more than two lines to preview",
         onClickLeft = {},
         onClickRight = {},

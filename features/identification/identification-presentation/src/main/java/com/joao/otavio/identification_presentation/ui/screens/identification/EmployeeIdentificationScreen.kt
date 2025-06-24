@@ -32,8 +32,7 @@ import com.joao.otavio.design_system.design.themes.DarkTheme
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
 import com.joao.otavio.design_system.dimensions.LocalPaddings
 import com.joao.otavio.design_system.dimensions.Paddings
-import com.joao.otavio.design_system.headers.HeaderCard
-import com.joao.otavio.design_system.headers.LightHeader
+import com.joao.otavio.design_system.headers.WebTrackerTopBarHandler
 import com.joao.otavio.design_system.outlinedTextField.WebTrackerOutlinedTextField
 import com.joao.otavio.design_system.permissions.PermissionsHandler
 import com.joao.otavio.design_system.scaffold.WebTrackerScaffold
@@ -92,7 +91,10 @@ private fun EmployeeIdentification(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(paddings.xSmall),
+            .padding(
+                start = paddings.xSmall,
+                end = paddings.xSmall
+            ),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -128,16 +130,12 @@ fun EmployeeIdentificationTopAppBar(
         modifier = Modifier
             .background(webTrackerTheme.primary)
     ) {
-        LightHeader(
+        WebTrackerTopBarHandler(
             title = "Matricula do operador",
             theme = webTrackerTheme,
             onClickLeftIcon = rememberVectorPainter(Icons.Default.Settings),
-            onClickLeft = onClickLeft
-        )
-
-        HeaderCard(
+            onClickLeft = onClickLeft,
             headerText = "Web Tracker Organization",
-            webTrackerTheme = webTrackerTheme,
             onInitialTextClick = {
                 doIfCanClick {
                     Toast.makeText(context, "Organization click", Toast.LENGTH_SHORT).show()

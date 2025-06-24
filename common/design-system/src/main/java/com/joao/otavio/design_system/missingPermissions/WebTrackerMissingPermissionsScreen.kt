@@ -39,7 +39,7 @@ import com.joao.otavio.design_system.buttons.WebTrackerButton
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
 import com.joao.otavio.design_system.dimensions.LocalDimensions
 import com.joao.otavio.design_system.dimensions.LocalPaddings
-import com.joao.otavio.design_system.headers.LightHeader
+import com.joao.otavio.design_system.headers.WebTrackerTopBarHandler
 import com.joao.otavio.design_system.permissions.rememberPermissionHandler
 import com.joao.otavio.design_system.scaffold.WebTrackerScaffold
 import com.joao.otavio.design_system.snackbar.WebTrackerSnackBar
@@ -94,7 +94,7 @@ fun WebTrackerMissingPermissionsScreen(
     WebTrackerScaffold(
         modifier = modifier,
         topBar = {
-            LightHeader(
+            WebTrackerTopBarHandler(
                 title = stringResource(R.string.missingPermissionsScreen_screen_title),
                 onClickLeft = {
                     doWithGrantedPermissions(
@@ -105,7 +105,9 @@ fun WebTrackerMissingPermissionsScreen(
                             showSnackBar = true
                         }
                     )
-                }
+                },
+                backgroundColor = WebTrackerTheme.error,
+                iconsColor = WebTrackerTheme.lateStatus
             )
         }
     ) { paddingValues ->
@@ -167,7 +169,8 @@ fun WebTrackerMissingPermissionsScreen(
             WebTrackerButton(
                 text = stringResource(R.string.missingPermissionsScreen_openSettings),
                 onClick = { openDeviceSettings.invoke() },
-                modifier = Modifier.padding(horizontal = paddings.xSmall)
+                modifier = Modifier.padding(horizontal = paddings.xSmall),
+                buttonColor = WebTrackerTheme.error
             )
         }
     }
