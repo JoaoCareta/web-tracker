@@ -33,6 +33,8 @@ import dependencies.projectconfig.ProjectConfig.VERSION
 import dependencies.projectconfig.ProjectConfig.KEY_PASSWORD
 import dependencies.projectconfig.ProjectConfig.STORE_FILE
 import dependencies.scripts.Scripts.GIT_VERSION_PATH
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -48,6 +50,12 @@ plugins {
 apply("$rootDir/$GIT_VERSION_PATH")
 
 val appName = APP_NAME
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties()
+
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
 
 android {
     namespace = NAME_SPACE
@@ -61,10 +69,10 @@ android {
 
     signingConfigs {
         create(RELEASE) {
-            keyAlias = System.getenv(KEY_ALIAS) ?: ""
-            keyPassword = System.getenv(KEY_PASSWORD) ?: ""
-            storeFile = file("keystore/release.keystore")
-            storePassword = System.getenv(STORE_PASSWORD) ?: ""
+            keyAlias = System.getenv(KEY_ALIAS) ?: keystoreProperties[KEY_ALIAS] as String
+            keyPassword = System.getenv(KEY_PASSWORD) ?: keystoreProperties[KEY_PASSWORD] as String
+            storeFile = file("../keystore")
+            storePassword = System.getenv(STORE_PASSWORD) ?: keystoreProperties[STORE_PASSWORD] as String
         }
     }
 
