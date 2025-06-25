@@ -15,8 +15,7 @@ executors:
       - image: cimg/android:2024.01
     resource_class: medium
     environment:
-      JAVA_TOOL_OPTIONS: "-Xmx2g -XX:+UseG1GC -XX:MaxGCPauseMillis=100"
-      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs=-Xmx2g"
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.jvmargs=-Xmx2g"
 
 # ----------------------------
 # References Section
@@ -104,38 +103,10 @@ commands:
             echo "Content of local.properties (masked):"
             cat local.properties | sed 's/\(MAPBOX_ACCESS_TOKEN=\).*/\1****/'
 
-  optimize-gradle-build:
-    steps:
-      - run:
-          name: Optimize Gradle Build
-          command: |
-            # Limpa o cache do Gradle
-            rm -rf ~/.gradle/caches/
-            # Configura o Gradle para modo offline
-            mkdir -p ~/.gradle
-            echo "org.gradle.parallel=false" >> ~/.gradle/gradle.properties
-            echo "org.gradle.workers.max=1" >> ~/.gradle/gradle.properties
-            echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
-            echo "org.gradle.jvmargs=-Xmx2g -XX:+HeapDumpOnOutOfMemoryError" >> ~/.gradle/gradle.properties
-
 # ----------------------------
 # Jobs Section
 # ----------------------------
 jobs:
-  # Debug Environment
-  debug-environment:
-    <<: *android_config
-    steps:
-      - checkout
-      - run:
-          name: Debug Environment
-          command: |
-            echo "Workspace: $PWD"
-            echo "List of environment variables:"
-            env | grep -v ENCODED_KEYSTORE
-            echo "Directory structure:"
-            ls -R
-
   # Tests and Code Quality
   test-and-sonar:
     <<: *android_config
@@ -145,31 +116,23 @@ jobs:
       - android/restore-gradle-cache
       - setup-mapbox
       - setup-keystore
-      - optimize-gradle-build
       - run:
-          name: Run Tests
-          command: make test
-      - run:
-          name: Generate Coverage Reports
+          name: Run Tests and Generate Coverage
           command: |
-            echo "Generating coverage reports..."
+            make test
             make coverage
-
-            echo "Checking generated reports..."
-            find . -name "jacocoTestReport*.xml" -type f -exec echo "=== {} ===" \; -exec cat {} \;
-
-            # Criar diretório para relatórios consolidados
+            
+            # Criar diretório para relatórios
             mkdir -p coverage-reports
-            cp $(find . -name "jacocoTestReport*.xml") coverage-reports/ || echo "No coverage reports found"
+            find . -name "jacocoTestReport*.xml" -exec cp {} coverage-reports/ \; || echo "No coverage reports found"
       - run:
           name: Execute SonarQube Scanner
           command: ./gradlew sonarqube -Dsonar.login="$SONAR_TOKEN"
       - store_artifacts:
-          path: app/build/reports/jacoco/jacocoTestReport-staging-unified/html
-          destination: reports/coverage
-      - store_artifacts:
-          path: app/build/reports/jacoco/jacocoTestReport-staging-unified/jacocoTestReport-staging-unified.xml
-          destination: reports/coverage-xml
+          paths:
+            - app/build/reports/jacoco/jacocoTestReport-staging-unified/html
+            - app/build/reports/jacoco/jacocoTestReport-staging-unified/jacocoTestReport-staging-unified.xml
+          destination: reports
       - store_test_results:
           path: build/test-results
       - android/save-gradle-cache
@@ -180,18 +143,14 @@ jobs:
     steps:
       - set-android-java-version
       - checkout
-      - attach_workspace:
-          at: .
       - setup-mapbox
       - setup-keystore
       - setup-firebase
-      - optimize-gradle-build
       - run:
-          name: Build Staging App
-          command: make build-staging
-      - run:
-          name: Deploy to Firebase
-          command: make deploy-firebase
+          name: Build and Deploy
+          command: |
+            make build-staging
+            make deploy-firebase
       - store_artifacts:
           path: app/build/outputs/apk/
           destination: apks/
@@ -203,15 +162,7 @@ workflows:
   version: 2
   build-test-deploy:
     jobs:
-      # Debug Environment
-      - debug-environment
-
-      # Tests and Quality Gate
-      - test-and-sonar:
-          requires:
-            - debug-environment
-
-      # Deploy to QA
+      - test-and-sonar
       - deploy-qa:
           requires:
             - test-and-sonar
