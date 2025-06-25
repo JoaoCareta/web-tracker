@@ -127,7 +127,14 @@ jobs:
             find . -name "jacocoTestReport*.xml" -exec cp {} coverage-reports/ \; || echo "No coverage reports found"
       - run:
           name: Execute SonarQube Scanner
-          command: ./gradlew sonarqube -Dsonar.login="$SONAR_TOKEN"
+          command: |
+            ./gradlew sonar \
+              -Dsonar.token="$SONAR_TOKEN" \
+              -Dsonar.junit.reportPaths=**/build/test-results/testStagingDebugUnitTest \
+              -Dsonar.coverage.jacoco.xmlReportPaths=**/build/reports/jacoco/jacocoTestReport-staging-unified/jacocoTestReport-staging-unified.xml \
+              -Dsonar.androidLint.reportPaths=**/build/reports/lint-results-stagingDebug.xml \
+              -Dsonar.java.binaries=**/build/intermediates/javac/stagingDebug/classes \
+              -Dsonar.kotlin.binaries=**/build/tmp/kotlin-classes/stagingDebug
       - store_artifacts:
           path: app/build/reports/jacoco/jacocoTestReport-staging-unified/html
           destination: reports/coverage-html

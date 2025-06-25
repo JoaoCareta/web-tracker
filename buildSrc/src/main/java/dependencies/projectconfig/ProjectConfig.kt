@@ -23,6 +23,8 @@ object ProjectConfig {
     const val COMPILE_SDK = 35
     const val MIN_SDK = 24
     const val TARGET_SDK = 35
+    const val GIT_VERSION_CODE = "gitVersionCode"
+    const val GIT_VERSION_NAME = "gitVersionName"
 
     /**
      * SIGNING CONFIG
@@ -31,6 +33,9 @@ object ProjectConfig {
     const val KEY_PASSWORD = "KEY_PASSWORD"
     const val STORE_FILE = "STORE_FILE"
     const val STORE_PASSWORD = "STORE_PASSWORD"
+    const val KEYSTORE_PATH = "KEYSTORE_PATH"
+    const val LOCAL_KEYSTORE_PATH = "../keystore"
+    const val REMOTE_KEYSTORE_PATH = "keystore/release.keystore"
 
     /**
      * Build Types
@@ -60,4 +65,15 @@ object ProjectConfig {
      * Kotlin Options
      */
     const val JVM_TARGET = "11"
+
+    /**
+     * MAPBOX CONFIG
+     */
+    const val MAPBOX_ACCESS_TOKEN = "MAPBOX_ACCESS_TOKEN"
+
+    /**
+     * PROPERTIES CONFIG
+     */
+    const val KEYSTORE_PROPERTIES = "keystore.properties"
+    const val LOCAL_PROPERTIES = "local.properties"
 }

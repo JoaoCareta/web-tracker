@@ -19,7 +19,11 @@ import dependencies.projectconfig.ProjectConfig.APP_NAME
 import dependencies.projectconfig.ProjectConfig.COMPILE_SDK
 import dependencies.projectconfig.ProjectConfig.DEBUG
 import dependencies.projectconfig.ProjectConfig.DEBUG_SUFFIX
+import dependencies.projectconfig.ProjectConfig.GIT_VERSION_CODE
+import dependencies.projectconfig.ProjectConfig.GIT_VERSION_NAME
 import dependencies.projectconfig.ProjectConfig.JVM_TARGET
+import dependencies.projectconfig.ProjectConfig.KEYSTORE_PATH
+import dependencies.projectconfig.ProjectConfig.KEYSTORE_PROPERTIES
 import dependencies.projectconfig.ProjectConfig.KEY_ALIAS
 import dependencies.projectconfig.ProjectConfig.MIN_SDK
 import dependencies.projectconfig.ProjectConfig.NAME_SPACE
@@ -34,6 +38,10 @@ import dependencies.projectconfig.ProjectConfig.TARGET_SDK
 import dependencies.projectconfig.ProjectConfig.TESTERS_GROUP_NAME
 import dependencies.projectconfig.ProjectConfig.VERSION
 import dependencies.projectconfig.ProjectConfig.KEY_PASSWORD
+import dependencies.projectconfig.ProjectConfig.LOCAL_KEYSTORE_PATH
+import dependencies.projectconfig.ProjectConfig.LOCAL_PROPERTIES
+import dependencies.projectconfig.ProjectConfig.MAPBOX_ACCESS_TOKEN
+import dependencies.projectconfig.ProjectConfig.REMOTE_KEYSTORE_PATH
 import dependencies.projectconfig.ProjectConfig.STORE_FILE
 import dependencies.scripts.Scripts.GIT_VERSION_PATH
 import java.io.FileInputStream
@@ -53,10 +61,10 @@ plugins {
 apply("$rootDir/$GIT_VERSION_PATH")
 
 val appName = APP_NAME
-val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystorePropertiesFile = rootProject.file(KEYSTORE_PROPERTIES)
 val keystoreProperties = Properties()
 
-val localPropertiesFile = rootProject.file("local.properties")
+val localPropertiesFile = rootProject.file(LOCAL_PROPERTIES)
 val localProperties = Properties()
 
 if (keystorePropertiesFile.exists()) {
@@ -70,10 +78,10 @@ if (localPropertiesFile.exists()) {
 fun getKeystorePath(): File {
 
     val possiblePaths = listOf(
-        System.getenv("KEYSTORE_PATH"),
-        keystoreProperties["STORE_FILE"]?.toString(),
-        "keystore/release.keystore",
-        "../keystore",
+        System.getenv(KEYSTORE_PATH),
+        keystoreProperties[STORE_FILE]?.toString(),
+        REMOTE_KEYSTORE_PATH,
+        LOCAL_KEYSTORE_PATH,
     )
 
     return possiblePaths
@@ -106,17 +114,17 @@ android {
         applicationId = APP_ID
         minSdk = MIN_SDK
         targetSdk = TARGET_SDK
-        versionCode = "${extra["gitVersionCode"] ?: 3333}".toInt()
-        versionName = "${extra["gitVersionName"] ?: "1.1.0"}"
+        versionCode = "${extra[GIT_VERSION_CODE] ?: 3333}".toInt()
+        versionName = "${extra[GIT_VERSION_NAME] ?: "1.1.0"}"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        val mapboxToken = localProperties["MAPBOX_ACCESS_TOKEN"]?.toString()
-            ?: System.getenv("MAPBOX_ACCESS_TOKEN")
+        val mapboxToken = localProperties[MAPBOX_ACCESS_TOKEN]?.toString()
+            ?: System.getenv(MAPBOX_ACCESS_TOKEN)
 
-        buildConfigField("String", "MAPBOX_ACCESS_TOKEN", "\"$mapboxToken\"")
+        buildConfigField("String", MAPBOX_ACCESS_TOKEN, "\"$mapboxToken\"")
         manifestPlaceholders += mapOf(
-            "MAPBOX_ACCESS_TOKEN" to mapboxToken
+            MAPBOX_ACCESS_TOKEN to mapboxToken
         )
     }
 
