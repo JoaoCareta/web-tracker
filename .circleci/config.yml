@@ -17,6 +17,7 @@ executors:
     environment:
       JAVA_TOOL_OPTIONS: "-Xmx2g -XX:+UseG1GC -XX:MaxGCPauseMillis=100"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs=-Xmx2g"
+      MAPBOX_ACCESS_TOKEN: ${MAPBOX_ACCESS_TOKEN}
 
 # ----------------------------
 # References Section
@@ -81,6 +82,13 @@ commands:
             # Ajusta as permissões
             chmod 600 $KEYSTORE_PATH
 
+  setup-mapbox:
+    steps:
+      - run:
+          name: Setup Mapbox Token
+          command: |
+            echo "MAPBOX_ACCESS_TOKEN=${MAPBOX_ACCESS_TOKEN}" >> local.properties
+
   optimize-gradle-build:
     steps:
       - run:
@@ -121,6 +129,7 @@ jobs:
       - checkout
       - android/restore-gradle-cache
       - setup-keystore
+      - setup-mapbox
       - optimize-gradle-build
       - run:
           name: Run Tests
@@ -160,6 +169,7 @@ jobs:
           at: .
       - setup-keystore
       - setup-firebase
+      - setup-mapbox
       - optimize-gradle-build
       - run:
           name: Build Staging App

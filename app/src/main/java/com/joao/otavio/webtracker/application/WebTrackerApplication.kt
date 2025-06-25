@@ -4,12 +4,15 @@ import android.app.Application
 import android.content.res.Configuration
 import com.joao.otavio.design_system.design.themes.AppThemes
 import com.joao.otavio.design_system.design.utils.ThemeUtils
+import com.joao.otavio.webtracker.BuildConfig
+import com.mapbox.common.MapboxOptions
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class WebTrackerApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        MapboxOptions.accessToken = BuildConfig.MAPBOX_ACCESS_TOKEN
         setInitialTheme()
     }
 
