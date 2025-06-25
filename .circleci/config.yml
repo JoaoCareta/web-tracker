@@ -141,8 +141,6 @@ jobs:
       - store_artifacts:
           path: app/build/reports/jacoco/jacocoTestReport-staging-unified/jacocoTestReport-staging-unified.xml
           destination: reports/coverage-xml
-      - store_test_results:
-          path: build/test-results
       - android/save-gradle-cache
 
   # Deployment
