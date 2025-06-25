@@ -11,6 +11,7 @@ import dependencies.modules.Modules.Common.AUTHENTICATION_PRESENTATION
 import dependencies.modules.Modules.Common.CORE
 import dependencies.modules.Modules.Common.DESIGN_SYSTEM
 import dependencies.modules.Modules.Common.IDENTIFICATION_PRESENTATION
+import dependencies.modules.Modules.Common.MAP_PRESENTATION
 import dependencies.projectconfig.ProjectConfig.APP_ID
 import dependencies.projectconfig.ProjectConfig.APP_NAME
 import dependencies.projectconfig.ProjectConfig.COMPILE_SDK
@@ -207,6 +208,7 @@ dependencies {
     implementation(project(AUTHENTICATION_PRESENTATION))
     implementation(project(AUTHENTICATION_DOMAIN))
     implementation(project(IDENTIFICATION_PRESENTATION))
+    implementation(project(MAP_PRESENTATION))
 
     // AndroidX - Testes
     testImplementation(libs.junit)

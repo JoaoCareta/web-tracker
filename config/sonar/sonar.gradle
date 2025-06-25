@@ -92,7 +92,8 @@ sonarqube {
                 "src/**/utils/database/*Dao*",
                 "src/**/core/database/*Database*",
                 "src/**/authentication_data/database/OrganizationDao*",
-                "src/**/authentication_data/mapper/OrganizationMapper*"
+                "src/**/authentication_data/mapper/OrganizationMapper*",
+                "src/**/map_presentation/ui/**"
         ]
 
         property "sonar.report.export.path", "sonar-report.json"

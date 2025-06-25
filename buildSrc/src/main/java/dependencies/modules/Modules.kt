@@ -9,6 +9,8 @@ object Modules {
 
         const val IDENTIFICATION_PRESENTATION = ":features:identification:identification-presentation"
 
+        const val MAP_PRESENTATION = ":features:map:map-presentation"
+
         const val CORE = ":core"
         const val UTILS = ":common:utils"
         const val DESIGN_SYSTEM = ":common:design-system"

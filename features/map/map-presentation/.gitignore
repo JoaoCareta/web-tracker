@@ -503,9 +503,6 @@ app/*/images/tiles/farmshots/visual/**/*.png
 # secrets file
 secrets.properties
 sentry.properties
-/keystore.properties
-keystore.properties
-/keystore
 
 # mapbox
 features/map/map-presentation/src/main/res/values/developer-config.xml

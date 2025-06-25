@@ -47,7 +47,7 @@
     <string name="authentication_loading_indicator_tag_test">loading_indicator</string>
     <string name="authentication_error_snack_bar_tag_test">error_snack_bar</string>
     <string name="popup_location_permission_checkbox">Autorizar acesso a localização o tempo todo.</string>
-    <string name="popup_location_permission_description">O aplicativo coleta dados de localização para habilitar atividades de monitoramento nos talhões, mesmo quando o aplicativo está fechado ou não esta em uso.\\nAutorize o acesso a localização para continuar usando o app.</string>
+    <string name="popup_location_permission_description">O aplicativo coleta dados de localização para habilitar atividades de monitoramento nos talhões, mesmo quando o aplicativo está fechado ou não esta em uso.\nAutorize o acesso a localização para continuar usando o app.</string>
     <string name="popup_permission_cancel">Cancelar</string>
     <string name="popup_permission_confirm">Confirmar</string>
     <!-- endregion -->

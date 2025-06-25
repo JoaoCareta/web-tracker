@@ -12,24 +12,23 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import com.joao.otavio.design_system.buttons.WebTrackerButton
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
 import com.joao.otavio.design_system.dimensions.LocalDimensions
 import com.joao.otavio.design_system.dimensions.LocalFontSize
@@ -42,7 +41,7 @@ fun LocationPermissionDialog(
     onCancel: () -> Unit,
     webTrackerTheme: WebTrackerTheme = WebTrackerTheme
 ) {
-    val isChecked = remember { mutableStateOf(false) }
+    val isChecked = rememberSaveable { mutableStateOf(false) }
     val fontSize = LocalFontSize.current
     val paddings = LocalPaddings.current
     val dimensions = LocalDimensions.current
@@ -56,9 +55,12 @@ fun LocationPermissionDialog(
             )
             .padding(paddings.large)
     ) {
-        Column {
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState())
+        ) {
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_location_permission),
@@ -84,7 +86,7 @@ fun LocationPermissionDialog(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = paddings.xxHuge)
+                    .padding(start = paddings.xxHuge, bottom = paddings.xSmall)
             ) {
                 Checkbox(
                     checked = isChecked.value,
@@ -113,44 +115,23 @@ fun LocationPermissionDialog(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                Button(
+                WebTrackerButton(
+                    text = stringResource(id = R.string.popup_permission_cancel),
                     onClick = onCancel,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = webTrackerTheme.secondaryButtonEnabled
-                    ),
                     modifier = Modifier
-                        .height(dimensions.xxLarge)
-                        .padding(end = paddings.xHuge)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.popup_permission_cancel),
-                        fontSize = fontSize.xSmall,
-                        fontFamily = FontFamily(Font(R.font.rubik)),
-                        color = webTrackerTheme.primaryText
-                    )
-                }
+                        .weight(1f)
+                        .padding(end = paddings.xSmall),
+                    buttonColor = webTrackerTheme.secondaryIcon,
+                    disablePadding = true
+                )
 
-                Button(
+                WebTrackerButton(
+                    text = stringResource(id = R.string.popup_permission_confirm),
                     onClick = onConfirm,
+                    modifier = Modifier.weight(1f),
                     enabled = isChecked.value,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isChecked.value)
-                            webTrackerTheme.secondary
-                        else
-                            webTrackerTheme.secondaryButtonEnabled
-                    ),
-                    modifier = Modifier.height(dimensions.xxLarge)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.popup_permission_confirm),
-                        fontSize = fontSize.xSmall,
-                        fontFamily = FontFamily(Font(R.font.rubik)),
-                        color = if (isChecked.value)
-                            webTrackerTheme.secondaryText
-                        else
-                            webTrackerTheme.primaryText
-                    )
-                }
+                    disablePadding = true
+                )
             }
         }
     }
