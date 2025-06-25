@@ -13,6 +13,7 @@ import com.joao.otavio.core.util.NavigationEvent
 import com.joao.otavio.core.util.NavigationType
 import com.joao.otavio.design_system.missingPermissions.WebTrackerMissingPermissionsScreen
 import com.joao.otavio.identification_presentation.ui.screens.identification.EmployeeIdentificationScreen
+import com.joao.otavio.map_presentation.ui.screens.webTrackerMap.WebTrackerMap
 
 @Composable
 fun WebTrackerNavigation(appVersion: String) {
@@ -51,6 +52,14 @@ fun WebTrackerNavigation(appVersion: String) {
         ) {
             WebTrackerMissingPermissionsScreen(
                 navigation = navController::navigateTo
+            )
+        }
+
+        composable(
+            route = WebTrackerScreens.WebTrackerMap.route
+        ) {
+            WebTrackerMap(
+                onNavigate = navController::navigateTo
             )
         }
     }

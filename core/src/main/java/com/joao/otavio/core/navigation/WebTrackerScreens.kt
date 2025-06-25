@@ -30,6 +30,10 @@ sealed class WebTrackerScreens : NavigationCommand {
         override val route = "missingPermissions"
     }
 
+    data object WebTrackerMap : WebTrackerScreens() {
+        override val route = "webTrackerMap"
+    }
+
     fun navigateReplacingStack(): NavigationEvent.Navigate = NavigationEvent.Navigate(
         route = this,
         navigationType = NavigationType.REPLACE_STACK

@@ -17,6 +17,8 @@ object ProjectConfig {
 
     const val IDENTIFICATION_PRESENTATION_NAME_SPACE = "com.joao.otavio.webtracker.features.identification.identification.presentation"
 
+    const val MAP_PRESENTATION_NAME_SPACE = "com.joao.otavio.webtracker.features.map.map.presentation"
+
     const val APP_ID = "com.joao.otavio.webtracker"
     const val COMPILE_SDK = 35
     const val MIN_SDK = 24

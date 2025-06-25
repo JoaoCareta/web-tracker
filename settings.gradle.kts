@@ -16,6 +16,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // Mapbox Maven repository
+        maven {
+            url = uri("https://api.mapbox.com/downloads/v2/releases/maven")
+        }
+
     }
 }
 
@@ -32,3 +37,5 @@ include(":features:authentication:authentication-data")
 include(":common:utils")
 include(":features:identification")
 include(":features:identification:identification-presentation")
+include(":features:map")
+include(":features:map:map-presentation")

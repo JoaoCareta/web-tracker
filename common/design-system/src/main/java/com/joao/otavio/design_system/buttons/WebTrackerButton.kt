@@ -23,6 +23,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.joao.otavio.design_system.design.themes.DarkTheme
 import com.joao.otavio.design_system.design.themes.MainTheme
@@ -42,7 +43,8 @@ fun WebTrackerButton(
     buttonColor: Color = theme.secondary,
     leftIcon: Painter? = null,
     iconTint: Color = MainTheme().primary,
-    disablePadding: Boolean = false
+    disablePadding: Boolean = false,
+    roundedCornerSize : Dp = 8.dp
 ) {
     val dimensionsValues = LocalDimensions.current
     val configuration = LocalConfiguration.current
@@ -68,7 +70,7 @@ fun WebTrackerButton(
             disabledContainerColor = theme.secondaryButtonEnabled,
             disabledContentColor = theme.thirdText
         ),
-        shape = RoundedCornerShape(dimensionsValues.xxxSmall),
+        shape = RoundedCornerShape(roundedCornerSize),
         contentPadding = PaddingValues(horizontal = adjustedPadding),
     ) {
         Row(
