@@ -5,6 +5,8 @@ import dependencies.firebase.Firebase.FIREBASE_AUTHENTICATION
 import dependencies.firebase.Firebase.FIREBASE_CRASHLYTICS
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_ANDROID
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_COMPILER
+import dependencies.map.Mapbox.MAPBOX_ANDROID
+import dependencies.map.Mapbox.MAPBOX_COMPOSE_EXTENSION
 import dependencies.modules.Modules.Common.AUTHENTICATION_DATA
 import dependencies.modules.Modules.Common.AUTHENTICATION_DOMAIN
 import dependencies.modules.Modules.Common.AUTHENTICATION_PRESENTATION
@@ -54,8 +56,31 @@ val appName = APP_NAME
 val keystorePropertiesFile = rootProject.file("keystore.properties")
 val keystoreProperties = Properties()
 
+val localPropertiesFile = rootProject.file("local.properties")
+val localProperties = Properties()
+
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
+
+fun getKeystorePath(): File {
+
+    val possiblePaths = listOf(
+        System.getenv("KEYSTORE_PATH"),
+        keystoreProperties["STORE_FILE"]?.toString(),
+        "keystore/release.keystore",
+        "../keystore",
+    )
+
+    return possiblePaths
+        .filterNotNull()
+        .map { path -> rootProject.file(path) }
+        .firstOrNull { it.exists() }
+        ?: rootProject.file(possiblePaths.last().toString())
 }
 
 android {
@@ -72,7 +97,7 @@ android {
         create(RELEASE) {
             keyAlias = System.getenv(KEY_ALIAS) ?: keystoreProperties[KEY_ALIAS] as String
             keyPassword = System.getenv(KEY_PASSWORD) ?: keystoreProperties[KEY_PASSWORD] as String
-            storeFile = file("keystore/release.keystore")
+            storeFile = getKeystorePath()
             storePassword = System.getenv(STORE_PASSWORD) ?: keystoreProperties[STORE_PASSWORD] as String
         }
     }
@@ -85,6 +110,9 @@ android {
         versionName = "${extra["gitVersionName"] ?: "1.1.0"}"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "MAPBOX_ACCESS_TOKEN", "\"${localProperties["MAPBOX_ACCESS_TOKEN"] ?: System.getenv("MAPBOX_ACCESS_TOKEN") ?: ""}\"")
+        resValue("string", "mapbox_access_token", "${localProperties["MAPBOX_ACCESS_TOKEN"] ?: System.getenv("MAPBOX_ACCESS_TOKEN") ?: ""}")
     }
 
     buildTypes {
@@ -201,6 +229,10 @@ dependencies {
     // Hilt
     kapt(DAGGER_HILT_COMPILER)
     implementation(DAGGER_HILT_ANDROID)
+
+    // Mapbox
+    implementation(MAPBOX_ANDROID)
+    implementation(MAPBOX_COMPOSE_EXTENSION)
 
     // Modules
     implementation(project(DESIGN_SYSTEM))

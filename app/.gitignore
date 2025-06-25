@@ -23,6 +23,7 @@ out/
 build/
 **/.cxx
 **/mapping.txt
+gradle.properties
 
 # Local configuration file (sdk path, etc)
 local.properties
