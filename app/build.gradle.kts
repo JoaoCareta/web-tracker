@@ -72,7 +72,7 @@ android {
         create(RELEASE) {
             keyAlias = System.getenv(KEY_ALIAS) ?: keystoreProperties[KEY_ALIAS] as String
             keyPassword = System.getenv(KEY_PASSWORD) ?: keystoreProperties[KEY_PASSWORD] as String
-            storeFile = file("../keystore")
+            storeFile = file("keystore/release.keystore")
             storePassword = System.getenv(STORE_PASSWORD) ?: keystoreProperties[STORE_PASSWORD] as String
         }
     }
