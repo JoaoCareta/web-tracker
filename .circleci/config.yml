@@ -15,9 +15,7 @@ executors:
       - image: cimg/android:2024.01
     resource_class: medium
     environment:
-      JAVA_TOOL_OPTIONS: "-Xmx2g -XX:+UseG1GC -XX:MaxGCPauseMillis=100"
-      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs=-Xmx2g"
-      MAPBOX_ACCESS_TOKEN: ${MAPBOX_ACCESS_TOKEN}
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.jvmargs=-Xmx2g"
 
 # ----------------------------
 # References Section
@@ -87,40 +85,28 @@ commands:
       - run:
           name: Setup Mapbox Token
           command: |
-            echo "MAPBOX_ACCESS_TOKEN=${MAPBOX_ACCESS_TOKEN}" >> local.properties
+            if [ -z "$MAPBOX_ACCESS_TOKEN" ]; then
+              echo "ERROR: MAPBOX_ACCESS_TOKEN is not set"
+              exit 1
+            fi
 
-  optimize-gradle-build:
-    steps:
-      - run:
-          name: Optimize Gradle Build
-          command: |
-            # Limpa o cache do Gradle
-            rm -rf ~/.gradle/caches/
-            # Configura o Gradle para modo offline
-            mkdir -p ~/.gradle
-            echo "org.gradle.parallel=false" >> ~/.gradle/gradle.properties
-            echo "org.gradle.workers.max=1" >> ~/.gradle/gradle.properties
-            echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
-            echo "org.gradle.jvmargs=-Xmx2g -XX:+HeapDumpOnOutOfMemoryError" >> ~/.gradle/gradle.properties
+            # Cria local.properties se não existir
+            touch local.properties
+
+            # Remove linha antiga do MAPBOX_ACCESS_TOKEN se existir
+            sed -i '/MAPBOX_ACCESS_TOKEN/d' local.properties
+
+            # Adiciona novo token
+            echo "MAPBOX_ACCESS_TOKEN=$MAPBOX_ACCESS_TOKEN" >> local.properties
+
+            # Mostra o conteúdo do arquivo (sem mostrar o token completo)
+            echo "Content of local.properties (masked):"
+            cat local.properties | sed 's/\(MAPBOX_ACCESS_TOKEN=\).*/\1****/'
 
 # ----------------------------
 # Jobs Section
 # ----------------------------
 jobs:
-  # Debug Environment
-  debug-environment:
-    <<: *android_config
-    steps:
-      - checkout
-      - run:
-          name: Debug Environment
-          command: |
-            echo "Workspace: $PWD"
-            echo "List of environment variables:"
-            env | grep -v ENCODED_KEYSTORE
-            echo "Directory structure:"
-            ls -R
-
   # Tests and Code Quality
   test-and-sonar:
     <<: *android_config
@@ -128,35 +114,33 @@ jobs:
       - set-android-java-version
       - checkout
       - android/restore-gradle-cache
-      - setup-keystore
       - setup-mapbox
-      - optimize-gradle-build
+      - setup-keystore
       - run:
-          name: Run Tests
-          command: make test
-      - run:
-          name: Generate Coverage Reports
+          name: Run Tests and Generate Coverage
           command: |
-            echo "Generating coverage reports..."
+            make test
             make coverage
-
-            echo "Checking generated reports..."
-            find . -name "jacocoTestReport*.xml" -type f -exec echo "=== {} ===" \; -exec cat {} \;
-
-            # Criar diretório para relatórios consolidados
+            
+            # Criar diretório para relatórios
             mkdir -p coverage-reports
-            cp $(find . -name "jacocoTestReport*.xml") coverage-reports/ || echo "No coverage reports found"
+            find . -name "jacocoTestReport*.xml" -exec cp {} coverage-reports/ \; || echo "No coverage reports found"
       - run:
           name: Execute SonarQube Scanner
-          command: ./gradlew sonarqube -Dsonar.login="$SONAR_TOKEN"
+          command: |
+            ./gradlew sonar \
+              -Dsonar.token="$SONAR_TOKEN" \
+              -Dsonar.junit.reportPaths=**/build/test-results/testStagingDebugUnitTest \
+              -Dsonar.coverage.jacoco.xmlReportPaths=**/build/reports/jacoco/jacocoTestReport-staging-unified/jacocoTestReport-staging-unified.xml \
+              -Dsonar.androidLint.reportPaths=**/build/reports/lint-results-stagingDebug.xml \
+              -Dsonar.java.binaries=**/build/intermediates/javac/stagingDebug/classes \
+              -Dsonar.kotlin.binaries=**/build/tmp/kotlin-classes/stagingDebug
       - store_artifacts:
           path: app/build/reports/jacoco/jacocoTestReport-staging-unified/html
-          destination: reports/coverage
+          destination: reports/coverage-html
       - store_artifacts:
           path: app/build/reports/jacoco/jacocoTestReport-staging-unified/jacocoTestReport-staging-unified.xml
           destination: reports/coverage-xml
-      - store_test_results:
-          path: build/test-results
       - android/save-gradle-cache
 
   # Deployment
@@ -165,18 +149,14 @@ jobs:
     steps:
       - set-android-java-version
       - checkout
-      - attach_workspace:
-          at: .
+      - setup-mapbox
       - setup-keystore
       - setup-firebase
-      - setup-mapbox
-      - optimize-gradle-build
       - run:
-          name: Build Staging App
-          command: make build-staging
-      - run:
-          name: Deploy to Firebase
-          command: make deploy-firebase
+          name: Build and Deploy
+          command: |
+            make build-staging
+            make deploy-firebase
       - store_artifacts:
           path: app/build/outputs/apk/
           destination: apks/
@@ -188,15 +168,7 @@ workflows:
   version: 2
   build-test-deploy:
     jobs:
-      # Debug Environment
-      - debug-environment
-
-      # Tests and Quality Gate
-      - test-and-sonar:
-          requires:
-            - debug-environment
-
-      # Deploy to QA
+      - test-and-sonar
       - deploy-qa:
           requires:
             - test-and-sonar
