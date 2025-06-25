@@ -129,10 +129,11 @@ jobs:
           name: Execute SonarQube Scanner
           command: ./gradlew sonarqube -Dsonar.login="$SONAR_TOKEN"
       - store_artifacts:
-          paths:
-            - app/build/reports/jacoco/jacocoTestReport-staging-unified/html
-            - app/build/reports/jacoco/jacocoTestReport-staging-unified/jacocoTestReport-staging-unified.xml
-          destination: reports
+          path: app/build/reports/jacoco/jacocoTestReport-staging-unified/html
+          destination: reports/coverage-html
+      - store_artifacts:
+          path: app/build/reports/jacoco/jacocoTestReport-staging-unified/jacocoTestReport-staging-unified.xml
+          destination: reports/coverage-xml
       - store_test_results:
           path: build/test-results
       - android/save-gradle-cache
