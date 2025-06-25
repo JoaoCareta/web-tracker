@@ -21,19 +21,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WebTracker"
         tools:targetApi="31">
+
+        <meta-data
+            android:name="com.mapbox.token"
+            android:value="${MAPBOX_ACCESS_TOKEN}" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.WebTracker">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <meta-data
-                android:name="com.mapbox.token"
-                android:value="${MAPBOX_ACCESS_TOKEN}" />
         </activity>
     </application>
 

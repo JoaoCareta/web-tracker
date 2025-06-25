@@ -17,7 +17,6 @@ executors:
     environment:
       JAVA_TOOL_OPTIONS: "-Xmx2g -XX:+UseG1GC -XX:MaxGCPauseMillis=100"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs=-Xmx2g"
-      MAPBOX_ACCESS_TOKEN: ${MAPBOX_ACCESS_TOKEN}
 
 # ----------------------------
 # References Section
@@ -87,7 +86,23 @@ commands:
       - run:
           name: Setup Mapbox Token
           command: |
-            echo "MAPBOX_ACCESS_TOKEN=${MAPBOX_ACCESS_TOKEN}" >> local.properties
+            if [ -z "$MAPBOX_ACCESS_TOKEN" ]; then
+              echo "ERROR: MAPBOX_ACCESS_TOKEN is not set"
+              exit 1
+            fi
+
+            # Cria local.properties se não existir
+            touch local.properties
+
+            # Remove linha antiga do MAPBOX_ACCESS_TOKEN se existir
+            sed -i '/MAPBOX_ACCESS_TOKEN/d' local.properties
+
+            # Adiciona novo token
+            echo "MAPBOX_ACCESS_TOKEN=$MAPBOX_ACCESS_TOKEN" >> local.properties
+
+            # Mostra o conteúdo do arquivo (sem mostrar o token completo)
+            echo "Content of local.properties (masked):"
+            cat local.properties | sed 's/\(MAPBOX_ACCESS_TOKEN=\).*/\1****/'
 
   optimize-gradle-build:
     steps:
@@ -128,8 +143,8 @@ jobs:
       - set-android-java-version
       - checkout
       - android/restore-gradle-cache
-      - setup-keystore
       - setup-mapbox
+      - setup-keystore
       - optimize-gradle-build
       - run:
           name: Run Tests
@@ -167,9 +182,9 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
+      - setup-mapbox
       - setup-keystore
       - setup-firebase
-      - setup-mapbox
       - optimize-gradle-build
       - run:
           name: Build Staging App

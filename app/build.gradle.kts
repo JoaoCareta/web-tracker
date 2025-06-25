@@ -111,8 +111,13 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "MAPBOX_ACCESS_TOKEN", "\"${localProperties["MAPBOX_ACCESS_TOKEN"] ?: System.getenv("MAPBOX_ACCESS_TOKEN") ?: ""}\"")
-        resValue("string", "mapbox_access_token", "${localProperties["MAPBOX_ACCESS_TOKEN"] ?: System.getenv("MAPBOX_ACCESS_TOKEN") ?: ""}")
+        val mapboxToken = localProperties["MAPBOX_ACCESS_TOKEN"]?.toString()
+            ?: System.getenv("MAPBOX_ACCESS_TOKEN")
+
+        buildConfigField("String", "MAPBOX_ACCESS_TOKEN", "\"$mapboxToken\"")
+        manifestPlaceholders += mapOf(
+            "MAPBOX_ACCESS_TOKEN" to mapboxToken
+        )
     }
 
     buildTypes {
