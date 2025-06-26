@@ -21,11 +21,9 @@ import dependencies.projectconfig.ProjectConfig.DEBUG_SUFFIX
 import dependencies.projectconfig.ProjectConfig.GIT_VERSION_CODE
 import dependencies.projectconfig.ProjectConfig.GIT_VERSION_NAME
 import dependencies.projectconfig.ProjectConfig.JVM_TARGET
-import dependencies.projectconfig.ProjectConfig.KEYSTORE_PATH
 import dependencies.projectconfig.ProjectConfig.KEYSTORE_PROPERTIES
 import dependencies.projectconfig.ProjectConfig.KEY_ALIAS
 import dependencies.projectconfig.ProjectConfig.KEY_PASSWORD
-import dependencies.projectconfig.ProjectConfig.LOCAL_KEYSTORE_PATH
 import dependencies.projectconfig.ProjectConfig.LOCAL_PROPERTIES
 import dependencies.projectconfig.ProjectConfig.MAPBOX_ACCESS_TOKEN
 import dependencies.projectconfig.ProjectConfig.MIN_SDK
@@ -73,12 +71,6 @@ if (localPropertiesFile.exists()) {
     localProperties.load(FileInputStream(localPropertiesFile))
 }
 
-fun getKeystorePath(): File {
-    return if (File(REMOTE_KEYSTORE_PATH).exists()) {
-        File(REMOTE_KEYSTORE_PATH)
-    } else rootProject.file(LOCAL_KEYSTORE_PATH)
-}
-
 android {
     namespace = NAME_SPACE
     compileSdk = COMPILE_SDK
@@ -93,7 +85,7 @@ android {
         create(RELEASE) {
             keyAlias = System.getenv(KEY_ALIAS) ?: keystoreProperties[KEY_ALIAS] as String
             keyPassword = System.getenv(KEY_PASSWORD) ?: keystoreProperties[KEY_PASSWORD] as String
-            storeFile = getKeystorePath()
+            storeFile = file(REMOTE_KEYSTORE_PATH)
             storePassword = System.getenv(STORE_PASSWORD) ?: keystoreProperties[STORE_PASSWORD] as String
         }
     }
