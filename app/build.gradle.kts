@@ -7,7 +7,6 @@ import dependencies.hilt.DaggerHilt.DAGGER_HILT_ANDROID
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_COMPILER
 import dependencies.map.Mapbox.MAPBOX_ANDROID
 import dependencies.map.Mapbox.MAPBOX_COMPOSE_EXTENSION
-import dependencies.modules.Modules.Common.AUTHENTICATION_DATA
 import dependencies.modules.Modules.Common.AUTHENTICATION_DOMAIN
 import dependencies.modules.Modules.Common.AUTHENTICATION_PRESENTATION
 import dependencies.modules.Modules.Common.CORE
@@ -25,6 +24,10 @@ import dependencies.projectconfig.ProjectConfig.JVM_TARGET
 import dependencies.projectconfig.ProjectConfig.KEYSTORE_PATH
 import dependencies.projectconfig.ProjectConfig.KEYSTORE_PROPERTIES
 import dependencies.projectconfig.ProjectConfig.KEY_ALIAS
+import dependencies.projectconfig.ProjectConfig.KEY_PASSWORD
+import dependencies.projectconfig.ProjectConfig.LOCAL_KEYSTORE_PATH
+import dependencies.projectconfig.ProjectConfig.LOCAL_PROPERTIES
+import dependencies.projectconfig.ProjectConfig.MAPBOX_ACCESS_TOKEN
 import dependencies.projectconfig.ProjectConfig.MIN_SDK
 import dependencies.projectconfig.ProjectConfig.NAME_SPACE
 import dependencies.projectconfig.ProjectConfig.PROD
@@ -37,12 +40,6 @@ import dependencies.projectconfig.ProjectConfig.STORE_PASSWORD
 import dependencies.projectconfig.ProjectConfig.TARGET_SDK
 import dependencies.projectconfig.ProjectConfig.TESTERS_GROUP_NAME
 import dependencies.projectconfig.ProjectConfig.VERSION
-import dependencies.projectconfig.ProjectConfig.KEY_PASSWORD
-import dependencies.projectconfig.ProjectConfig.LOCAL_KEYSTORE_PATH
-import dependencies.projectconfig.ProjectConfig.LOCAL_PROPERTIES
-import dependencies.projectconfig.ProjectConfig.MAPBOX_ACCESS_TOKEN
-import dependencies.projectconfig.ProjectConfig.REMOTE_KEYSTORE_PATH
-import dependencies.projectconfig.ProjectConfig.STORE_FILE
 import dependencies.scripts.Scripts.GIT_VERSION_PATH
 import java.io.FileInputStream
 import java.util.Properties
@@ -76,19 +73,9 @@ if (localPropertiesFile.exists()) {
 }
 
 fun getKeystorePath(): File {
-
-    val possiblePaths = listOf(
-        System.getenv(KEYSTORE_PATH),
-        keystoreProperties[STORE_FILE]?.toString(),
-        REMOTE_KEYSTORE_PATH,
-        LOCAL_KEYSTORE_PATH,
-    )
-
-    return possiblePaths
-        .filterNotNull()
-        .map { path -> rootProject.file(path) }
-        .firstOrNull { it.exists() }
-        ?: rootProject.file(possiblePaths.last().toString())
+    return if (!System.getenv(KEYSTORE_PATH).isNullOrEmpty()) {
+        File(System.getenv(KEYSTORE_PATH))
+    } else rootProject.file(LOCAL_KEYSTORE_PATH)
 }
 
 android {
