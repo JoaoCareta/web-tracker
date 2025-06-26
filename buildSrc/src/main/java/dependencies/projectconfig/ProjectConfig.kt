@@ -31,11 +31,9 @@ object ProjectConfig {
      */
     const val KEY_ALIAS = "KEY_ALIAS"
     const val KEY_PASSWORD = "KEY_PASSWORD"
-    const val STORE_FILE = "STORE_FILE"
     const val STORE_PASSWORD = "STORE_PASSWORD"
     const val KEYSTORE_PATH = "KEYSTORE_PATH"
     const val LOCAL_KEYSTORE_PATH = "keystore"
-    const val REMOTE_KEYSTORE_PATH = "keystore/release.keystore"
 
     /**
      * Build Types
