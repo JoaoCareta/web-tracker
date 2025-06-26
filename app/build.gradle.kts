@@ -34,6 +34,7 @@ import dependencies.projectconfig.ProjectConfig.PROD
 import dependencies.projectconfig.ProjectConfig.PROD_SUFFIX
 import dependencies.projectconfig.ProjectConfig.RELEASE
 import dependencies.projectconfig.ProjectConfig.RELEASE_NOTES_FILE
+import dependencies.projectconfig.ProjectConfig.REMOTE_KEYSTORE_PATH
 import dependencies.projectconfig.ProjectConfig.STAGING
 import dependencies.projectconfig.ProjectConfig.STAGING_SUFFIX
 import dependencies.projectconfig.ProjectConfig.STORE_PASSWORD
@@ -73,8 +74,8 @@ if (localPropertiesFile.exists()) {
 }
 
 fun getKeystorePath(): File {
-    return if (!System.getenv(KEYSTORE_PATH).isNullOrEmpty()) {
-        File(System.getenv(KEYSTORE_PATH))
+    return if (File(REMOTE_KEYSTORE_PATH).exists()) {
+        File(REMOTE_KEYSTORE_PATH)
     } else rootProject.file(LOCAL_KEYSTORE_PATH)
 }
 
