@@ -100,14 +100,6 @@ allprojects {
                 )
             }
         }
-
-        configurations {
-            all {
-                resolutionStrategy {
-                    disableDependencyVerification()
-                }
-            }
-        }
     }
 
     /**
