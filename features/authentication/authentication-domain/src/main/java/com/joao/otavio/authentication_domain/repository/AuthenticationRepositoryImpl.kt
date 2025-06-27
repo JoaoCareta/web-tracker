@@ -5,7 +5,7 @@ import com.joao.otavio.authentication_presentation.datasource.AuthenticationRemo
 import com.joao.otavio.authentication_presentation.repository.AuthenticationRepository
 import com.joao.otavio.authentication_presentation.usecases.SaveOrganizationUseCase
 import com.joao.otavio.core.logger.WebTrackerLogger
-import com.joao.otavio.core.util.isNotNullOrEmptyOrBlank
+import com.joao.otavio.core.extensions.string.isNotNullOrEmptyOrBlank
 import javax.inject.Inject
 
 class AuthenticationRepositoryImpl @Inject constructor(

@@ -1,10 +1,5 @@
 package com.joao.otavio.core.navigation
 
-import com.joao.otavio.core.util.NavigationArgs
-import com.joao.otavio.core.util.NavigationCommand
-import com.joao.otavio.core.util.NavigationEvent
-import com.joao.otavio.core.util.NavigationType
-
 sealed class WebTrackerScreens : NavigationCommand {
     data object Authentication : WebTrackerScreens() {
         override val route = "authentication?version={version}"

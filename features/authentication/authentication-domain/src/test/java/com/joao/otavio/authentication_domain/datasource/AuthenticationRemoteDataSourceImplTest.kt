@@ -82,7 +82,7 @@ class AuthenticationRemoteDataSourceImplTest {
         const val EMAIL = "test@test.com"
         const val PASSWORD = "123456"
         val ORGANIZATION = Organization(
-            organizationId = ORGANIZATION_ID,
+            organizationUuid = ORGANIZATION_ID,
             organizationName = ORGANIZATION_NAME
         )
     }

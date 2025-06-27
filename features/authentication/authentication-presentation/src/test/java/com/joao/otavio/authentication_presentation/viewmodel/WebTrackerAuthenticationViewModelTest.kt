@@ -8,7 +8,7 @@ import com.joao.otavio.authentication_presentation.usecases.CheckOrganizationLog
 import com.joao.otavio.authentication_presentation.utils.MainDispatcherRule
 import com.joao.otavio.core.coroutine.CoroutineContextProvider
 import com.joao.otavio.core.coroutine.TestContextProvider
-import com.joao.otavio.core.util.IsNetworkAvailableUseCase
+import com.joao.otavio.core.network.IsNetworkAvailableUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals

@@ -206,7 +206,7 @@ class AuthenticationRepositoryImplTest {
         const val EMPTY_STRING = ""
         const val CLASS_NAME = "AuthenticationRepositoryImpl"
         val ORGANIZATION = Organization(
-            organizationId = ORGANIZATION_ID,
+            organizationUuid = ORGANIZATION_ID,
             organizationName = ORGANIZATION_NAME
         )
     }

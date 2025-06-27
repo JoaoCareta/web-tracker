@@ -1,6 +1,6 @@
 package com.joao.otavio.core.util
 
-import com.joao.otavio.core.util.formatToMinutesAndSeconds
+import com.joao.otavio.core.extensions.longs.formatToMinutesAndSeconds
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 

@@ -20,7 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.joao.otavio.core.navigation.WebTrackerScreens
-import com.joao.otavio.core.util.NavigationEvent
+import com.joao.otavio.core.navigation.NavigationEvent
 import com.joao.otavio.core.util.PermissionUtils
 import com.joao.otavio.design_system.buttons.WebTrackerCircularButton
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme

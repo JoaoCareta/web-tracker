@@ -59,7 +59,7 @@ class FirebaseAuthentication @Inject constructor(
                     "Successfully retrieved current organization UID"
                 )
                 Organization(
-                    organizationId = currentOrganization.uid,
+                    organizationUuid = currentOrganization.uid,
                     organizationName = currentOrganization.displayName ?: "no_name_informed"
                 )
             } ?: run {

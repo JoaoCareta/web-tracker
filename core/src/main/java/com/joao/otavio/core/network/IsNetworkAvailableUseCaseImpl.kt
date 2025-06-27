@@ -1,4 +1,4 @@
-package com.joao.otavio.core.util
+package com.joao.otavio.core.network
 
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities

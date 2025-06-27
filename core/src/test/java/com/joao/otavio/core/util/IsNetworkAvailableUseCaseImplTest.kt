@@ -2,6 +2,7 @@ package com.joao.otavio.core.util
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
+import com.joao.otavio.core.network.IsNetworkAvailableUseCaseImpl
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert.assertFalse

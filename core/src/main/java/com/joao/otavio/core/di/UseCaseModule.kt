@@ -1,7 +1,7 @@
 package com.joao.otavio.core.di
 
-import com.joao.otavio.core.util.IsNetworkAvailableUseCase
-import com.joao.otavio.core.util.IsNetworkAvailableUseCaseImpl
+import com.joao.otavio.core.network.IsNetworkAvailableUseCase
+import com.joao.otavio.core.network.IsNetworkAvailableUseCaseImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

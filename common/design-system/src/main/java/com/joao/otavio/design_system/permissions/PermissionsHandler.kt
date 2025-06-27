@@ -13,7 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Dialog
 import com.joao.otavio.core.navigation.WebTrackerScreens
-import com.joao.otavio.core.util.NavigationEvent
+import com.joao.otavio.core.navigation.NavigationEvent
 import com.joao.otavio.core.util.PermissionUtils
 import com.joao.otavio.core.util.PermissionUtils.areAllPermissionsGranted
 import com.joao.otavio.utils.click.ClickUtils.doIfCanClick

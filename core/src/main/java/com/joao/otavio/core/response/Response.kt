@@ -1,4 +1,4 @@
-package com.joao.otavio.core.util
+package com.joao.otavio.core.response
 
 sealed interface Response<out T> {
     data class Success<T>(val data: T) : Response<T>

@@ -167,7 +167,7 @@ class AuthenticationLocalDataSourceImplTest {
         const val ORGANIZATION_NAME = "organization_name"
         const val CLASS_NAME = "AuthenticationLocalDataSourceImplTest"
         val ORGANIZATION = Organization(
-            organizationId = ORGANIZATION_ID,
+            organizationUuid = ORGANIZATION_ID,
             organizationName = ORGANIZATION_NAME
         )
     }

@@ -196,7 +196,7 @@ class FirebaseAuthenticationTest {
         const val ORGANIZATION_NAME = "organization_id"
         const val CLASS_NAME = "FirebaseAuthentication"
         val ORGANIZATION = Organization(
-            organizationId = ORGANIZATION_ID,
+            organizationUuid = ORGANIZATION_ID,
             organizationName = ORGANIZATION_NAME
         )
     }

@@ -17,10 +17,10 @@ import com.joao.otavio.authentication_presentation.state.WebTrackerAuthenticatio
 import com.joao.otavio.authentication_presentation.usecases.AuthenticateUserUseCase
 import com.joao.otavio.authentication_presentation.usecases.CheckOrganizationLoginStatusUseCase
 import com.joao.otavio.core.coroutine.CoroutineContextProvider
-import com.joao.otavio.core.util.IsNetworkAvailableUseCase
+import com.joao.otavio.core.network.IsNetworkAvailableUseCase
 import com.joao.otavio.core.util.TimeUtils.ONE_MINUTE
 import com.joao.otavio.core.util.TimeUtils.ONE_SECOND
-import com.joao.otavio.core.util.isValidEmail
+import com.joao.otavio.core.extensions.string.isValidEmail
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

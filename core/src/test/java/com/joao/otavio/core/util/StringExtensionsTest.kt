@@ -1,7 +1,9 @@
 package com.joao.otavio.core.util
 
-import com.joao.otavio.core.util.isNotNullOrEmptyOrBlank
-import com.joao.otavio.core.util.isValidEmail
+import com.joao.otavio.core.extensions.string.isEmptyOrBlank
+import com.joao.otavio.core.extensions.string.isNotEmptyOrBlank
+import com.joao.otavio.core.extensions.string.isNotNullOrEmptyOrBlank
+import com.joao.otavio.core.extensions.string.isValidEmail
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import org.junit.Test
@@ -124,6 +126,126 @@ class StringExtensionsTest {
         validEmailsWithCases.forEach { email ->
             assertTrue("Email $email should be valid", email.isValidEmail())
         }
+    }
+
+    @Test
+    fun `given a blank string, when call isEmptyOrBlank, then should return true`() {
+        // Mockk
+        val stringMocked = BLANK_STRING
+
+        // Run
+        val result = stringMocked.isEmptyOrBlank()
+
+        // Assert
+        assertTrue(result)
+    }
+
+    @Test
+    fun `given an empty string, when call isEmptyOrBlank, then should return true`() {
+        // Mockk
+        val stringMocked = EMPTY_STRING
+
+        // Run
+        val result = stringMocked.isEmptyOrBlank()
+
+        // Assert
+        assertTrue(result)
+    }
+
+    @Test
+    fun `given a regular string, when call isEmptyOrBlank, then should return false`() {
+        // Mockk
+        val stringMocked = REGULAR_STRING
+
+        // Run
+        val result = stringMocked.isEmptyOrBlank()
+
+        // Assert
+        assertFalse(result)
+    }
+
+    @Test
+    fun `given a blank string, when call isNotEmptyOrBlank, then should return false`() {
+        // Mockk
+        val stringMocked = BLANK_STRING
+
+        // Run
+        val result = stringMocked.isNotEmptyOrBlank()
+
+        // Assert
+        assertFalse(result)
+    }
+
+    @Test
+    fun `given an empty string, when call isNotEmptyOrBlank, then should return false`() {
+        // Mockk
+        val stringMocked = EMPTY_STRING
+
+        // Run
+        val result = stringMocked.isNotEmptyOrBlank()
+
+        // Assert
+        assertFalse(result)
+    }
+
+    @Test
+    fun `given a regular string, when call isNotEmptyOrBlank, then should return true`() {
+        // Mockk
+        val stringMocked = REGULAR_STRING
+
+        // Run
+        val result = stringMocked.isNotEmptyOrBlank()
+
+        // Assert
+        assertTrue(result)
+    }
+
+    @Test
+    fun `given a string with only spaces, when call isEmptyOrBlank, then should return true`() {
+        // Mockk
+        val stringMocked = "   "
+
+        // Run
+        val result = stringMocked.isEmptyOrBlank()
+
+        // Assert
+        assertTrue(result)
+    }
+
+    @Test
+    fun `given a string with only spaces, when call isNotEmptyOrBlank, then should return false`() {
+        // Mockk
+        val stringMocked = "   "
+
+        // Run
+        val result = stringMocked.isNotEmptyOrBlank()
+
+        // Assert
+        assertFalse(result)
+    }
+
+    @Test
+    fun `given a string with spaces and characters, when call isEmptyOrBlank, then should return false`() {
+        // Mockk
+        val stringMocked = " hello "
+
+        // Run
+        val result = stringMocked.isEmptyOrBlank()
+
+        // Assert
+        assertFalse(result)
+    }
+
+    @Test
+    fun `given a string with spaces and characters, when call isNotEmptyOrBlank, then should return true`() {
+        // Mockk
+        val stringMocked = " hello "
+
+        // Run
+        val result = stringMocked.isNotEmptyOrBlank()
+
+        // Assert
+        assertTrue(result)
     }
 
     companion object {

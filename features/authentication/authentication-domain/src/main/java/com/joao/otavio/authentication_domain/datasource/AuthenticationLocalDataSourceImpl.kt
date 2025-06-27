@@ -27,7 +27,7 @@ class AuthenticationLocalDataSourceImpl @Inject constructor(
         return try {
             webTrackerDataStore.savePreference(
                 WebTrackerAuthentication.FIREBASE_ORG_ID,
-                organizationId.organizationId
+                organizationId.organizationUuid
             )
             webTrackerDataStore.savePreference(
                 WebTrackerAuthentication.FIREBASE_ORG_NAME,

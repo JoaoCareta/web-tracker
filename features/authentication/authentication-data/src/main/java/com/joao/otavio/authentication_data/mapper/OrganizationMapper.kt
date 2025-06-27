@@ -7,14 +7,14 @@ import com.joao.otavio.utils.mapper.Mapper
 object OrganizationMapper : Mapper<OrganizationEntity, OrganizationDomain> {
     override fun OrganizationEntity.toDomain(): OrganizationDomain {
         return OrganizationDomain(
-            organizationId = this.organizationUuid,
+            organizationUuid = this.organizationUuid,
             organizationName = this.organizationName
         )
     }
 
     override fun OrganizationDomain.toEntity(): OrganizationEntity {
         return OrganizationEntity(
-            organizationUuid = this.organizationId,
+            organizationUuid = this.organizationUuid,
             organizationName = this.organizationName
         )
     }

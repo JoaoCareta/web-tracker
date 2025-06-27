@@ -17,7 +17,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.text.input.ImeAction
 import com.joao.otavio.authentication_presentation.state.AuthenticateState
 import com.joao.otavio.authentication_presentation.viewmodel.FakeAuthenticationViewModel
-import com.joao.otavio.core.util.formatToMinutesAndSeconds
+import com.joao.otavio.core.extensions.longs.formatToMinutesAndSeconds
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
 import com.joao.otavio.webtracker.common.desygn.system.R
 import kotlinx.coroutines.ExperimentalCoroutinesApi

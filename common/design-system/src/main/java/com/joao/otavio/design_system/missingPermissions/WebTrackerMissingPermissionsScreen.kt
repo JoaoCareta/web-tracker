@@ -33,7 +33,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.joao.otavio.core.util.NavigationEvent
+import com.joao.otavio.core.navigation.NavigationEvent
 import com.joao.otavio.core.util.PermissionUtils
 import com.joao.otavio.design_system.buttons.WebTrackerButton
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme

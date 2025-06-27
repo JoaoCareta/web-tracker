@@ -1,4 +1,4 @@
-package com.joao.otavio.core.util
+package com.joao.otavio.core.navigation
 
 sealed class NavigationEvent {
     data class Navigate(

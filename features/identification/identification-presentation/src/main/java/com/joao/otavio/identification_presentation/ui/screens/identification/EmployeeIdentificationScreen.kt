@@ -27,7 +27,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.joao.otavio.core.navigation.WebTrackerScreens
-import com.joao.otavio.core.util.NavigationEvent
+import com.joao.otavio.core.navigation.NavigationEvent
 import com.joao.otavio.design_system.buttons.WebTrackerButton
 import com.joao.otavio.design_system.design.themes.DarkTheme
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme

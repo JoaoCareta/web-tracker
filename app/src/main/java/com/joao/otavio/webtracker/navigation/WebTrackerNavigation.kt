@@ -9,8 +9,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.joao.otavio.authentication_presentation.ui.screens.authentication.AuthenticationScreen
 import com.joao.otavio.core.navigation.WebTrackerScreens
-import com.joao.otavio.core.util.NavigationEvent
-import com.joao.otavio.core.util.NavigationType
+import com.joao.otavio.core.navigation.NavigationEvent
+import com.joao.otavio.core.navigation.NavigationType
 import com.joao.otavio.design_system.missingPermissions.WebTrackerMissingPermissionsScreen
 import com.joao.otavio.identification_presentation.ui.screens.identification.EmployeeIdentificationScreen
 import com.joao.otavio.map_presentation.ui.screens.webTrackerMap.WebTrackerMap

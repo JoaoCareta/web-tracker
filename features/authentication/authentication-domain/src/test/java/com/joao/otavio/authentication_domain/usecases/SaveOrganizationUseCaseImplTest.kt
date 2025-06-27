@@ -75,7 +75,7 @@ class SaveOrganizationUseCaseImplTest {
         private const val ORGANIZATION_ID = "organization_id"
         private const val ORGANIZATION_NAME = "organization_name"
         val ORGANIZATION = Organization(
-            organizationId = ORGANIZATION_ID,
+            organizationUuid = ORGANIZATION_ID,
             organizationName = ORGANIZATION_NAME
         )
     }

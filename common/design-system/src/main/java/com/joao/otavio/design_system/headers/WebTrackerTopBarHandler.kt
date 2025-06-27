@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
-import com.joao.otavio.core.util.isEmptyOrBlank
+import com.joao.otavio.core.extensions.string.isEmptyOrBlank
 import com.joao.otavio.design_system.design.themes.WebTrackerTheme
 import com.joao.otavio.webtracker.common.desygn.system.R
 

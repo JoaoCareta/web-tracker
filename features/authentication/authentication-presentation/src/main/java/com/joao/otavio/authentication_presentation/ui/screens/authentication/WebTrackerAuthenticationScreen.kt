@@ -52,8 +52,8 @@ import com.joao.otavio.authentication_presentation.state.WebTrackerAuthenticatio
 import com.joao.otavio.authentication_presentation.viewmodel.BaseWebTrackerAuthenticationViewModel
 import com.joao.otavio.authentication_presentation.viewmodel.WebTrackerAuthenticationViewModel
 import com.joao.otavio.core.navigation.WebTrackerScreens
-import com.joao.otavio.core.util.NavigationEvent
-import com.joao.otavio.core.util.formatToMinutesAndSeconds
+import com.joao.otavio.core.navigation.NavigationEvent
+import com.joao.otavio.core.extensions.longs.formatToMinutesAndSeconds
 import com.joao.otavio.design_system.animationScreen.SuccessAnimationScreen
 import com.joao.otavio.design_system.buttons.WebTrackerButton
 import com.joao.otavio.design_system.design.themes.MainTheme

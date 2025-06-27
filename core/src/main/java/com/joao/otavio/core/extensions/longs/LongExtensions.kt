@@ -1,4 +1,4 @@
-package com.joao.otavio.core.util
+package com.joao.otavio.core.extensions.longs
 
 import android.annotation.SuppressLint
 import com.joao.otavio.core.util.TimeUtils.ONE_MINUTE

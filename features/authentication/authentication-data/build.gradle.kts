@@ -1,5 +1,6 @@
 import dependencies.android.Android
 import dependencies.android.Android.AndroidX.DATA_STORE
+import dependencies.gson.Gson.GSON
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_ANDROID
 import dependencies.hilt.DaggerHilt.DAGGER_HILT_COMPILER
 import dependencies.modules.Modules.Common.CORE
@@ -108,6 +109,9 @@ dependencies {
     kapt(ROOM_COMPILER)
     implementation(ROOM_RUN_TIME)
     implementation(ROOM_KTX)
+
+    // Gson
+    implementation(GSON)
 
     // Modules
     implementation(project(UTILS))
