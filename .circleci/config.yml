@@ -38,6 +38,72 @@ commands:
       - android/change-java-version:
           java-version: 17
 
+  setup-firebase:
+    steps:
+      - run:
+          name: Install Firebase CLI
+          command: curl -sL https://firebase.tools | bash
+
+  setup-keystore:
+    steps:
+      - run:
+          name: Setup Keystore
+          command: |
+            # Mostra o diretório de trabalho
+            echo "Working directory: $PWD"
+
+            # Cria um diretório temporário para a keystore
+            mkdir -p ${PWD}/app/keystore
+
+            # Define o caminho completo da keystore
+            KEYSTORE_PATH="${PWD}/app/keystore/release.keystore"
+            echo "Keystore path: $KEYSTORE_PATH"
+
+            # Verifica se a variável ENCODED_KEYSTORE existe
+            if [ -z "$ENCODED_KEYSTORE" ]; then
+              echo "ERROR: ENCODED_KEYSTORE is empty or not set"
+              exit 1
+            fi
+
+            # Decodifica a keystore
+            echo "$ENCODED_KEYSTORE" | base64 -d > "$KEYSTORE_PATH"
+
+            # Verifica se o arquivo foi criado e seu tamanho
+            if [ -f "$KEYSTORE_PATH" ]; then
+              echo "Keystore created successfully"
+              ls -la "$KEYSTORE_PATH"
+              echo "Keystore size: $(wc -c < "$KEYSTORE_PATH") bytes"
+            else
+              echo "ERROR: Failed to create keystore file"
+              exit 1
+            fi
+
+            # Ajusta as permissões
+            chmod 600 "$KEYSTORE_PATH"
+
+  setup-mapbox:
+    steps:
+      - run:
+          name: Setup Mapbox Token
+          command: |
+            if [ -z "$MAPBOX_ACCESS_TOKEN" ]; then
+              echo "ERROR: MAPBOX_ACCESS_TOKEN is not set"
+              exit 1
+            fi
+
+            # Cria local.properties se não existir
+            touch local.properties
+
+            # Remove linha antiga do MAPBOX_ACCESS_TOKEN se existir
+            sed -i '/MAPBOX_ACCESS_TOKEN/d' local.properties
+
+            # Adiciona novo token
+            echo "MAPBOX_ACCESS_TOKEN=$MAPBOX_ACCESS_TOKEN" >> local.properties
+
+            # Mostra o conteúdo do arquivo (sem mostrar o token completo)
+            echo "Content of local.properties (masked):"
+            cat local.properties | sed 's/\(MAPBOX_ACCESS_TOKEN=\).*/\1****/'
+
 # ----------------------------
 # Jobs Section
 # ----------------------------
@@ -49,7 +115,12 @@ jobs:
       - checkout
       - run:
           name: Debug Environment
-          command: make debug-environment
+          command: |
+            echo "Workspace: $PWD"
+            echo "List of environment variables:"
+            env | grep -v ENCODED_KEYSTORE
+            echo "Directory structure:"
+            ls -R
 
   # Tests and Code Quality
   test-and-sonar:
@@ -58,12 +129,8 @@ jobs:
       - set-android-java-version
       - checkout
       - android/restore-gradle-cache
-      - run:
-          name: Setup Mapbox Token
-          command: make setup-mapbox
-      - run:
-          name: Setup Keystore
-          command: make setup-keystore
+      - setup-mapbox
+      - setup-keystore
       - run:
           name: Run Tests
           command: make test
@@ -81,7 +148,7 @@ jobs:
             cp $(find . -name "jacocoTestReport*.xml") coverage-reports/ || echo "No coverage reports found"
       - run:
           name: Execute SonarQube Scanner
-          command: make sonar
+          command: ./gradlew sonar -Dsonar.login="$SONAR_TOKEN"
       - store_artifacts:
           path: app/build/reports/jacoco/jacocoTestReport-staging-unified/html
           destination: reports/coverage
@@ -100,15 +167,9 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-      - run:
-          name: Setup Mapbox Token
-          command: make setup-mapbox
-      - run:
-          name: Setup Keystore
-          command: make setup-keystore
-      - run:
-          name: Install Firebase CLI
-          command: make setup-firebase
+      - setup-mapbox
+      - setup-keystore
+      - setup-firebase
       - run:
           name: Build Staging App
           command: make build-staging
