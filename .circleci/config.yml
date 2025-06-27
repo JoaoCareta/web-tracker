@@ -66,20 +66,20 @@ commands:
             fi
 
             # Decodifica a keystore
-            echo $ENCODED_KEYSTORE | base64 -d > $KEYSTORE_PATH
+            echo "$ENCODED_KEYSTORE" | base64 -d > "$KEYSTORE_PATH"
 
             # Verifica se o arquivo foi criado e seu tamanho
             if [ -f "$KEYSTORE_PATH" ]; then
               echo "Keystore created successfully"
-              ls -la $KEYSTORE_PATH
-              echo "Keystore size: $(wc -c < $KEYSTORE_PATH) bytes"
+              ls -la "$KEYSTORE_PATH"
+              echo "Keystore size: $(wc -c < "$KEYSTORE_PATH") bytes"
             else
               echo "ERROR: Failed to create keystore file"
               exit 1
             fi
 
             # Ajusta as permissões
-            chmod 600 $KEYSTORE_PATH
+            chmod 600 "$KEYSTORE_PATH"
 
   setup-mapbox:
     steps:
@@ -103,20 +103,6 @@ commands:
             # Mostra o conteúdo do arquivo (sem mostrar o token completo)
             echo "Content of local.properties (masked):"
             cat local.properties | sed 's/\(MAPBOX_ACCESS_TOKEN=\).*/\1****/'
-
-  optimize-gradle-build:
-    steps:
-      - run:
-          name: Optimize Gradle Build
-          command: |
-            # Limpa o cache do Gradle
-            rm -rf ~/.gradle/caches/
-            # Configura o Gradle para modo offline
-            mkdir -p ~/.gradle
-            echo "org.gradle.parallel=false" >> ~/.gradle/gradle.properties
-            echo "org.gradle.workers.max=1" >> ~/.gradle/gradle.properties
-            echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
-            echo "org.gradle.jvmargs=-Xmx2g -XX:+HeapDumpOnOutOfMemoryError" >> ~/.gradle/gradle.properties
 
 # ----------------------------
 # Jobs Section
@@ -145,7 +131,7 @@ jobs:
       - android/restore-gradle-cache
       - setup-mapbox
       - setup-keystore
-      - optimize-gradle-build
+      # A command 'optimize-gradle-build' foi removida, pois as otimizações já são tratadas via GRADLE_OPTS no executor
       - run:
           name: Run Tests
           command: make test
@@ -185,7 +171,7 @@ jobs:
       - setup-mapbox
       - setup-keystore
       - setup-firebase
-      - optimize-gradle-build
+      # A command 'optimize-gradle-build' foi removida, pois as otimizações já são tratadas via GRADLE_OPTS no executor
       - run:
           name: Build Staging App
           command: make build-staging
@@ -211,7 +197,7 @@ workflows:
           requires:
             - debug-environment
 
-      # Deploy to QA
+      # Deploy to QA - Só será executado após um merge na branch 'main'
       - deploy-qa:
           requires:
             - test-and-sonar
