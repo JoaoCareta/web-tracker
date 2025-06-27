@@ -43,6 +43,7 @@ sonarqube {
                 "src/**/datastore/**",
                 "src/**/di/**",
                 "src/**/events/**",
+                "src/**/extensions/**",
                 "src/**/logger/**",
                 "src/**/navigation/**",
                 "src/**/network/**",

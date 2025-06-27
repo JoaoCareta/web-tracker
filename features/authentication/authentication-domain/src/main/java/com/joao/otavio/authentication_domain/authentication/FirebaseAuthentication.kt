@@ -60,7 +60,7 @@ class FirebaseAuthentication @Inject constructor(
                 )
                 Organization(
                     organizationUuid = currentOrganization.uid,
-                    organizationName = currentOrganization.displayName ?: "no_name_informed"
+                    organizationName = currentOrganization.displayName ?: DEFAULT_NAME
                 )
             } ?: run {
                 logger.i(logger.getTag(), "No current organization logged in.")
@@ -70,5 +70,9 @@ class FirebaseAuthentication @Inject constructor(
             logger.e(logger.getTag(), "Unexpected error while retrieving current organization ID", t)
             null
         }
+    }
+
+    companion object {
+        const val DEFAULT_NAME = "no_name_informed"
     }
 }

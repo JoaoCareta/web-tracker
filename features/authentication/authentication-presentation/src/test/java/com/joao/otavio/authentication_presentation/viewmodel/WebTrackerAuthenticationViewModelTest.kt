@@ -122,6 +122,21 @@ class WebTrackerAuthenticationViewModelTest {
         assertTrue(viewModel.webTrackerAuthenticationState.displayErrorSnackBar.value)
     }
 
+    @Test
+    fun `given network available and delay completes, when checking login status, then should complete after delay`() = runTest {
+        // Mockk
+        coEvery { checkOrganizationLoginStatusUseCase() } returns Result.success(true)
+        coEvery { isNetworkAvailableUseCase.invoke() } returns true
+
+        // Run Test
+        viewModel.isOrganizationAlreadyLoggedIn()
+        advanceTimeBy(ONE_SECOND_DELAY)
+        advanceUntilIdle()
+
+        // Assert
+        assertEquals(AuthenticateState.AUTHENTICATE, viewModel.webTrackerAuthenticationState.authenticateState.value)
+    }
+
     /*
      * Network Connectivity Tests
      */
@@ -427,6 +442,25 @@ class WebTrackerAuthenticationViewModelTest {
      */
 
     @Test
+    fun `given authentication in progress with delay, when attempting login, then should complete after delay`() = runTest {
+        // Mockk
+        coEvery {
+            authenticationUseCase(USER_EMAIL_TRIM, USER_PASSWORD)
+        } returns Result.success(true)
+
+        // Run Test
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingEmail(USER_EMAIL))
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingPassword(USER_PASSWORD))
+        viewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
+
+        advanceTimeBy(ONE_SECOND_DELAY)
+        advanceUntilIdle()
+
+        // Assert
+        assertEquals(AuthenticateState.AUTHENTICATE, viewModel.webTrackerAuthenticationState.authenticateState.value)
+    }
+
+    @Test
     fun `given authentication in progress, when attempting login, then loading state should be updated correctly`() = runTest {
         // Mockk
         coEvery {
@@ -505,6 +539,57 @@ class WebTrackerAuthenticationViewModelTest {
     /*
     * Login Attempt Lock Tests
     */
+
+    @Test
+    fun `given lockout initiated, when finally block executes, then should reset lockout time`() = runTest {
+        // Mockk
+        coEvery {
+            authenticationUseCase(USER_EMAIL_TRIM, USER_PASSWORD)
+        } returns Result.success(false)
+
+        // Setup
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingEmail(USER_EMAIL))
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingPassword(USER_PASSWORD))
+
+        // Run Test - Trigger lockout
+        repeat(WebTrackerAuthenticationViewModel.MAX_ATTEMPTS) {
+            viewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
+            advanceUntilIdle()
+        }
+
+        // Advance time to trigger finally block
+        advanceTimeBy(LOCKOUT_DURATION + ONE_SECOND_DELAY)
+        advanceUntilIdle()
+
+        // Assert
+        assertEquals(0L, viewModel.webTrackerAuthenticationState.remainingLockoutTime.value)
+    }
+
+    @Test
+    fun `given lockout active, when remaining time reaches zero, then should break loop`() = runTest {
+        // Mockk
+        coEvery {
+            authenticationUseCase(USER_EMAIL_TRIM, USER_PASSWORD)
+        } returns Result.success(false)
+
+        // Setup
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingEmail(USER_EMAIL))
+        viewModel.onUiEvents(AuthenticationEvents.OnTypingPassword(USER_PASSWORD))
+
+        // Run Test - Trigger lockout
+        repeat(WebTrackerAuthenticationViewModel.MAX_ATTEMPTS) {
+            viewModel.onUiEvents(AuthenticationEvents.OnLoginUpClick)
+            advanceUntilIdle()
+        }
+
+        // Advance time until lockout ends
+        advanceTimeBy(LOCKOUT_DURATION)
+        advanceUntilIdle()
+
+        // Assert
+        assertEquals(0L, viewModel.webTrackerAuthenticationState.remainingLockoutTime.value)
+    }
+
     @Test
     fun `given max failed attempts reached, when attempting login, then should initiate lockout`() = runTest {
         // Mockk
@@ -661,5 +746,7 @@ class WebTrackerAuthenticationViewModelTest {
         const val USER_EMAIL_TRIM = "test@email.com"
         const val USER_EMAIL = "test@email.com "
         const val USER_PASSWORD = "password123"
+        const val LOCKOUT_DURATION = 5L * 60L * 1000L // 5 minutes
+        const val ONE_SECOND_DELAY = 1000L
     }
 }

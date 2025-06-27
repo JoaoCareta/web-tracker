@@ -154,6 +154,23 @@ class FirebaseAuthenticationTest {
     }
 
     @Test
+    fun `given a logged user, when authentication tries to get the currentUser and everything went well but the name is null, then it should return it with default name`() = runTest {
+        // Mockk
+        every { firebaseAuth.currentUser?.uid } returns ORGANIZATION_ID
+        every { firebaseAuth.currentUser?.displayName } returns null
+        val organization = Organization(
+            organizationUuid = ORGANIZATION_ID,
+            organizationName = "no_name_informed"
+        )
+
+        // Run Test
+        val result = firebaseAuthentication.getLoginOrganization()
+
+        // Assert
+        assertEquals(result, organization)
+    }
+
+    @Test
     fun `given a logged user, when authentication tries to get the currentUser and it returns null, then it should return null`() = runTest {
         // Mockk
         every { firebaseAuth.currentUser?.uid } returns null

@@ -1,9 +1,5 @@
-package com.joao.otavio.core.util
+package com.joao.otavio.core.extensions.string
 
-import com.joao.otavio.core.extensions.string.isEmptyOrBlank
-import com.joao.otavio.core.extensions.string.isNotEmptyOrBlank
-import com.joao.otavio.core.extensions.string.isNotNullOrEmptyOrBlank
-import com.joao.otavio.core.extensions.string.isValidEmail
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import org.junit.Test
